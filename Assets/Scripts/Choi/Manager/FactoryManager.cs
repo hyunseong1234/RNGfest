@@ -1,7 +1,7 @@
+using Dev.cheol.Model;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Dev.cheol.Model;
 
 namespace Dev.cheol.Manager
 {
@@ -19,7 +19,7 @@ namespace Dev.cheol.Manager
 
         private void Awake()
         {
-            prefabs = Resources.LoadAll<BaseObject>("Prefab/cyc/TrashObject");
+            prefabs = Resources.LoadAll<BaseObject>("Prefab/CYC/TrashObject");
 
             poolingManger = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
         }
@@ -27,11 +27,6 @@ namespace Dev.cheol.Manager
 
         public void StartSetting()
         {
-            SettingObject(30, "쓰래기", prefabs[0]);
-            SettingObject(50, "쓰래기", prefabs[1]);
-            SettingObject(50, "쓰래기", prefabs[2]);
-
-            SettingObject(5, "버블", prefabs[3]);
 
         }
 

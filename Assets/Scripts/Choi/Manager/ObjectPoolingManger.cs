@@ -1,9 +1,8 @@
-﻿using System.Collections;
+﻿using Dev.cheol.Model;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
-using Dev.cheol.Model;
 
 
 namespace Dev.cheol.Manager
@@ -39,14 +38,14 @@ namespace Dev.cheol.Manager
 
 
         #region Public Funtion
-       
+
         /// <summary>
         /// 클래스용
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="tag"></param>
         /// <param name="path"></param>
-      
+
 
         /// <summary>
         /// 풀링해오는 함수 (포지션은 팩토리쪽에 받기를 권장!!)
