@@ -7,7 +7,7 @@ namespace Dev.cheol.Comon
     /// <summary>
     /// 상태 추상화
     /// </summary>
-    public interface IUnitState
+    public interface IState
     {
         /// <summary>
         /// 상태 진입 시 호출
