@@ -10,17 +10,17 @@ namespace Dev.cheol.Comon
     {
         public IEnumerator Enter(BaseObject unit)
         {
-            throw new System.NotImplementedException();
+            yield break;
         }
 
         public IEnumerator Execute(BaseObject unit)
         {
-            throw new System.NotImplementedException();
+            yield break;
         }
 
         public IEnumerator Exit(BaseObject unit)
         {
-            throw new System.NotImplementedException();
+            yield break;
         }
 
     }

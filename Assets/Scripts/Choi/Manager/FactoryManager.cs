@@ -10,7 +10,7 @@ namespace Dev.cheol.Manager
     {
         string[] tagNames;
         [SerializeField] private ObjectPoolingManger poolingManger = null;
-        [SerializeField] private BaseObject[] prefabs = null;
+        [SerializeField] private BaseObject[] _prefabs = null;
 
 
         //[SerializeField] private GameObject _playerPrefab = null;
@@ -19,7 +19,7 @@ namespace Dev.cheol.Manager
 
         private void Awake()
         {
-            prefabs = Resources.LoadAll<BaseObject>("Prefab/CYC/TrashObject");
+            _prefabs = Resources.LoadAll<BaseObject>("Prefabs/CYC/Enenmy");
 
             poolingManger = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
         }
@@ -35,25 +35,39 @@ namespace Dev.cheol.Manager
         {
             T obj = Instantiate(path);
             obj.gameObject.SetActive(false);
+            obj.PoolTag = tag;
 
             if (!poolingManger.Pushs.ContainsKey(tag))
             {
                 Debug.Log($"[PoolManager] 신규 태그 생성됨: {tag}");
                 poolingManger.Pushs.Add(tag, new Queue<BaseObject>()); // 여기서 Queue를 생성해야 KeyNotFound가 안 뜸
             }
-            poolingManger.Pushs[tag].Enqueue(obj);
             obj.transform.parent = poolingManger.PushlTransform; //부모설정
+            poolingManger.Pushs[tag].Enqueue(obj); // 큐 삽입
         }
 
 
 
-
-        private void SettingObject(int count, string tag, BaseObject file)
+        /// <summary>
+        /// 미리 생성해주는 코드 프리팹 버전
+        /// </summary>
+        /// <param name="count"></param>
+        /// <param name="tag"></param>
+        /// <param name="file"></param>
+        public void SettingObject(int count, string tag, BaseObject file)
         {
             for (int i = 0; i < count; i++)
             {
                 LoadDataCreatedObj<BaseObject>(tag, file);
             }
+        }
+        public void SettingObject(int count, string tag, int fileIndex)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                LoadDataCreatedObj<BaseObject>(tag, _prefabs[fileIndex]);
+            }
+
         }
         public override void HandleEvent(string data)
         {
