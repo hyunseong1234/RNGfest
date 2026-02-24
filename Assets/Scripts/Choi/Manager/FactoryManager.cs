@@ -12,14 +12,11 @@ namespace Dev.cheol.Manager
         [SerializeField] private ObjectPoolingManger poolingManger = null;
         [SerializeField] private BaseObject[] _prefabs = null;
 
-
         //[SerializeField] private GameObject _playerPrefab = null;
-
-
 
         private void Awake()
         {
-            _prefabs = Resources.LoadAll<BaseObject>("Prefabs/CYC/Enenmy");
+            _prefabs = Resources.LoadAll<BaseObject>("Prefabs/CYC/Enemy");
 
             poolingManger = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
         }
