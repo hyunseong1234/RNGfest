@@ -1,6 +1,7 @@
 using Dev.cheol.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Dev.cheol.Manager
@@ -16,15 +17,23 @@ namespace Dev.cheol.Manager
 
         private void Awake()
         {
-            _prefabs = Resources.LoadAll<BaseObject>("Prefabs/CYC/Enemy");
+            StartSetting();
 
-            poolingManger = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+            // 첫 번째 경로 로드
+            var enemyPrefabs = Resources.LoadAll<BaseObject>("Prefabs/CYC/Enemy");
+            // 두 번째 경로 로드
+            var towerPrefabs = Resources.LoadAll<BaseObject>("Prefabs/CYC/Tower");
+            // 두 배열을 합쳐서 _prefabs에 할당
+            _prefabs = enemyPrefabs.Concat(towerPrefabs).ToArray();
+
+
         }
 
 
-        public void StartSetting()
+        private void StartSetting()
         {
-
+            if (poolingManger != null) return;
+            poolingManger = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
         }
 
 

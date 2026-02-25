@@ -5,7 +5,7 @@
 //public class MouseOrbitImproved : MonoBehaviour
 //{
 
-//    public Transform target;
+//    public Transform _target;
 //    public float distance = 5.0f;
 //    public float xSpeed = 120.0f;
 //    public float ySpeed = 120.0f;
@@ -39,7 +39,7 @@
 
 //    void LateUpdate()
 //    {
-//        if (target)
+//        if (_target)
 //        {
 //            x += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
 //            y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
@@ -51,12 +51,12 @@
 //            distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel") * 5, distanceMin, distanceMax);
 
 //            RaycastHit hit;
-//            if (Physics.Linecast(target.position, transform.position, out hit))
+//            if (Physics.Linecast(_target.position, transform.position, out hit))
 //            {
 //                distance -= hit.distance;
 //            }
 //            Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
-//            Vector3 position = rotation * negDistance + target.position;
+//            Vector3 position = rotation * negDistance + _target.position;
 
 //            transform.rotation = rotation;
 //            transform.position = position;

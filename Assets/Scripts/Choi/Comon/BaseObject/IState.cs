@@ -13,17 +13,17 @@ namespace Dev.cheol.Comon
         /// 상태 진입 시 호출
         /// </summary>
         /// <param name="unit"></param>
-        IEnumerator Enter(BaseObject unit);
+        IEnumerator Enter(BaseUnit unit);
         /// <summary>
         /// 매 프레임마다 호출
         /// </summary>
         /// <param name="unit"></param>
-        IEnumerator Execute(BaseObject unit);
+        IEnumerator Execute(BaseUnit unit);
         /// <summary>
         /// 상태 종료 시 호출
         /// </summary>
         /// <param name="unit"></param>
-        IEnumerator Exit(BaseObject unit);
+        IEnumerator Exit(BaseUnit unit);
     }
 }
 

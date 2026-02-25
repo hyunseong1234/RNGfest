@@ -15,7 +15,8 @@ namespace Dev.cheol.Stats
         /// <summary>
         /// 에너미는 이속, 타워는 공속임
         /// </summary>
-        public float speed;
+        public float Speed;
+        public float Range;
 
 
         //TODO : 데이터 나중에 넣어주세요 아무나

@@ -6,16 +6,16 @@ using UnityEngine;
 
 namespace Dev.cheol.Comon
 {
-    public class MoveState : IState
+    public class IMoveState : IState
     {
-        public IEnumerator Enter(BaseObject unit)
+        public IEnumerator Enter(BaseUnit unit)
         {
             Debug.Log("움직임 시작");
             yield break;
         }
-        public IEnumerator Execute(BaseObject unit)
+        public IEnumerator Execute(BaseUnit unit)
         {
-            if (unit.Status.speed <= 0) yield break;
+            if (unit.Status.Speed <= 0) yield break;
 
             while (true)
             {
@@ -26,14 +26,14 @@ namespace Dev.cheol.Comon
                 unit.transform.position = Vector3.MoveTowards(
                     unit.transform.position,
                     unit.Target.position,
-                    unit.Status.speed * Time.deltaTime
+                    unit.Status.Speed * Time.deltaTime
                 );
 
                 yield return null;
             }
         }
 
-        public IEnumerator Exit(BaseObject unit)
+        public IEnumerator Exit(BaseUnit unit)
         {
             yield break;
         }

@@ -4,7 +4,11 @@ using UnityEngine;
 
 namespace Dev.cheol.Model
 {
-    public class Tile : MonoBehaviour
+    public abstract class BaseBullet : BaseObject
     {
+        protected Transform _target;
+
     }
+
+
 }

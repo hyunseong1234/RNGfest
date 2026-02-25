@@ -1,3 +1,4 @@
+using Dev.cheol.Model;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,19 +12,32 @@ namespace Dev.cheol.Manager
         [SerializeField] private Transform _pathTilesParrent = null;
         [SerializeField] private Transform _mapTilesParrent = null;
 
-        [SerializeField] private Model.Tile[] _pathTiles = null;
-        [SerializeField] private Model.Tile[] _mapTile = null;
+        /// <summary>
+        /// 경로관련 타일들
+        /// </summary>
+        [SerializeField] private TileObject[] _pathTiles = null;
+        /// <summary>
+        /// 타워배치 관련 타일들
+        /// </summary>
+        [SerializeField] private TileObject[] _mapTile = null;
 
-        public Model.Tile[] PathTiles { get => _pathTiles; set => _pathTiles = value; }
-        public Model.Tile[] MapTile { get => _mapTile; set => _mapTile = value; }
+        /// <summary>
+        /// 경로관련 타일들
+        /// </summary>
+        public TileObject[] PathTiles { get => _pathTiles; set => _pathTiles = value; }
+
+        /// <summary>
+        /// 타워배치 관련 타일들
+        /// </summary>
+        public TileObject[] MapTile { get => _mapTile; set => _mapTile = value; }
 
         private void Awake()
         {
             _pathTilesParrent = FindNameTr(_pathTilesParrent, "FlagPoint");
             _mapTilesParrent = FindNameTr(_mapTilesParrent, "TowerBuildArea");
 
-            _pathTiles = _pathTilesParrent.GetComponentsInChildren<Model.Tile>();
-            _mapTile = _mapTilesParrent.GetComponentsInChildren<Model.Tile>();
+            _pathTiles = _pathTilesParrent.GetComponentsInChildren<Model.TileObject>();
+            _mapTile = _mapTilesParrent.GetComponentsInChildren<Model.TileObject>();
 
         }
         public override void HandleEvent(string data)

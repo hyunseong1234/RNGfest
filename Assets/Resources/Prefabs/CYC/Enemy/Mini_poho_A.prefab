@@ -134,7 +134,9 @@ MonoBehaviour:
   _poolTag: Enemy
   _status:
     MaxHp: 0
-    speed: 1
+    Hp: 0
+    Speed: 1
+    Range: 0
   currentState: 1
 --- !u!1 &432442095986779958
 GameObject:

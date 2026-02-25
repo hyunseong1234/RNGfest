@@ -17,12 +17,18 @@ namespace Dev.cheol.Manager
         private void Start()
         {
             var factory = ServiceLocator.Instance.GetService<FactoryManager>();
-            if (factory != null) factory.StartSetting();
 
-            factory.SettingObject(8, "Enemy1", 1);
-            factory.SettingObject(8, "Enemy2", 2);
-            factory.SettingObject(8, "Enemy3", 3);
-            factory.SettingObject(8, "Enemy4", 4);
+
+            //나중에 함수화 부탁해 현성아
+            factory.SettingObject(8, "Enemy1", 0);
+            factory.SettingObject(8, "Enemy2", 1);
+            factory.SettingObject(8, "Enemy3", 2);
+            factory.SettingObject(8, "Enemy4", 3);
+
+            factory.SettingObject(20, "Tower1", 5);
+            factory.SettingObject(20, "Tower2", 6);
+            factory.SettingObject(20, "Tower3", 7);
+            factory.SettingObject(20, "Tower4", 8);
             StartCoroutine(WaitForSeedAndSpawn());
         }
 
@@ -45,7 +51,6 @@ namespace Dev.cheol.Manager
             //업데이트
             UpdateList(_spawnEnemys);
             UpdateList(_spawnTowers);
-
             //테스트용 인풋기능
             Test(); // 테스트때만 주석풀어용~
 

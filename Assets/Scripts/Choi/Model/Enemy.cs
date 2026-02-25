@@ -6,9 +6,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 
-public class Enemy : BaseObject
+public class Enemy : BaseUnit
 {
     private int _waypointIndex = 0;
+
+    protected override void Awake()
+    {
+        base.Awake();
+    }
 
 
     /// <summary>
@@ -99,7 +104,7 @@ public class Enemy : BaseObject
         }
 
         // 4. 상태 머신 연동
-        if (Status.speed > 0)
+        if (Status.Speed > 0)
         {
             ChangeState(EState.MOVE);
         }
@@ -108,6 +113,8 @@ public class Enemy : BaseObject
             ChangeState(EState.IDLE);
         }
     }
+
+
 }
 
 
