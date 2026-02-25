@@ -13,6 +13,8 @@ namespace Dev.cheol.Manager
         [SerializeField] private ObjectPoolingManger poolingManger = null;
         [SerializeField] private BaseObject[] _prefabs = null;
 
+        public BaseObject[] Prefabs { get => _prefabs; set => _prefabs = value; }
+
         //[SerializeField] private GameObject _playerPrefab = null;
 
         private void Awake()
@@ -23,8 +25,9 @@ namespace Dev.cheol.Manager
             var enemyPrefabs = Resources.LoadAll<BaseObject>("Prefabs/CYC/Enemy");
             // 두 번째 경로 로드
             var towerPrefabs = Resources.LoadAll<BaseObject>("Prefabs/CYC/Tower");
+            var threePrefabs = Resources.LoadAll<BaseObject>("Prefabs/CYC/Bullet");
             // 두 배열을 합쳐서 _prefabs에 할당
-            _prefabs = enemyPrefabs.Concat(towerPrefabs).ToArray();
+            _prefabs = enemyPrefabs.Concat(towerPrefabs).Concat(threePrefabs).ToArray();
 
 
         }

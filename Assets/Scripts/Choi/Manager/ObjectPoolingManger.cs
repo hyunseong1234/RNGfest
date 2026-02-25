@@ -85,7 +85,50 @@ namespace Dev.cheol.Manager
 
             return objToUse as T;
         }
+        /// <summary>
+        /// 프리팹 전용
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="prefab"></param>
+        /// <returns></returns>
+        public T GetFromPool<T>(BaseObject prefab) where T : BaseObject
+        {
+            if (prefab == null)
+            {
+                Debug.LogError("전달된 프리팹이 null입니다!");
+                return null;
+            }
 
+            // 프리팹의 이름을 키로 사용 (보통 프리팹 이름이 고유 태그 역할을 함)
+            string key = prefab.gameObject.name;
+
+            // 1. 해당 키의 풀이 아예 없다면 새로 생성해줌 (딕셔너리 초기화)
+            if (!pushs.ContainsKey(key))
+            {
+                pushs.Add(key, new Queue<BaseObject>());
+            }
+
+            Queue<BaseObject> poolQueue = pushs[key];
+            BaseObject objToUse = null;
+
+            // 2. 풀에 꺼낼 게 있다면 데려옴
+            if (poolQueue.Count > 0)
+            {
+                objToUse = poolQueue.Dequeue();
+            }
+            // 3. 풀이 비어있다면? "현성아 재생성 코드 만들어줘" 부분
+            else
+            {
+                objToUse = Instantiate(prefab, poolTransform);
+                Debug.Log($"[Pool] '{key}' 풀이 비어있어 새로 생성함.");
+            }
+
+            // 4. 오브젝트 설정 후 반환
+            objToUse.gameObject.SetActive(true);
+            objToUse.PoolTag = key; // 나중에 반납할 때를 위해 키 저장
+
+            return objToUse as T;
+        }
         /// <summary>
         /// 오브젝트 풀링용 디스트로이 대용 함수 (삭제역활)
         /// </summary>

@@ -11,21 +11,18 @@ namespace Dev.cheol.Model
     public class AttackTower : Tower
     {
         private List<Enemy> _enemyList; // 적 리스트 캐싱용
-        protected BaseBullet _bullet;
+        [SerializeField] private BaseBullet _bullet;
+
+        public BaseBullet Bullet { get => _bullet; set => _bullet = value; }
+
         protected override void Awake()
         {
             base.Awake();
-            // 1. 서비스 로케이터에서 리스트 미리 가져오기 (매 프레임 호출 방지)
+            // 서비스 로케이터에서 리스트 미리 가져오기 (매 프레임 호출 방지)
             var mainManager = ServiceLocator.Instance.GetService<MainManager>();
             if (mainManager != null)
             {
                 _enemyList = mainManager.SpawnEnemys;
-            }
-
-            if (_bullet != null)
-            {
-                var factory = ServiceLocator.Instance.GetService<FactoryManager>();
-                factory.SettingObject(10, this.gameObject.name + "_Bullet", _bullet);
             }
 
             if (_animator != null) return;
@@ -49,6 +46,14 @@ namespace Dev.cheol.Model
             {
                 ChangeState(EState.IDLE);
             }
+        }
+        public override void ActiveAttack()
+        {
+            Debug.Log("불렛호출됨");
+            BaseBullet bullet = ServiceLocator.Instance.GetService<ObjectPoolingManger>().GetFromPool<BaseBullet>(_bullet);
+            bullet.transform.position = transform.position;
+            bullet.Init(_target, 0, 3);
+
         }
 
         /// <summary>
@@ -92,6 +97,8 @@ namespace Dev.cheol.Model
                 .FirstOrDefault();
         }
     }
+
+
 
 
 }

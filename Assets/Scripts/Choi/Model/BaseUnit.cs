@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Dev.cheol.Model
 {
 
-    public class BaseUnit : BaseObject
+    public abstract class BaseUnit : BaseObject
     {
         [Header("기본 필드")]
         [SerializeField] protected StatusInfo _status;
@@ -72,5 +72,6 @@ namespace Dev.cheol.Model
         {
 
         }
+        public abstract void ActiveAttack();
     }
 }

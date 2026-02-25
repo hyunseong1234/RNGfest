@@ -6,6 +6,8 @@ namespace Dev.cheol.Model
 {
     public abstract class BaseBullet : BaseObject
     {
+        public abstract void Init(Transform target, int damage, float speed = 20f);
+
 
     }
 

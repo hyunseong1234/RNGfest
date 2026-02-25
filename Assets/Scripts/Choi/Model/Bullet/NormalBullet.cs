@@ -3,15 +3,14 @@ using Dev.cheol.Model; // BaseObject나 Enemy가 있는 네임스페이스
 using System.Collections;
 using UnityEngine;
 
-public class NormalBullet : BaseObject
+public class NormalBullet : BaseBullet
 {
-    private Transform _target;
     private float _speed = 20f;
     private int _damage = 10;
     private Coroutine _moveCoroutine;
 
     // 풀에서 꺼낼 때 호출할 초기화 함수
-    public void Init(Transform target, int damage, float speed = 20f)
+    public override void Init(Transform target, int damage, float speed = 20f)
     {
         _target = target;
         _damage = damage;
@@ -35,7 +34,7 @@ public class NormalBullet : BaseObject
             );
 
             // 타겟과의 거리가 아주 가까워지면 충돌 처리
-            if (Vector3.Distance(transform.position, _target.position) < 0.2f)
+            if (Vector3.Distance(transform.position, _target.position) < 0.05f)
             {
                 HitTarget();
                 yield break; // 코루틴 종료
@@ -62,8 +61,7 @@ public class NormalBullet : BaseObject
 
     private void ReturnToPool()
     {
-        // 오브젝트 풀링 매니저를 통해 반납 (비활성화)
-        // 직접 SetActive(false)를 해도 풀 매니저 구조에 따라 작동함
+
         ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(this);
     }
 

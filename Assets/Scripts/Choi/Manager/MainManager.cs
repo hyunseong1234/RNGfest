@@ -29,6 +29,15 @@ namespace Dev.cheol.Manager
             factory.SettingObject(20, "Tower2", 6);
             factory.SettingObject(20, "Tower3", 7);
             factory.SettingObject(20, "Tower4", 8);
+
+            //불렛 타워에맞게 생성
+            AttackTower temp = factory.Prefabs[5] as AttackTower;
+            factory.SettingObject(20, "Bullet1", temp.Bullet);
+
+            //temp = factory.Prefabs[6] as AttackTower;
+            //if (temp.Bullet == null) return;
+            //factory.SettingObject(20, "Bullet2", temp.Bullet);
+
             StartCoroutine(WaitForSeedAndSpawn());
         }
 
@@ -41,7 +50,6 @@ namespace Dev.cheol.Manager
         {
 
             yield return new WaitForSeconds(0.2f);
-
 
         }
 

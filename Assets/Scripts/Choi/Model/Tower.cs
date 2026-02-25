@@ -7,8 +7,14 @@ using UnityEngine;
 
 public class Tower : BaseUnit
 {
+    public override void ActiveAttack()
+    {
+        throw new System.NotImplementedException();
+    }
 
     public override void ObjectUpdate()
     {
     }
+
+
 }

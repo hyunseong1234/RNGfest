@@ -1,3 +1,4 @@
+using Dev.cheol.Manager;
 using Dev.cheol.Model;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,44 +13,71 @@ namespace Dev.cheol.Comon
         private bool _hasFired = false; // 한 번의 공격 애니메이션에서 발사 여부 체크
         public IEnumerator Enter(BaseUnit unit)
         {
-            Debug.Log("공격 호출");
             unit.Animator.SetInteger("animation", 2);
 
+            unit.Animator.Play("ATK0", 0, 0f);
+
+            // 3. 발사 플래그 초기화
+            _hasFired = false;
             yield break;
         }
 
         public IEnumerator Execute(BaseUnit unit)
         {
-            // 공격을 시작할 때 초기화
+            // 공격 상태 진입 시 발사 여부 초기화
             _hasFired = false;
+            string ATK0 = "ATK0";
 
-            while (true) // 상태가 바뀌어서 StopCoroutine이 호출될 때까지 무한 반복
+
+            while (true)
             {
-                if (unit.Target == null) yield break;
+                // 1. 타겟 유효성 검사
+                if (unit.Target == null)
+                {
+                    Debug.Log($"{unit.name} : 타겟이 없어 공격 상태를 종료합니다.");
+                    unit.ChangeState(EState.IDLE);
+                    yield break;
+                }
 
+                // 2. 타겟 방향으로 회전
                 Vector3 direction = (unit.Target.position - unit.transform.position).normalized;
                 direction.y = 0;
                 if (direction != Vector3.zero)
                 {
                     Quaternion targetRotation = Quaternion.LookRotation(direction);
-                    float rotSpeed = unit.Status.Speed * 10f; //회전속도 나중에 
+                    float rotSpeed = 10f; // 필요시 unit.Status.RotationSpeed 등으로 교체
                     unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, targetRotation, Time.deltaTime * rotSpeed);
                 }
 
+                // 3. 애니메이터 정보 가져오기 (0번 레이어)
                 AnimatorStateInfo stateInfo = unit.Animator.GetCurrentAnimatorStateInfo(0);
 
-                if (!_hasFired && stateInfo.IsName("Attack") && stateInfo.normalizedTime >= 0.5f)
+                if (stateInfo.IsName("ATK1"))
                 {
-                    _hasFired = true;
-                    FireProjectile(unit);
+                    Debug.Log("애니메이션 조건 맞음");
                 }
 
-                // 애니메이션 종료 체크
-                if (stateInfo.IsName("Attack") && stateInfo.normalizedTime >= 1.0f && !unit.Animator.IsInTransition(0))
+                if (stateInfo.IsName(ATK0))
                 {
-                    unit.Animator.SetInteger("animation", 0);
-                    unit.ChangeState(EState.IDLE);
-                    yield break; // 상태가 바뀌었으니 루프 탈출
+                    if (!_hasFired)
+                    {
+                        if (stateInfo.normalizedTime >= 0.5f)
+                        {
+                            unit.ActiveAttack();
+                            _hasFired = true;
+                            Debug.Log($"<color=cyan>{unit.name} 탄 발사 호출!</color>");
+                        }
+                    }
+
+                    if (stateInfo.normalizedTime >= 1.0f && !unit.Animator.IsInTransition(0))
+                    {
+                        Debug.Log($"{unit.name} 공격 애니메이션 완료, IDLE로 전환");
+                        unit.Animator.SetInteger("animation", 0);
+                        unit.ChangeState(EState.IDLE);
+                        yield break;
+                    }
+
+
                 }
 
                 yield return null; // 다음 프레임까지 대기
@@ -58,16 +86,11 @@ namespace Dev.cheol.Comon
 
         public IEnumerator Exit(BaseUnit unit)
         {
-
+            Debug.Log("T시팔 호출됫나??");
             yield break;
         }
 
-        private void FireProjectile(BaseObject unit)
-        {
-            // 여기서 실제로 총알 생성 및 발사 로직 수행
-            Debug.Log($"{unit.name} 발사!");
-            // 예: ObjectPoolingManager.Instance.GetBullet(unit.Target);
-        }
+
     }
 
 }

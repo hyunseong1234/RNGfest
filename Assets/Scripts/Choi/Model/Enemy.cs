@@ -114,7 +114,10 @@ public class Enemy : BaseUnit
         }
     }
 
-
+    public override void ActiveAttack()
+    {
+        throw new System.NotImplementedException();
+    }
 }
 
 

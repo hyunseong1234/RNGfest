@@ -4488,6 +4488,7 @@ MonoBehaviour:
     Range: 0
   currentState: 1
   _animator: {fileID: 0}
+  _bullet: {fileID: -2298236460351502730, guid: ff7239cd154b4a64691bd07c693e3e2d, type: 3}
 --- !u!1 &5667878098454840720
 GameObject:
   m_ObjectHideFlags: 0

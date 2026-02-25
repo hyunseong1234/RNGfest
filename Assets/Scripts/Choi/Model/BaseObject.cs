@@ -17,8 +17,8 @@ namespace Dev.cheol.Model
     }
     public abstract class BaseObject : MonoBehaviour
     {
-        [SerializeField] private string _poolTag;
-        [SerializeField] private Transform _target;
+        [SerializeField] protected string _poolTag;
+        [SerializeField] protected Transform _target;
 
         public string PoolTag { get => _poolTag; set => _poolTag = value; }
         public Transform Target { get => _target; set => _target = value; }
