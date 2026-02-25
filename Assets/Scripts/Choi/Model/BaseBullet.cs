@@ -6,7 +6,6 @@ namespace Dev.cheol.Model
 {
     public abstract class BaseBullet : BaseObject
     {
-        protected Transform _target;
 
     }
 

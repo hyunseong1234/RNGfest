@@ -11,7 +11,7 @@ namespace Dev.cheol.Model
     public class AttackTower : Tower
     {
         private List<Enemy> _enemyList; // 적 리스트 캐싱용
-        //protected Bullet
+        protected BaseBullet _bullet;
         protected override void Awake()
         {
             base.Awake();
@@ -22,8 +22,16 @@ namespace Dev.cheol.Model
                 _enemyList = mainManager.SpawnEnemys;
             }
 
+            if (_bullet != null)
+            {
+                var factory = ServiceLocator.Instance.GetService<FactoryManager>();
+                factory.SettingObject(10, this.gameObject.name + "_Bullet", _bullet);
+            }
+
             if (_animator != null) return;
             _animator = GetComponentInChildren<Animator>();
+
+
         }
 
         public override void ObjectUpdate()
