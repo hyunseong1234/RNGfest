@@ -7,13 +7,13 @@ namespace Dev.cheol.Manager
 
     public class SystemManager : BaseManager
     {
-        [SerializeField] private int _gold = 100;
+        [SerializeField] private int _gold = 100; //골드
         [SerializeField] private float _gameTime = 1; // 게임 배속
         [SerializeField] private int[] upgrades = new int[5]; //타워 강화 상태
         [SerializeField] private int _buildCount = 0; //타워 뽑기에 해당되는 변수
-        [SerializeField] private int _life = 3;
-        [SerializeField] private int _currentWave = 0;
-        [SerializeField] private int _max_Wave = 50;
+        [SerializeField] private int _life = 3; //생명력
+        [SerializeField] private int _currentWave = 0;// 현재 웨이브
+        [SerializeField] private int _max_Wave = 50; //마지막 웨이브
 
         #region 프로퍼티
 

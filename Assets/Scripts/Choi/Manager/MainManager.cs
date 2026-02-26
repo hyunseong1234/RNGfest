@@ -73,6 +73,16 @@ namespace Dev.cheol.Manager
 
         }
 
+        public void RemoveUnit(BaseUnit obj)
+        {
+            if (obj is Enemy enemy) _spawnEnemys.Remove(enemy);
+            else if (obj is Tower tower) _spawnTowers.Remove(tower);
+
+            // 공통 초기화 및 반납 처리
+            obj.OnReturnToPool();
+            ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(obj);
+        }
+
         private void Test()
         {
             if (Input.GetKeyDown(KeyCode.F1))

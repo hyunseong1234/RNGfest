@@ -1,4 +1,5 @@
 using Dev.cheol.Comon;
+using Dev.cheol.Manager;
 using Dev.cheol.Model;
 using Dev.cheol.Stats;
 using System.Collections;
@@ -59,6 +60,21 @@ namespace Dev.cheol.Model
             {
                 Debug.LogWarning($"{newStateEnum} 상태가 stateDictionary에 등록되지 않았습니다.");
             }
+        }
+
+
+        /// <summary>
+        /// 객체가 사라질때 초기화 코드
+        /// </summary>
+        public virtual void OnReturnToPool()
+        {
+
+            StopAllCoroutines();
+            currentStateCoroutine = null;
+
+            Target = null;
+
+            ChangeState(EState.IDLE);
         }
 
         private IEnumerator RunStateLifeCyle(IState state)

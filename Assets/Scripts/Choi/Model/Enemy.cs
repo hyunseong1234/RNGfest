@@ -8,7 +8,8 @@ using UnityEngine.Playables;
 
 public class Enemy : BaseUnit
 {
-    private int _waypointIndex = 0;
+    private int _waypointIndex = 0; //현재 가고있는 플레그 인덱스
+    private int _getGold = 0; //몬스터가 사망시 주는돈
 
     protected override void Awake()
     {
@@ -37,35 +38,18 @@ public class Enemy : BaseUnit
             Target = null;
             Debug.Log($"{this.name} 종점 도착");
 
-            OnDead();
+            ServiceLocator.Instance.GetService<MainManager>().RemoveUnit(this);
         }
     }
 
-    /// <summary>
-    /// 몬스터 리턴풀 처리 외부호출 있을 필요있으니 퍼블릭으로함
-    /// </summary>
-    public void OnDead()
+    public override void OnReturnToPool()
     {
-        // 풀링 반납 및 정리
-        ServiceLocator.Instance.GetService<MainManager>().SpawnEnemys.Remove(this); //1
-        OnReturnToPool(); //2
-        ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(this); //3
-    }
-
-    /// <summary>
-    /// 객체가 사라질때 
-    /// </summary>
-    public void OnReturnToPool()
-    {
-
-        StopAllCoroutines();
-        currentStateCoroutine = null;
-
+        base.OnReturnToPool();
         _waypointIndex = 0;
-        Target = null;
-
-        ChangeState(EState.IDLE);
     }
+
+
+
 
     public void OnDamaged(int damage)
     {
@@ -74,7 +58,10 @@ public class Enemy : BaseUnit
 
         if (_status.Hp <= 0)
         {
-            OnDead(); // 만들어둔 3종 세트 호출
+            var system = ServiceLocator.Instance.GetService<SystemManager>();
+            //디지는 판정은 여기서 하기 때문에 돈주는거랑 더미 연출도 여기다가 넣을 예정
+            ServiceLocator.Instance.GetService<MainManager>().RemoveUnit(this);
+            system.Gold += _getGold;
         }
     }
 
