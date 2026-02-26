@@ -6,7 +6,7 @@ using UnityEngine;
 public class NormalBullet : BaseBullet
 {
     private float _speed = 20f;
-    private int _damage = 10;
+    [SerializeField] private int _damage = 10;
     private Coroutine _moveCoroutine;
 
     // 풀에서 꺼낼 때 호출할 초기화 함수

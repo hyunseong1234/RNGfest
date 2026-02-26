@@ -52,7 +52,7 @@ namespace Dev.cheol.Model
             Debug.Log("∫“∑ø»£√‚µ ");
             BaseBullet bullet = ServiceLocator.Instance.GetService<ObjectPoolingManger>().GetFromPool<BaseBullet>(_bullet);
             bullet.transform.position = transform.position;
-            bullet.Init(_target, 0, 3);
+            bullet.Init(_target, Status.damage, 5);
 
         }
 

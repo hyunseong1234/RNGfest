@@ -17,6 +17,7 @@ namespace Dev.cheol.Stats
         /// </summary>
         public float Speed;
         public float Range;
+        public int damage;
 
 
         //TODO : 데이터 나중에 넣어주세요 아무나

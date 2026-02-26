@@ -253,6 +253,7 @@ MonoBehaviour:
     Range: 0
   currentState: 1
   _animator: {fileID: 0}
+  _getGold: 10
 --- !u!1 &15960668110080808
 GameObject:
   m_ObjectHideFlags: 0
