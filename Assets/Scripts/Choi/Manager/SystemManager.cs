@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Dev.cheol.Manager
 {
 
-    public class SystemManager : MonoBehaviour
+    public class SystemManager : BaseManager
     {
         [SerializeField] private int _gold = 100;
         [SerializeField] private float _gameTime = 1; // 게임 배속
@@ -24,6 +24,11 @@ namespace Dev.cheol.Manager
         public int Life { get => _life; set => _life = value; }
         public int CurrentWave { get => _currentWave; set => _currentWave = value; }
         public int Max_Wave { get => _max_Wave; set => _max_Wave = value; }
+
+        public override void HandleEvent(string data)
+        {
+            throw new System.NotImplementedException();
+        }
         //증강 Info
         #endregion
     }

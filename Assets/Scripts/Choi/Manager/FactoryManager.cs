@@ -37,7 +37,7 @@ namespace Dev.cheol.Manager
 
         private void Start()
         {
-            SettingObject(8, _prefabs_Enmey);
+            SettingObject(8, _prefabs_Enmey); 1
             SettingObject(20, _prefabs_Twoer);
         }
 
