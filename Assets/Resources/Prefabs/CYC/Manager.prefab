@@ -153,6 +153,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   poolingManger: {fileID: 0}
+  _prefabs_Twoer: []
+  _prefabs_Enmey: []
+  _prefabs_Bullet: []
   _prefabs: []
 --- !u!1 &2179260801934790881
 GameObject:
@@ -444,6 +447,37 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+--- !u!1 &6417320290660914564
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6212946239200162602}
+  m_Layer: 0
+  m_Name: SystemManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6212946239200162602
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6417320290660914564}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2256663909391279759}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7291307259668940554
 GameObject:
   m_ObjectHideFlags: 0
@@ -481,6 +515,7 @@ Transform:
   - {fileID: 8972122912478661188}
   - {fileID: 5229868472132315094}
   - {fileID: 3609579288421879132}
+  - {fileID: 6212946239200162602}
   - {fileID: 2845506895188894851}
   - {fileID: 8380748902888523791}
   - {fileID: 1247557179606838960}
