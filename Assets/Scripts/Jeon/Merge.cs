@@ -7,93 +7,48 @@ public class Merge : MonoBehaviour
     public int unitLevel = 1;
     public GameObject nextLevelPrefab;
 
-    private Vector3 offset;
-    private float mZCoord;
+    [Header("분신 설정")]
+    public GameObject ghostPrefab; // 드래그할 때 보여줄 투명한 분신 프리팹
+
+    private GameObject currentGhost;
     private Vector3 originalPosition;
-    private bool isDragging = false;
+    private Plane dragPlane; // 드래그를 계산할 가상의 바닥
+
+   
 
     private void OnMouseDown()
     {
-        originalPosition = transform.position;
-        isDragging = true;
+        // 1. 마우스를 누르는 순간, 분신(Ghost)을 생성합니다.
+        // 본체(this)는 그 자리에 그대로 있습니다.
+        currentGhost = Instantiate(ghostPrefab, transform.position, transform.rotation);
 
-        mZCoord = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
+        // 2. 분신에게 내 정보를 전달합니다 (레벨 등)
+        // 분신에도 MergeGhost 같은 스크립트가 있어야 합니다. (아래 참고)
+        var ghostScript = currentGhost.GetComponent<MergeGhost>();
+        ghostScript.Setup(this);
 
-        offset = gameObject.transform.position - GetMouseWorldPos();
-
-        transform.position += Vector3.up * 0.5f;
+        // 3. 드래그 평면 설정
+        dragPlane = new Plane(Vector3.up, transform.position);
     }
 
     private void OnMouseDrag()
     {
-        Vector3 newPos = GetMouseWorldPos() + offset;
+        if (currentGhost == null) return;
 
-        transform.position  = newPos;   
+        // 평면 위에서 마우스 위치 추적 (화면 모서리에서도 정확함)
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (dragPlane.Raycast(ray, out float distance))
+        {
+            currentGhost.transform.position = ray.GetPoint(distance);
+        }
     }
 
     private void OnMouseUp()
     {
-        isDragging = false;
-        CheckForMerge();
-    }
+        if (currentGhost == null) return;
 
-    private Vector3 GetMouseWorldPos()
-    {
-        Vector3 mousePoint = Input.mousePosition;
-        mousePoint.z = mZCoord;
-
-        return Camera.main.ScreenToWorldPoint(mousePoint);
-    }
-    private void CheckForMerge()
-    {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 1.0f);
-
-        Merge closestTarget = null;
-        float minDist = float.MaxValue;
-
-        foreach(Collider col in colliders)
-        {
-            if (col.gameObject == gameObject) continue;
-
-            Merge otherUnit = col.GetComponent<Merge>();
-
-            if(otherUnit != null && otherUnit.unitLevel == this.unitLevel)
-            {
-                float dist = Vector3.Distance(transform.position, otherUnit.transform.position);
-
-                if(dist < minDist)
-                {
-                    minDist = dist;
-                    closestTarget = otherUnit;
-                }
-            }
-        }
-        if(closestTarget != null )
-        {
-            MergeWith(closestTarget);
-        }
-        else
-        {
-            transform.position = originalPosition;
-        }
-    }
-    private void MergeWith(Merge other)
-    {
-        Vector3 spawnPos = (transform.position + other.transform.position) / 2;
-
-        if (nextLevelPrefab != null)
-        {
-            Instantiate(nextLevelPrefab, spawnPos, Quaternion.identity);
-        }
-        else
-        {
-            Debug.Log($"Level {unitLevel + 1} 캐릭터가 없어서 생성 못함!");
-        }
-
-        Destroy(other.gameObject);
-        Destroy(gameObject);
-
-
+        // 5. 분신이 머지 대상을 찾았는지 확인합니다.
+        currentGhost.GetComponent<MergeGhost>().CheckMerge();
     }
 
 
