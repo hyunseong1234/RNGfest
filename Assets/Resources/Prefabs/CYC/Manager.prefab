@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de3c4cc0552b7ba41ac770c5d371a424, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  poolingManger: {fileID: 0}
+  poolingManger: {fileID: 6649991809175784235}
   _prefabs_Twoer: []
   _prefabs_Enmey: []
   _prefabs_Bullet: []
@@ -456,6 +456,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6212946239200162602}
+  - component: {fileID: 9102478644705314163}
   m_Layer: 0
   m_Name: SystemManager
   m_TagString: Untagged
@@ -478,6 +479,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2256663909391279759}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9102478644705314163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6417320290660914564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65d62e55ac452ed4c98c55084059b385, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7291307259668940554
 GameObject:
   m_ObjectHideFlags: 0
