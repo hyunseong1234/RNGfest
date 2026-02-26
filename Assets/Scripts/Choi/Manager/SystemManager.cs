@@ -2,17 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SystemManager : MonoBehaviour
+namespace Dev.cheol.Manager
 {
-    // Start is called before the first frame update
-    void Start()
+
+    public class SystemManager : MonoBehaviour
     {
-        
+        [SerializeField] private int _gold = 100;
+        [SerializeField] private float _gameTime = 1; // 게임 배속
+        [SerializeField] private int[] upgrades = new int[5]; //타워 강화 상태
+        [SerializeField] private int _buildCount = 0; //타워 뽑기에 해당되는 변수
+        [SerializeField] private int _life = 3;
+        [SerializeField] private int _currentWave = 0;
+        [SerializeField] private int _max_Wave = 50;
+
+        #region 프로퍼티
+
+        public int Gold { get => _gold; set => _gold = value; }
+        public float GameTime { get => _gameTime; set => _gameTime = value; }
+        public int[] Upgrades { get => upgrades; set => upgrades = value; }
+        public int BuildCount { get => _buildCount; set => _buildCount = value; }
+        public int Life { get => _life; set => _life = value; }
+        public int CurrentWave { get => _currentWave; set => _currentWave = value; }
+        public int Max_Wave { get => _max_Wave; set => _max_Wave = value; }
+        //증강 Info
+        #endregion
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
