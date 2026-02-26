@@ -19,7 +19,6 @@ namespace Dev.cheol.Utill
             {
                 int randomIndex = Random.Range(0, availableTiles.Count);
                 TileObject selectedTile = availableTiles[randomIndex];
-
                 tempVec = selectedTile.transform.position;
             }
 

@@ -56,28 +56,24 @@ namespace Dev.cheol.Manager
         {
             string key = string.IsNullOrEmpty(tag) ? typeof(T).FullName : tag;
 
-            //태그가 잘못됬을 경우 동작 안하게 하는 코드
             if (!pushs.ContainsKey(key))
             {
-                //해당 태그의 풀이 존재 확인
-                Debug.LogWarning($"'{key}' 태그가 맞는지 확인 검토 해당 풀이 존재하지 않음");
-                return null;
+                pushs.Add(key, new Queue<BaseObject>());
             }
 
             Queue<BaseObject> poolQueue = pushs[key];
-            BaseObject objToUse = null;
 
-            if (poolQueue.Count > 0)
+            // 풀이 비었으면? 팩토리한테 이름만 던져서 일 시키기
+            if (poolQueue.Count == 0)
             {
-                objToUse = poolQueue.Dequeue();
+                var factory = ServiceLocator.Instance.GetService<FactoryManager>();
+                factory.LoadDataCreatedObj(key); // 팩토리가 지 리스트 뒤져서 하나 만들어 넣음
             }
-            else
-            {
-                Debug.Log("재 생성 코드 만들어줘 현성아");
-                //objToUse = GetOrCreateNewObject(key);
 
-                if (objToUse == null) return null;
-            }
+            // 이제 무조건 하나는 들어있으니 꺼내기
+            BaseObject objToUse = poolQueue.Count > 0 ? poolQueue.Dequeue() : null;
+
+            if (objToUse == null) return null;
 
             objToUse.gameObject.SetActive(true);
             objToUse.transform.parent = poolTransform;
@@ -111,19 +107,16 @@ namespace Dev.cheol.Manager
             Queue<BaseObject> poolQueue = pushs[key];
             BaseObject objToUse = null;
 
-            // 2. 풀에 꺼낼 게 있다면 데려옴
             if (poolQueue.Count > 0)
             {
                 objToUse = poolQueue.Dequeue();
             }
-            // 3. 풀이 비어있다면? "현성아 재생성 코드 만들어줘" 부분
             else
             {
-                objToUse = Instantiate(prefab, poolTransform);
-                Debug.Log($"[Pool] '{key}' 풀이 비어있어 새로 생성함.");
+                ServiceLocator.Instance.GetService<FactoryManager>().LoadDataCreatedObj(prefab.PoolTag, prefab);
+                objToUse = poolQueue.Dequeue();
             }
 
-            // 4. 오브젝트 설정 후 반환
             objToUse.gameObject.SetActive(true);
             objToUse.PoolTag = key; // 나중에 반납할 때를 위해 키 저장
 

@@ -11,9 +11,17 @@ namespace Dev.cheol.Manager
     {
         string[] tagNames;
         [SerializeField] private ObjectPoolingManger poolingManger = null;
+        [SerializeField] private BaseObject[] _prefabs_Twoer = null;
+        [SerializeField] private BaseObject[] _prefabs_Enmey = null;
+        [SerializeField] private BaseObject[] _prefabs_Bullet = null;
+
         [SerializeField] private BaseObject[] _prefabs = null;
 
-        public BaseObject[] Prefabs { get => _prefabs; set => _prefabs = value; }
+        public BaseObject[] Prefabs_Twoer { get => _prefabs_Twoer; set => _prefabs_Twoer = value; }
+        public BaseObject[] Prefabs_Enmey { get => _prefabs_Enmey; set => _prefabs_Enmey = value; }
+        public BaseObject[] Prefabs_Bullet { get => _prefabs_Bullet; set => _prefabs_Bullet = value; }
+
+
 
         //[SerializeField] private GameObject _playerPrefab = null;
 
@@ -21,24 +29,47 @@ namespace Dev.cheol.Manager
         {
             StartSetting();
 
-            // 첫 번째 경로 로드
-            var enemyPrefabs = Resources.LoadAll<BaseObject>("Prefabs/CYC/Enemy");
-            // 두 번째 경로 로드
-            var towerPrefabs = Resources.LoadAll<BaseObject>("Prefabs/CYC/Tower");
-            var threePrefabs = Resources.LoadAll<BaseObject>("Prefabs/CYC/Bullet");
-            // 두 배열을 합쳐서 _prefabs에 할당
-            _prefabs = enemyPrefabs.Concat(towerPrefabs).Concat(threePrefabs).ToArray();
-
-
+            _prefabs_Enmey = Resources.LoadAll<BaseObject>("Prefabs/CYC/Enemy");
+            _prefabs_Twoer = Resources.LoadAll<BaseObject>("Prefabs/CYC/Tower");
+            _prefabs_Bullet = Resources.LoadAll<BaseObject>("Prefabs/CYC/Bullet");
+            _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).ToArray();
         }
 
+        private void Start()
+        {
+            SettingObject(8, _prefabs_Enmey);
+            SettingObject(20, _prefabs_Twoer);
+        }
 
         private void StartSetting()
         {
             if (poolingManger != null) return;
             poolingManger = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
         }
+        public void LoadDataCreatedObj(string tag) // 프리팹 안 줘도 이름만 주면 알아서 함
+        {
+            // 1. 팩토리가 쥐고 있는 리스트에서 이름 일치하는 놈 탐색
+            BaseObject target = _prefabs.FirstOrDefault(p => p.gameObject.name == tag);
 
+            if (target == null)
+            {
+                Debug.LogError($"[Factory] '{tag}' 프리팹이 리스트에 없습니다. 리소스 경로 확인하세요.");
+                return;
+            }
+
+            // 2. 찾았으면 바로 생성해서 풀에 꽂아넣기
+            BaseObject obj = Instantiate(target);
+            obj.gameObject.SetActive(false);
+            obj.PoolTag = tag;
+
+            if (!poolingManger.Pushs.ContainsKey(tag))
+            {
+                poolingManger.Pushs.Add(tag, new Queue<BaseObject>());
+            }
+
+            obj.transform.parent = poolingManger.PushlTransform;
+            poolingManger.Pushs[tag].Enqueue(obj);
+        }
 
         public void LoadDataCreatedObj<T>(string tag, T path) where T : BaseObject
         {
@@ -56,7 +87,7 @@ namespace Dev.cheol.Manager
         }
 
 
-
+        #region 구조 경우에따라 사용할수도있는 함수 오버로딩
         /// <summary>
         /// 미리 생성해주는 코드 프리팹 버전
         /// </summary>
@@ -76,12 +107,44 @@ namespace Dev.cheol.Manager
             {
                 LoadDataCreatedObj<BaseObject>(tag, _prefabs[fileIndex]);
             }
+        }
+        #endregion
 
+        /// <summary>
+        /// 메인에서 배열을 통째로 던져주면, 팩토리가 알아서 순회하며 풀에 박아넣음
+        /// </summary>
+        public void SettingObject(int count, BaseObject[] targetArray)
+        {
+            if (targetArray == null || targetArray.Length == 0) return;
+
+            for (int i = 0; i < targetArray.Length; i++)
+            {
+                // 1. 일반 객체 생성 (타워든 에너미든)
+                string tagName = targetArray[i].gameObject.name;
+                LoadDataCreatedObj<BaseObject>(tagName, targetArray[i]);
+
+                // 2. 만약 이게 공격 타워라면? 탄(Bullet)까지 세트로 생성해라
+                if (targetArray[i] is AttackTower attackTower)
+                {
+                    if (attackTower.Bullet != null)
+                    {
+                        string bulletTag = attackTower.Bullet.gameObject.name;
+                        // 탄은 기본적으로 10개씩 넉넉히 (수치는 형님 마음대로)
+                        for (int j = 0; j < 10; j++)
+                        {
+                            LoadDataCreatedObj<BaseObject>(bulletTag, attackTower.Bullet);
+                        }
+                        Debug.Log($"[Factory] {tagName}의 탄({bulletTag}) 풀링 완료");
+                    }
+                }
+            }
         }
         public override void HandleEvent(string data)
         {
             throw new System.NotImplementedException();
         }
+
+
 
     }//END Class
 }

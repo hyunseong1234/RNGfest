@@ -1,5 +1,6 @@
 using Dev.cheol.Model;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -17,29 +18,13 @@ namespace Dev.cheol.Manager
         private void Start()
         {
             var factory = ServiceLocator.Instance.GetService<FactoryManager>();
+            //OpjSetting(factory.Prefabs_Enmey, 8);
+            //OpjSetting(factory.Prefabs_Twoer, 20);
 
-
-            //나중에 함수화 부탁해 현성아
-            factory.SettingObject(8, "Enemy1", 0);
-            factory.SettingObject(8, "Enemy2", 1);
-            factory.SettingObject(8, "Enemy3", 2);
-            factory.SettingObject(8, "Enemy4", 3);
-
-            factory.SettingObject(20, "Tower1", 5);
-            factory.SettingObject(20, "Tower2", 6);
-            factory.SettingObject(20, "Tower3", 7);
-            factory.SettingObject(20, "Tower4", 8);
-
-            //불렛 타워에맞게 생성
-            AttackTower temp = factory.Prefabs[5] as AttackTower;
-            factory.SettingObject(20, "Bullet1", temp.Bullet);
-
-            //temp = factory.Prefabs[6] as AttackTower;
-            //if (temp.Bullet == null) return;
-            //factory.SettingObject(20, "Bullet2", temp.Bullet);
 
             StartCoroutine(WaitForSeedAndSpawn());
         }
+
 
 
         /// <summary>
@@ -93,8 +78,12 @@ namespace Dev.cheol.Manager
             if (Input.GetKeyDown(KeyCode.F1))
             {
                 Debug.Log("몬스터 생성");
-                var monster = ServiceLocator.Instance.GetService<ObjectPoolingManger>().GetFromPool<Enemy>("Enemy1");
+                var factory = ServiceLocator.Instance.GetService<FactoryManager>();
+                var monster = ServiceLocator.Instance.GetService<ObjectPoolingManger>().GetFromPool<Enemy>(factory.Prefabs_Enmey[0].gameObject.name);
+
+                var mapmanager = ServiceLocator.Instance.GetService<MapManager>();
                 _spawnEnemys.Add(monster);
+                monster.transform.position = mapmanager.FlagPoints[0].position;
             }
         }
         public override void HandleEvent(string data) { }

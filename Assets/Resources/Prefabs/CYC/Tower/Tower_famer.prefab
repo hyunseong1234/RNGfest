@@ -6351,7 +6351,7 @@ GameObject:
   - component: {fileID: 1814030971034424303}
   - component: {fileID: -4621913156408959615}
   m_Layer: 0
-  m_Name: Tower (2)
+  m_Name: Tower_famer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6394,6 +6394,7 @@ MonoBehaviour:
     Range: 0
   currentState: 1
   _animator: {fileID: 0}
+  _bullet: {fileID: -2298236460351502730, guid: ff7239cd154b4a64691bd07c693e3e2d, type: 3}
 --- !u!1 &8855438543722817254
 GameObject:
   m_ObjectHideFlags: 0

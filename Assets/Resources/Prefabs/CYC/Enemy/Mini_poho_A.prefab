@@ -132,12 +132,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _poolTag: Enemy
+  _target: {fileID: 0}
   _status:
-    MaxHp: 0
-    Hp: 0
+    MaxHp: 100
+    Hp: 100
     Speed: 1
     Range: 0
   currentState: 1
+  _animator: {fileID: 0}
 --- !u!1 &432442095986779958
 GameObject:
   m_ObjectHideFlags: 0
