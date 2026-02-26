@@ -2,41 +2,44 @@ using UnityEngine;
 
 public class MergeGhost : MonoBehaviour
 {
-    private Merge parentTower; // 나를 만든 본체 타워
-
-    public void Setup(Merge parent)
+    private Merge parentTower;
+    private float checkRadius;
+    public void Setup(Merge parent, float radius)
     {
         parentTower = parent;
+        checkRadius = radius;
     }
-
     public void CheckMerge()
     {
-        // 주변에 머지할 수 있는 '본체' 타워가 있는지 찾습니다.
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 1.5f);
+        // 하드코딩된 1.5f 대신 본체에서 정해준 checkRadius 사용
+        Collider[] colliders = Physics.OverlapSphere(transform.position, checkRadius);
         Merge targetTower = null;
 
         foreach (var col in colliders)
         {
-            var other = col.GetComponent<Merge>();
-            // 본체(parentTower)가 아니고, 레벨이 같은 타워 찾기
-            if (other != null && other != parentTower && other.unitLevel == parentTower.unitLevel)
+            // GetComponent 대신 안전하고 빠른 TryGetComponent 사용
+            if (col.TryGetComponent<Merge>(out var other))
             {
-                targetTower = other;
-                break;
+                // 본체가 아니고, 레벨이 같은 타워인지 확인
+                if (other != parentTower && other.unitLevel == parentTower.unitLevel)
+                {
+                    targetTower = other;
+                    break;
+                }
             }
         }
 
-        if (targetTower != null)
+        // targetTower를 찾았고, 합쳐질 다음 레벨의 프리팹이 등록되어 있을 때만 실행 (에러 방지)
+        if (targetTower != null && parentTower.nextLevelPrefab != null)
         {
             // [머지 성공]
             Vector3 spawnPos = targetTower.transform.position;
             Instantiate(parentTower.nextLevelPrefab, spawnPos, Quaternion.identity);
 
-            Destroy(targetTower.gameObject); // 상대방 타워 파괴
-            Destroy(parentTower.gameObject); // 나의 본체 타워 파괴
+            Destroy(targetTower.gameObject);
+            Destroy(parentTower.gameObject);
         }
 
-        // 머지 성공 여부와 상관없이 분신은 삭제
-        Destroy(gameObject);
+        Destroy(gameObject); // 분신은 항상 마지막에 삭제
     }
 }

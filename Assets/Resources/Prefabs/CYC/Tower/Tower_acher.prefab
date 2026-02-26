@@ -73,7 +73,6 @@ GameObject:
   - component: {fileID: 2729432064566911872}
   - component: {fileID: 2300758194959212453}
   - component: {fileID: 5656229566956737278}
-  - component: {fileID: 4633953480302852728}
   m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
@@ -137,25 +136,10 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 1.5, z: 1}
   m_Center: {x: 0, y: 0.77, z: 0}
---- !u!114 &4633953480302852728
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 89851017017581834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a15587056acdb194bab576cc26706781, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  unitLevel: 1
-  nextLevelPrefab: {fileID: 5116557204495258647, guid: cb1459e0059bf4044bd4279ffb3de050, type: 3}
-  ghostPrefab: {fileID: 2656517705613033743, guid: 4a6e8b5dc49b35d45b7eebd34de8bdcb, type: 3}
 --- !u!1 &101171533417363250
 GameObject:
   m_ObjectHideFlags: 0
@@ -3796,6 +3780,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7483934080403786511}
   - component: {fileID: 8659312771135199873}
+  - component: {fileID: 4987452219679106964}
+  - component: {fileID: 7426433368521416228}
   m_Layer: 0
   m_Name: Tower_acher
   m_TagString: Untagged
@@ -3842,6 +3828,43 @@ MonoBehaviour:
   currentState: 1
   _animator: {fileID: 0}
   _bullet: {fileID: -2298236460351502730, guid: ff7239cd154b4a64691bd07c693e3e2d, type: 3}
+--- !u!114 &4987452219679106964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4577867509176408825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a15587056acdb194bab576cc26706781, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitLevel: 1
+  nextLevelPrefab: {fileID: 5116557204495258647, guid: cb1459e0059bf4044bd4279ffb3de050, type: 3}
+  ghostPrefab: {fileID: 2656517705613033743, guid: 4a6e8b5dc49b35d45b7eebd34de8bdcb, type: 3}
+  mergeRadius: 1.5
+--- !u!65 &7426433368521416228
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4577867509176408825}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.5, z: 1}
+  m_Center: {x: 0, y: 0.77, z: 0}
 --- !u!1 &4581356985923208575
 GameObject:
   m_ObjectHideFlags: 0
