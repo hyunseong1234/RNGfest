@@ -16,7 +16,6 @@ namespace Dev.cheol.Manager
         [SerializeField] private int _max_Wave = 50; //마지막 웨이브
 
         #region 프로퍼티
-
         public int Gold { get => _gold; set => _gold = value; }
         public float GameTime { get => _gameTime; set => _gameTime = value; }
         public int[] Upgrades { get => upgrades; set => upgrades = value; }

@@ -10,6 +10,16 @@ public class Ui_BuildButton : UIObject
 {
     public void _BuildTewor()
     {
+        //버튼 흔들리는 연출 넣어줘용
+        var system = ServiceLocator.Instance.GetService<SystemManager>();
+        int needGold = 10 + (system.BuildCount * 10);
+        if (system.Gold < needGold)
+        {
+            Debug.Log("돈이 없어용 ㅜㅜ");
+            return;
+        }
+        system.Gold -= needGold;
+        system.BuildCount++;
 
         Debug.Log("타워 생성 호출");
         var TileManager = ServiceLocator.Instance.GetService<TileManager>();

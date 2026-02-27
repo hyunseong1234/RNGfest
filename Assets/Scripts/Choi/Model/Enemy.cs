@@ -46,6 +46,7 @@ public class Enemy : BaseUnit
     {
         base.OnReturnToPool();
         _waypointIndex = 0;
+        _status.Hp = _status.MaxHp;
     }
 
 
