@@ -83,30 +83,38 @@ namespace Dev.Help
         /// </summary>
         private void AttemptDrop()
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            _draggingUnit.gameObject.layer = LayerMask.NameToLayer("Tower"); // 레이어 복구
+            // 레이어 복구는 일단 해줌 (드래그 시작 시 Ignore로 바꿨을 경우)
+            _draggingUnit.gameObject.layer = LayerMask.NameToLayer("Tower");
 
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f, _targetLayer))
+            // 1. 모든 타워 리스트 가져오기 (MainManager에 저장된 리스트 활용)
+            var main = ServiceLocator.Instance.GetService<MainManager>();
+            Tower closestTarget = null;
+            float minSqrDist = 1.0f; // 합성을 판정할 임계 거리 (예: 1칸 거리의 제곱)
+
+            foreach (var target in main.SpawnTowers)
             {
-                var targetTower = hit.collider.GetComponent<Tower>();
+                // 나 자신은 제외
+                if (target == _draggingUnit || target == null) continue;
 
-                // 합성 조건 체크 (가까운 거리 + 같은 종류 등)
-                if (targetTower != null && targetTower != _draggingUnit)
+                // 2. 놓은 위치와 필드 타워들 간의 유클리드 제곱 거리 계산
+                float sqrDist = (target.transform.position - _draggingUnit.transform.position).sqrMagnitude;
+
+                if (sqrDist < minSqrDist)
                 {
-                    // 유클리드 거리 체크 (이미 레이캐스트로 잡았지만 한 번 더 검증)
-                    float sqrDist = (targetTower.transform.position - _originalPosition).sqrMagnitude;
-
-                    if (CanMerge(_draggingUnit, targetTower))
-                    {
-                        Debug.Log("합성 성공 ㄱㄱ");
-                        // 합성 성공
-                        ExecuteMerge(_draggingUnit, targetTower);
-                        return;
-                    }
+                    minSqrDist = sqrDist;
+                    closestTarget = target;
                 }
             }
 
-            // 합성 실패 시 원래 위치로 복귀
+            // 3. 가장 가까운 타워가 있고 합성 조건이 맞으면 실행
+            if (closestTarget != null && CanMerge(_draggingUnit, closestTarget))
+            {
+                Debug.Log("거리 기반 합성 성공!");
+                ExecuteMerge(_draggingUnit, closestTarget);
+                return;
+            }
+
+            // 4. 실패 시 복귀
             _draggingUnit.transform.position = _originalPosition;
             _draggingUnit = null;
         }
