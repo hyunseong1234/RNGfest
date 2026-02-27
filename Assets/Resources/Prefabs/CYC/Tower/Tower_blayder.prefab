@@ -4129,6 +4129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3901468142601562474}
   - component: {fileID: 6138684215524662550}
+  - component: {fileID: -6803420772769780372}
   m_Layer: 0
   m_Name: Tower_blayder
   m_TagString: Untagged
@@ -4177,6 +4178,27 @@ MonoBehaviour:
   _currentTile: {fileID: 0}
   _lank: 0
   _bullet: {fileID: -2298236460351502730, guid: ff7239cd154b4a64691bd07c693e3e2d, type: 3}
+--- !u!65 &-6803420772769780372
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5116557204495258647}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5163539955483549079
 GameObject:
   m_ObjectHideFlags: 0

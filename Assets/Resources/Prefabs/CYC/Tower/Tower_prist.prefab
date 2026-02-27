@@ -4444,6 +4444,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5636765001196314021}
   - component: {fileID: 5356294834920395167}
+  - component: {fileID: -6946160218837433088}
   m_Layer: 0
   m_Name: Tower_prist
   m_TagString: Untagged
@@ -4486,9 +4487,33 @@ MonoBehaviour:
     Hp: 0
     Speed: 1
     Range: 0
+    damage: 0
   currentState: 1
   _animator: {fileID: 0}
+  _currentTile: {fileID: 0}
+  _lank: 0
   _bullet: {fileID: -2298236460351502730, guid: ff7239cd154b4a64691bd07c693e3e2d, type: 3}
+--- !u!65 &-6946160218837433088
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5663655053334136730}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5667878098454840720
 GameObject:
   m_ObjectHideFlags: 0

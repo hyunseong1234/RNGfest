@@ -48,7 +48,6 @@ namespace Dev.cheol.Manager
             //테스트용 인풋기능
             Test(); // 테스트때만 주석풀어용~
 
-            InputCtrl();//인풋 ㄱㄱ
 
             //업데이트 매니저 업데이트 호출해주는 구간
             if (ServiceLocator.Instance.UpdateManagers == null) return;
@@ -111,44 +110,6 @@ namespace Dev.cheol.Manager
             }
         }
 
-
-        //귀찮아서 메인에 박아둠 키입력 받는 함수 기능분리는 조상님이 해줄예정
-        private void InputCtrl()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                Tower _selectedTower = GetClickedObject<Tower>();
-
-                if (_selected != null) //선택된 객체있을 때
-                {
-                    Debug.Log($"선택된 타일: {_selected.name}");
-                    _selected = _selectedTower;
-                    // 여기서 선택 시각화(Highlight)나 UI 띄우기 등을 처리
-                }
-                else //없을 때
-                {
-                    _selected = null;
-                }
-            }
-        }
-
-        private T GetClickedObject<T>() where T : Tower
-        {
-            // 1. 마우스 위치에서 레이(Ray) 생성
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            Debug.Log("레이발싸");
-            // 2. 레이캐스트 발사 (거리 100f, 필요 시 레이어 마스크 추가)
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f))
-            {
-                // 3. 맞은 객체에서 원하는 컴포넌트(T)가 있는지 확인
-
-                Debug.Log(" 맞은대상 이름 : " + hit.collider.name);
-                return hit.collider.GetComponent<T>();
-            }
-
-            return null;
-        }
         public override void HandleEvent(string data) { }
     }
 }

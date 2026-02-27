@@ -3758,7 +3758,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7483934080403786511}
   - component: {fileID: 8659312771135199873}
-  - component: {fileID: 4987452219679106964}
   - component: {fileID: 7426433368521416228}
   m_Layer: 0
   m_Name: Tower_acher
@@ -3808,22 +3807,6 @@ MonoBehaviour:
   _currentTile: {fileID: 0}
   _lank: 0
   _bullet: {fileID: -2298236460351502730, guid: ff7239cd154b4a64691bd07c693e3e2d, type: 3}
---- !u!114 &4987452219679106964
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4577867509176408825}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a15587056acdb194bab576cc26706781, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  unitLevel: 1
-  nextLevelPrefab: {fileID: 5116557204495258647, guid: cb1459e0059bf4044bd4279ffb3de050, type: 3}
-  ghostPrefab: {fileID: 2656517705613033743, guid: 4a6e8b5dc49b35d45b7eebd34de8bdcb, type: 3}
-  minDragDistance: 0.1
 --- !u!65 &7426433368521416228
 BoxCollider:
   m_ObjectHideFlags: 0

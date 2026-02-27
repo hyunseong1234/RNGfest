@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEngine.UI.Image;
 
 namespace Dev.Help
 {
@@ -113,10 +114,37 @@ namespace Dev.Help
         {
             var pooling = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
             var main = ServiceLocator.Instance.GetService<MainManager>();
+
+            int currentLank = origin.Lank;
+            int nextLank = currentLank + 1;
+
+            //if () 현성아 여기 보라 슬라임전용 로직도 추가해주라
+            //TODO : 각각의 타워의 (특수타워) 별떨어뜨리기나 확률 따지는 등등8성 초과 이런거 들어갈때 여기다가 넣으면되유 조상님
+            if (!CanMergeDefault(nextLank, 7)) return;
+
+            TileObject tempTile = target.CurrentTile;
             main.RemoveUnit(origin);
             main.RemoveUnit(target);
             Debug.Log($"{origin.name}와 {target.name} 합성 실행!");
             _draggingUnit = null;
+        }
+
+        /// <summary>
+        /// 단순 맥스비교 불값 함수
+        /// </summary>
+        /// <param name="nextLank"></param>
+        /// <param name="maxLank"></param>
+        /// <returns></returns>
+        private bool CanMergeDefault(int nextLank, int maxLank)
+        {
+            if (nextLank > maxLank)
+            {
+                Debug.Log("최대 성급에 도달하여 더 이상 합성할 수 없습니다.");
+                // 실패 처리 (원래 위치로 복귀 등)
+                return false;
+            }
+
+            return true;
         }
     }
 }
