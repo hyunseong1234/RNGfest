@@ -1228,6 +1228,10 @@ PrefabInstance:
       propertyPath: _pathTilesParrent
       value: 
       objectReference: {fileID: 689457113}
+    - target: {fileID: 7977209378111020874, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
+      propertyPath: _targetLayer.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

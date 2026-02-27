@@ -39,7 +39,7 @@ public class Ui_BuildButton : UIObject
         if (selectTile == null) return;
 
         //증강 고려
-        ServiceLocator.Instance.GetService<TowerManager>().BuildTower(selectTile, 1);
+        ServiceLocator.Instance.GetService<MainManager>().BuildTower(selectTile, 1);
     }
 
 

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 using static UnityEngine.UI.Image;
 
@@ -12,7 +13,7 @@ namespace Dev.Help
     public class MergeManager : UpdateManager
     {
         #region Fields
-        private Tower _draggingUnit = null;
+        [SerializeField] private Tower _draggingUnit = null;
         private Vector3 _originalPosition;
         [SerializeField] private LayerMask _targetLayer; // Tower와 Tile 레이어 포함
         #endregion
@@ -51,6 +52,7 @@ namespace Dev.Help
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, _targetLayer))
             {
                 var unit = hit.collider.GetComponent<Tower>();
+                Debug.Log(hit.collider.name);
                 if (unit != null)
                 {
                     _draggingUnit = unit;
@@ -76,6 +78,9 @@ namespace Dev.Help
             }
         }
 
+        /// <summary>
+        /// 드롭 놨을때 돌아가는 함수
+        /// </summary>
         private void AttemptDrop()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -93,6 +98,7 @@ namespace Dev.Help
 
                     if (CanMerge(_draggingUnit, targetTower))
                     {
+                        Debug.Log("합성 성공 ㄱㄱ");
                         // 합성 성공
                         ExecuteMerge(_draggingUnit, targetTower);
                         return;
@@ -105,11 +111,22 @@ namespace Dev.Help
             _draggingUnit = null;
         }
 
+        /// <summary>
+        /// 동일 태그 동일 랭크가 맞는지 확인 
+        /// </summary>
+        /// <param name="origin"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
         private bool CanMerge(Tower origin, Tower target)
         {
             return origin.PoolTag == target.PoolTag && origin.Lank == target.Lank;
         }
 
+        /// <summary>
+        /// 거리 감지 최종 확인후 타워 합성하는 부분
+        /// </summary>
+        /// <param name="origin"></param>
+        /// <param name="target"></param>
         private void ExecuteMerge(Tower origin, Tower target)
         {
             var pooling = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
@@ -125,6 +142,9 @@ namespace Dev.Help
             TileObject tempTile = target.CurrentTile;
             main.RemoveUnit(origin);
             main.RemoveUnit(target);
+
+            ServiceLocator.Instance.GetService<MainManager>().BuildTower(tempTile, nextLank);
+
             Debug.Log($"{origin.name}와 {target.name} 합성 실행!");
             _draggingUnit = null;
         }
