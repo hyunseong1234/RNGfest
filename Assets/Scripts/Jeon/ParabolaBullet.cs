@@ -66,7 +66,7 @@ namespace Dev.jeon.Bullet
             Vector3 start_pos = this.transform.position;
             Vector3 end_pos = targetPoint;
             Vector3 tXYZ;
-           
+
             var dh = end_pos.y - start_pos.y;
             var mh = height - start_pos.y;
 

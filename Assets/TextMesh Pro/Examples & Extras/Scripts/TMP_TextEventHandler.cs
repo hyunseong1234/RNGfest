@@ -148,7 +148,7 @@ namespace TMPro
                 {
                     m_lastWordIndex = wordIndex;
 
-                    // Get the information about the selected word.
+                    // Get the information about the _selected word.
                     TMP_WordInfo wInfo = m_TextComponent.textInfo.wordInfo[wordIndex];
 
                     // Send the event to any listeners.
@@ -164,7 +164,7 @@ namespace TMPro
                 {
                     m_lastLineIndex = lineIndex;
 
-                    // Get the information about the selected word.
+                    // Get the information about the _selected word.
                     TMP_LineInfo lineInfo = m_TextComponent.textInfo.lineInfo[lineIndex];
 
                     // Send the event to any listeners.

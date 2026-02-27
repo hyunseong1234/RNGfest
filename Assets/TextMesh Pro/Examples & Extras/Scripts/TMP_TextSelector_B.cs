@@ -100,7 +100,7 @@ namespace TMPro.Examples
                     // Get the index of the material / sub text object used by this character.
                     int materialIndex = m_TextMeshPro.textInfo.characterInfo[charIndex].materialReferenceIndex;
 
-                    // Get the index of the first vertex of the selected character.
+                    // Get the index of the first vertex of the _selected character.
                     int vertexIndex = m_TextMeshPro.textInfo.characterInfo[charIndex].vertexIndex;
 
                     // Get a reference to the vertices array.
@@ -148,7 +148,7 @@ namespace TMPro.Examples
                     vertexColors[vertexIndex + 3] = c;
 
 
-                    // Get a reference to the meshInfo of the selected character.
+                    // Get a reference to the meshInfo of the _selected character.
                     TMP_MeshInfo meshInfo = m_TextMeshPro.textInfo.meshInfo[materialIndex];
 
                     // Get the index of the last character's vertex attributes.
@@ -314,7 +314,7 @@ namespace TMPro.Examples
             int charIndex = TMP_TextUtilities.FindIntersectingCharacter(m_TextMeshPro, Input.mousePosition, m_Camera, true);
             if (charIndex != -1 && charIndex != m_lastIndex)
             {
-                //Debug.Log("Character [" + m_TextMeshPro.textInfo.characterInfo[index].character + "] was selected at POS: " + eventData.position);
+                //Debug.Log("Character [" + m_TextMeshPro.textInfo.characterInfo[index].character + "] was _selected at POS: " + eventData.position);
                 m_lastIndex = charIndex;
 
                 Color32 c = new Color32((byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)Random.Range(0, 255), 255);
@@ -460,7 +460,7 @@ namespace TMPro.Examples
             // Get the index of the material / sub text object used by this character.
             int materialIndex = m_TextMeshPro.textInfo.characterInfo[index].materialReferenceIndex;
 
-            // Get the index of the first vertex of the selected character.
+            // Get the index of the first vertex of the _selected character.
             int vertexIndex = m_TextMeshPro.textInfo.characterInfo[index].vertexIndex;
 
             // Restore Vertices

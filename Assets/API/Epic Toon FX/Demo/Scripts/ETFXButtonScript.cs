@@ -38,11 +38,11 @@
 ////		print(projectileParticleName);
 //	}
 
-//	public void getProjectileNames()			// Find and diplay the name of the currently selected projectile
+//	public void getProjectileNames()			// Find and diplay the name of the currently _selected projectile
 //	{
-//		// Access the currently selected projectile's 'ProjectileScript'
+//		// Access the currently _selected projectile's 'ProjectileScript'
 //		projectileScript = effectScript.projectiles[effectScript.currentProjectile].GetComponent<ETFXProjectileScript>();
-//		projectileParticleName = projectileScript.projectileParticle.name;	// Assign the name of the currently selected projectile to projectileParticleName
+//		projectileParticleName = projectileScript.projectileParticle.name;	// Assign the name of the currently _selected projectile to projectileParticleName
 //	}
 
 //	public bool overButton()		// This function will return either true or false

@@ -5,16 +5,25 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Tower : BaseUnit
+namespace Dev.cheol.Model
 {
-    public override void ActiveAttack()
+
+    public class Tower : BaseUnit
     {
-        throw new System.NotImplementedException();
+        [SerializeField] private TileObject _currentTile;
+        [SerializeField] private int _lank;
+        public TileObject CurrentTile { get => _currentTile; set => _currentTile = value; }
+        public int Lank { get => _lank; set => _lank = value; }
+
+        public override void ActiveAttack()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void ObjectUpdate()
+        {
+        }
+
+
     }
-
-    public override void ObjectUpdate()
-    {
-    }
-
-
 }
