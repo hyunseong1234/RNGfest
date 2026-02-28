@@ -1,29 +1,59 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+// 웨이브의 종류를 명확히 구분하기 위한 열거형(Enum)
+public enum WaveType
+{
+    Normal, // 일반 몬스터 웨이브
+    Boss    // 보스 웨이브
+}
+
 [System.Serializable]
 public class WaveMonsterInfo
 {
-    [Header("소환할 몬스터 종류 및 마리 수")]
-    // 팩토리가 생성해둔 프리팹(일반, 이속 빠른 놈 등)을 직접 연결합니다.
+    [Header("소환할 몬스터 종류")]
     public Enemy monsterPrefab;
-    public int count; // 이 몬스터를 몇 마리 뽑을 것인가
+    [Header("소환할 마리 수")]
+    public int count;
 }
 
 [CreateAssetMenu(fileName = "Wave_00", menuName = "Wave/WaveData")]
 public class WaveData : ScriptableObject
 {
-    [Header("A. 몬스터 웨이브 (예: 1 Wave)")]
+    // TODO : 일단 웨이브 
+    [Header("웨이브 정보")]
     public string waveName;
+    public WaveType waveType = WaveType.Normal;
 
-    [Header("B. 몬스터 총 수")]
-    public int totalMonsterCount;
+    [Space(10)]
+    [Header("웨이브 시작 전 대기 시간")]
+    [Tooltip("이 웨이브가 시작되기 전에 몇 초를 기다릴지 설정합니다.")]
+    public float delayBeforeWave = 3.0f;
 
-    [Header("C. 몬스터 종류 선택 (최대 4종류 권장)")]
-    // 엑셀의 '일반=7, 이속=3' 등을 리스트로 추가해서 만듭니다.
+    [Space(10)]
+    [Header("일반 웨이브 설정")]
     public List<WaveMonsterInfo> monsterTypes = new List<WaveMonsterInfo>();
 
-    [Header("D. 보스 몬스터")]
-    public bool hasBoss; // 엑셀의 'X'면 false, 보스가 있으면 true
-    public Enemy bossPrefab; // hasBoss가 true일 때 소환할 보스 프리팹
+    [Space(10)]
+    [Header("보스 웨이브 설정")]
+    public Enemy bossPrefab;
+
+    // 총 몬스터 수를 수동으로 입력하지 않고 자동으로 계산해주는 프로퍼티
+    public int TotalMonsterCount
+    {
+        get
+        {
+            if (waveType == WaveType.Boss)
+            {
+                return 1; // 보스 웨이브는 무조건 1마리
+            }
+
+            int total = 0;
+            foreach (var info in monsterTypes)
+            {
+                total += info.count;
+            }
+            return total;
+        }
+    }
 }

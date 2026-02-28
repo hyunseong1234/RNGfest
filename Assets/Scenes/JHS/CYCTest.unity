@@ -208,54 +208,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7528117761481218424, guid: f568d0d3f4674404eb8eff210b457512, type: 3}
   m_PrefabInstance: {fileID: 7496160336589964722}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &933743850
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 933743851}
-  - component: {fileID: 933743852}
-  m_Layer: 0
-  m_Name: WaveManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &933743851
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 933743850}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1271966211}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &933743852
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 933743850}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3be4d23e4c019bd4f9e6a266e1457857, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _waves:
-  - {fileID: 11400000, guid: 62f9a0439be2d3d41bf8d7f9f9ad482f, type: 2}
-  - {fileID: 11400000, guid: 62f9a0439be2d3d41bf8d7f9f9ad482f, type: 2}
-  - {fileID: 11400000, guid: 62f9a0439be2d3d41bf8d7f9f9ad482f, type: 2}
 --- !u!4 &1033015358 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 805366328759502901, guid: f568d0d3f4674404eb8eff210b457512, type: 3}
@@ -435,11 +387,6 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4491265311286449971, guid: f568d0d3f4674404eb8eff210b457512, type: 3}
   m_PrefabInstance: {fileID: 7496160336589964722}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1271966211 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2256663909391279759, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
-  m_PrefabInstance: {fileID: 3435417603062192809}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1354353098
 GameObject:
@@ -1273,6 +1220,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Manager
       objectReference: {fileID: 0}
+    - target: {fileID: 7685101245544224980, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
+      propertyPath: _waves.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 88a5e920a286c4f4782794608d6fe715, type: 2}
     - target: {fileID: 7970685115366017228, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
       propertyPath: _mapTilesParrent
       value: 
@@ -1283,10 +1234,7 @@ PrefabInstance:
       objectReference: {fileID: 689457113}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 2256663909391279759, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 933743851}
+    m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
 --- !u!1001 &7496160336589964722
