@@ -9,7 +9,4 @@ namespace Dev.cheol.Manager
 
     }//End Class
 
-
-
-
 }//End namespace

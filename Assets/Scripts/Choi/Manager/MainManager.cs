@@ -21,9 +21,6 @@ namespace Dev.cheol.Manager
         private void Start()
         {
             var factory = ServiceLocator.Instance.GetService<FactoryManager>();
-            //OpjSetting(factory.Prefabs_Enmey, 8);
-            //OpjSetting(factory.Prefabs_Twoer, 20);
-
 
             StartCoroutine(WaitForSeedAndSpawn());
         }
@@ -150,6 +147,20 @@ namespace Dev.cheol.Manager
                 var system = ServiceLocator.Instance.GetService<SystemManager>();
                 system.Gold += 100000;
             }
+            //¸ØÃß°ÔÇÏ´Â
+            if (Input.GetKeyDown(KeyCode.F4))
+            {
+                if (Time.timeScale == 0)
+                {
+                    Time.timeScale = 1;
+
+                }
+                else
+                {
+                    Time.timeScale = 0;
+                }
+            }
+
         }
 
         public override void HandleEvent(string data) { }

@@ -2,6 +2,7 @@ using Dev.cheol.Comon;
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
 using Dev.cheol.Stats;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,10 +10,12 @@ using UnityEngine;
 namespace Dev.cheol.Model
 {
 
+
     public abstract class BaseUnit : BaseObject
     {
         [Header("기본 필드")]
         [SerializeField] protected StatusInfo _status;
+
 
         [Header("상태관련")]
         public Coroutine currentStateCoroutine;
@@ -22,6 +25,10 @@ namespace Dev.cheol.Model
 
         [Header("아니메")]
         [SerializeField] protected Animator _animator = null;
+        //[SerializeField] protected AnimData _animData;
+        //[SerializeField] private AnimConfig _animConfig;
+        //private Dictionary<AniModel, int> _animTable = new Dictionary<AniModel, int>();
+
 
         #region  프로퍼티
         public StatusInfo Status { get => _status; set => _status = value; }
@@ -32,6 +39,7 @@ namespace Dev.cheol.Model
 
         protected virtual void Awake()
         {
+            //상태 머신 등록
             stateDictionary.Add(EState.IDLE, new IIdleState());
             stateDictionary.Add(EState.MOVE, new IMoveState());
             stateDictionary.Add(EState.ATTACK, new IAttackState());
@@ -39,6 +47,16 @@ namespace Dev.cheol.Model
             IndexPair.Add(EState.IDLE, 0);
             IndexPair.Add(EState.MOVE, 1);
             IndexPair.Add(EState.ATTACK, 2);
+
+            //foreach (var data in _animConfig.datas)
+            //{
+            //    // Enum.ToString()을 쓰기로 했다면 여기서 해시 생성
+            //    int hash = Animator.StringToHash(data.eAniName.ToString());
+            //    _animTable[data.eAniName] = hash;
+            //}
+
+            if (_animator != null) return;
+            _animator = GetComponentInChildren<Animator>();
         }
         // 이넘을 인자로 받는 ChangeState
         public void ChangeState(EState newStateEnum)

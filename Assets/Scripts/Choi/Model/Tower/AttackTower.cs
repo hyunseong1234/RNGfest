@@ -25,8 +25,7 @@ namespace Dev.cheol.Model
                 _enemyList = mainManager.SpawnEnemys;
             }
 
-            if (_animator != null) return;
-            _animator = GetComponentInChildren<Animator>();
+
 
 
         }
