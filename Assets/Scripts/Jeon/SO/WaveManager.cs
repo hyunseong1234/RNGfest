@@ -65,7 +65,7 @@ namespace Dev.jeon.Manager
                 {
                     main.SpawnEnemys.Add(monster);
 
-                    // 🔥 형님 방식 적용: 스폰 위치를 첫 번째 깃발(경로) 위치로 지정!
+                    //  스폰 위치를 첫 번째 깃발(경로) 위치로 지정!
                     monster.transform.position = map.FlagPoints[0].position;
 
                     monster.RefreshPath(); // 다음 경로로 이동 시작
