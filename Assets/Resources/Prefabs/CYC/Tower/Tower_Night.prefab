@@ -7041,7 +7041,7 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _currentTile: {fileID: 0}
   _lank: 0
-  _bullet: {fileID: -2298236460351502730, guid: ff7239cd154b4a64691bd07c693e3e2d, type: 3}
+  _bullet: {fileID: 856071976875046743, guid: 5a7a8fd21a56b0946a3cbd545fac2eab, type: 3}
 --- !u!65 &7773275962948525925
 BoxCollider:
   m_ObjectHideFlags: 0

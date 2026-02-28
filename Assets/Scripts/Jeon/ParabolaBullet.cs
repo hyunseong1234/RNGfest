@@ -1,141 +1,83 @@
 using Dev.cheol.Manager;
-using Dev.cheol.Model; // BaseObject나 Enemy가 있는 네임스페이스
-using Dev.cheol.Stats;
+using Dev.cheol.Model;
 using System.Collections;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace Dev.jeon.Bullet
 {
-
-    public class ParabolaBullet : BaseObject
+    public class ParabolaBullet : BaseBullet
     {
-        private Transform _target;
-        private int _damage = 10;
+        private float _speed = 20f;
+        [SerializeField] private int _damage = 10;
         private Coroutine _moveCoroutine;
 
-        [SerializeField] Vector3 targetPoint; //목표지점
+        [Header("포물선 설정")]
+        [Tooltip("포물선의 최대 솟구치는 높이")]
+        [SerializeField] private float _arcHeight = 5f;
 
-        [Tooltip("올라가는 높이")]
-        [SerializeField] private float height; //높이
-        [Tooltip("떨어지는 속도")]
-        [SerializeField] private float gravity; //중력
-        [Tooltip("타겟없을때 사거리")]
-        [SerializeField] private float range;
-        [Tooltip("낙하지점")]
-        [SerializeField] private float dropPoint; // 낙하지점
-        [Tooltip("낙하포인트 높이")]
-        [SerializeField] private float arriveHeight;
-        //[Tooltip("공격 범위")]
-        //[SerializeField] private Vector3 attackRange = new Vector3();
-
-        public void Init(Transform target, int damage)
+        public override void Init(Transform target, int damage, float speed = 20f)
         {
             _target = target;
             _damage = damage;
+            _speed = speed;
 
-            // 기존에 돌던 코루틴이 있다면 방어적으로 중지
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
-
-            if (_target != null)
-            {
-                _moveCoroutine = StartCoroutine(MoveToTarget());
-            }
-            else
-            {
-                ReturnToPool();
-            }
+            _moveCoroutine = StartCoroutine(MoveToTarget());
         }
 
         private IEnumerator MoveToTarget()
         {
-            // todo : 일단 머지 끝나고 작업 시작 이 주석제거하면서
-            ////타겟없을때 사거리 계산해서 자동적으로 도착지점 정하는 로직인데 지금 사용 안해서 주석
-            //if (target != Vector3.zero)
-            //{
-            //    targetPoint = target;
-            //}
-            //else
-            //{
-            //    targetPoint = AngleToDirection(transform.rotation.y, 5);
-            //    Debug.Log("앵글 투 다이렉션 함수 작동 중");
-            //}
+            Vector3 startPos = transform.position;
 
+            // 타겟까지의 거리와 도달하는 데 걸리는 총 시간 계산
+            float distance = Vector3.Distance(startPos, _target.position);
+            float totalTime = distance / _speed;
+            float elapsedTime = 0f;
 
-            //Todo 영철_221103_변수명 번역 밑 주석작업 2211221 이후 할예정
-            Vector3 start_pos = this.transform.position;
-            Vector3 end_pos = targetPoint;
-            Vector3 tXYZ;
-
-            var dh = end_pos.y - start_pos.y;
-            var mh = height - start_pos.y;
-
-            tXYZ.y = Mathf.Sqrt(2 * gravity * mh);
-
-            float a = gravity;
-            float b = -2 * tXYZ.y;
-            float c = 2 * dh;
-
-            float dat = (-b + Mathf.Sqrt(b * b - 4 * a * c)) / (2 * a);
-            tXYZ.x = -(start_pos.x - targetPoint.x) / dat;
-            tXYZ.z = -(start_pos.z - targetPoint.z) / dat;
-
-            float elapsed_time, posX, posY, posZ;
-            elapsed_time = 0;
-            Vector3 tpos;
-
-            float durationRatio;
-
-            float arriveTime = dat + dropPoint; //발사후 사라지는 시간
-
-
-            while (elapsed_time <= arriveTime)
+            // 타겟이 살아있는 동안 & 정해진 시간 동안 이동
+            while (elapsedTime < totalTime && _target != null && _target.gameObject.activeSelf)
             {
-                elapsed_time += Time.deltaTime;
+                elapsedTime += Time.deltaTime;
 
-                //_FillNum
-                durationRatio = elapsed_time / arriveTime;
+                // 진행률 t (0에서 시작해 1로 끝남)
+                float t = elapsedTime / totalTime;
 
-                posX = start_pos.x + tXYZ.x * elapsed_time;
-                posY = start_pos.y + tXYZ.y * elapsed_time - 0.5f * gravity * elapsed_time * elapsed_time;
-                posZ = start_pos.z + tXYZ.z * elapsed_time;
+                // 1. 시작점부터 타겟의 '현재 위치'까지 평면적인(직선) 이동 위치 계산
+                Vector3 currentPos = Vector3.Lerp(startPos, _target.position, t);
 
-                tpos = new Vector3(posX, posY, posZ);
+                // 2. 포물선 높이 계산 (Sin 곡선 활용)
+                // t가 0일 때 0, 0.5일 때 1, 1일 때 0이 되는 완벽한 아치형 곡선
+                float heightOffset = Mathf.Sin(t * Mathf.PI) * _arcHeight;
 
-                this.transform.LookAt(tpos);
-                this.transform.rotation *= Quaternion.Euler(90, 0, 0);
-                this.transform.position = tpos;
+                // 3. 평면 이동 위치에 높이(Y값) 더하기
+                currentPos.y += heightOffset;
 
+                // 총알이 날아가는 방향을 자연스럽게 바라보게 회전 (선택 사항)
+                Vector3 moveDirection = currentPos - transform.position;
+                if (moveDirection != Vector3.zero)
+                {
+                    transform.rotation = Quaternion.LookRotation(moveDirection);
+                }
+
+                transform.position = currentPos;
 
                 yield return null;
             }
 
-            HitTarget();
-            yield return null;
-            ReturnToPool();
-            //isCoroutine = false;
+            // 루프가 끝났을 때 타겟이 여전히 살아있다면 명중 처리
+            if (_target != null && _target.gameObject.activeSelf)
+            {
+                HitTarget();
+            }
+            else
+            {
+                // 날아가는 도중 몬스터가 죽었다면 그냥 사라짐
+                ReturnToPool();
+            }
         }
 
-        //Todo : 20221009_영철_유틸로 빼야되는데 일단보류
-        /// <summary>
-        /// 바라보는 각도의 앞 거리 계산 해주는 함수
-        /// </summary>
-        /// <param name="angle"></param>
-        /// <param name="range"></param>
-        /// <returns></returns>
-        private Vector3 AngleToDirection(float angle, float range)
-        {
-            Vector3 pibot = transform.position;
-            Vector3 direction = transform.forward;
-
-            var quaternion = Quaternion.Euler(0, angle, 0);
-            Vector3 newDirection = pibot + quaternion * direction * 10;
-
-            return newDirection;
-        }
         private void HitTarget()
         {
-            // 타겟의 Enemy 컴포넌트나 BaseObject를 가져와 데미지 입힘
             var enemy = _target.GetComponent<Enemy>();
             if (enemy != null)
             {
@@ -147,14 +89,11 @@ namespace Dev.jeon.Bullet
 
         private void ReturnToPool()
         {
-            // 오브젝트 풀링 매니저를 통해 반납 (비활성화)
-            // 직접 SetActive(false)를 해도 풀 매니저 구조에 따라 작동함
             ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(this);
         }
 
         private void OnDisable()
         {
-            // 오브젝트가 비활성화될 때 코루틴을 확실히 멈춰서 에러 방지
             if (_moveCoroutine != null)
             {
                 StopCoroutine(_moveCoroutine);
@@ -162,11 +101,10 @@ namespace Dev.jeon.Bullet
             }
             _target = null;
         }
+
         public override void ObjectUpdate()
         {
             throw new System.NotImplementedException();
         }
-
     }
 }
-
