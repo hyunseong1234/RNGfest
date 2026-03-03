@@ -21,8 +21,11 @@ namespace Dev.jeon.Bullet
             _damage = damage;
             _speed = speed;
 
-            if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
-            _moveCoroutine = StartCoroutine(MoveToTarget());
+            if (_moveCoroutine != null)
+            {
+                StopCoroutine(_moveCoroutine);
+                _moveCoroutine = StartCoroutine(MoveToTarget());
+            }
         }
 
         private IEnumerator MoveToTarget()

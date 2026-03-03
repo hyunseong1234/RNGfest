@@ -2,6 +2,8 @@ using Dev.cheol.Comon;
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
 using Dev.cheol.Stats;
+using Dev.jeon.Bullet;
+using Dev.jeon.Model;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,7 +17,9 @@ namespace Dev.cheol.Model
     {
         [Header("기본 필드")]
         [SerializeField] protected StatusInfo _status;
-        //List<Buff> _buffs = null;
+
+        [Header("버프 관리")]
+        protected List<BaseBuff> _buffs = new List<BaseBuff>();
 
         [Header("상태관련")]
         public Coroutine currentStateCoroutine;
@@ -79,6 +83,61 @@ namespace Dev.cheol.Model
                 Debug.LogWarning($"{newStateEnum} 상태가 stateDictionary에 등록되지 않았습니다.");
             }
         }
+        //  외부에서 버프를 추가하는 함수
+        public void AddBuff(BaseBuff newBuff)
+        {
+            // 새 버프 초기화 및 리스트 추가
+            // (이미 Init이 된 상태로 들어올 수도 있으니 상황에 맞게 조정)
+            if (newBuff != null)
+            {
+                _buffs.Add(newBuff);
+            }
+        }
+
+        //  버프 전체 해제 (풀 반납 시 호출)
+        public void ClearAllBuffs()
+        {
+            foreach (var buff in _buffs)
+            {
+                buff.EndBuff(); // 스탯 복구 등 마무리 작업
+            }
+            _buffs.Clear();
+        }
+        // 기존 버프 찾는 기능 추가
+        public T GetBuff<T>() where T : BaseBuff
+        {
+            // 내 몸에 붙은 버프들을 쭉 뒤져서
+            for (int i = 0; i < _buffs.Count; i++)
+            {
+                // 찾고 있는 타입(예: PoisonBuff)이 있으면 그걸 반환
+                if (_buffs[i] is T typedBuff)
+                {
+                    return typedBuff;
+                }
+            }
+            return null; // 없으면 null
+        }
+
+
+        public override void ObjectUpdate()
+        {
+            //  매니저가 이 함수를 호출해주면, 여기서 버프들을 돌립니다.
+            if (_buffs.Count > 0)
+            {
+                // 역순으로 돌려야 삭제(RemoveAt)할 때 인덱스 에러가 안 납니다.
+                for (int i = _buffs.Count - 1; i >= 0; i--)
+                {
+                    // 1. 업데이트 실행
+                    _buffs[i].BuffUpdate(Time.deltaTime);
+
+                    // 2. 수명 다한 버프 리스트에서 제거
+                    if (_buffs[i].IsFinished)
+                    {
+                        _buffs.RemoveAt(i);
+                    }
+                }
+            }
+        }
 
 
         /// <summary>
@@ -93,7 +152,11 @@ namespace Dev.cheol.Model
             Target = null;
 
             ChangeState(EState.IDLE);
+
+            // 풀로 돌아갈 때 버프 싹 지우기
+            ClearAllBuffs();
         }
+
 
         private IEnumerator RunStateLifeCyle(IState state)
         {
@@ -102,18 +165,7 @@ namespace Dev.cheol.Model
             yield return state.Exit(this);
         }
 
-        public override void ObjectUpdate()
-        {
 
-            //if (_buff.Count > 0)
-            //{
-            //    foreach (var item in _buff)
-            //    {
-            //        item.buffUpdate();
-            //    }
-            //}
-
-        }
         public abstract void ActiveAttack();
     }
 }
