@@ -65,7 +65,7 @@ namespace Dev.cheol.Utill
                 TileObject selectedTile = availableTiles[randomIndex];
 
 
-                selectedTile._isUsed = true;
+
 
                 Debug.Log($"[RandTileFind] 선택된 타일: {selectedTile.name} | 좌표: {selectedTile.transform.position}");
                 return selectedTile;

@@ -3,6 +3,7 @@ using Dev.cheol.Model;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
@@ -52,6 +53,7 @@ namespace Dev.Help
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, _targetLayer))
             {
                 var unit = hit.collider.GetComponent<Tower>();
+                ServiceLocator.Instance.GetService<MainManager>().Selected = unit;
                 Debug.Log(hit.collider.name);
                 if (unit != null)
                 {
@@ -60,6 +62,7 @@ namespace Dev.Help
 
                     // 드래그 시 레이캐스트 방해 금지 (임시 레이어 변경 혹은 콜라이더 비활성화)
                     _draggingUnit.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+                    TileVisual();
                 }
             }
         }
@@ -105,18 +108,22 @@ namespace Dev.Help
                     closestTarget = target;
                 }
             }
-
+            var mapTiles = ServiceLocator.Instance.GetService<TileManager>().MapTile.ToList();
             // 3. 가장 가까운 타워가 있고 합성 조건이 맞으면 실행
             if (closestTarget != null && CanMerge(_draggingUnit, closestTarget))
             {
                 Debug.Log("거리 기반 합성 성공!");
+                main.Selected = null;
                 ExecuteMerge(_draggingUnit, closestTarget);
+                mapTiles.ForEach(a => a.SetHighlight(0)); //모든타일 기본값 복원
                 return;
             }
-
+            main.Selected = null;
+            mapTiles.ForEach(a => a.SetHighlight(0)); //모든타일 기본값 복원
             // 4. 실패 시 복귀
             _draggingUnit.transform.position = _originalPosition;
             _draggingUnit = null;
+
         }
 
         /// <summary>
@@ -128,6 +135,17 @@ namespace Dev.Help
         private bool CanMerge(Tower origin, Tower target)
         {
             return origin.PoolTag == target.PoolTag && origin.Lank == target.Lank;
+        }
+
+        private void TileVisual()
+        {
+            string tag = _draggingUnit.PoolTag;
+            MainManager main = ServiceLocator.Instance.GetService<MainManager>();
+
+            foreach (var tower in main.SpawnTowers)
+            {
+                tower.CurrentTile.SetHighlight(CanMerge(_draggingUnit, tower) ? 1 : 2);
+            }
         }
 
         /// <summary>

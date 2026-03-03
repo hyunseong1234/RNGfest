@@ -15,6 +15,7 @@ namespace Dev.cheol.Manager
         [SerializeField] private Tower _selected = null;
         public List<Tower> SpawnTowers { get => _spawnTowers; set => _spawnTowers = value; }
         public List<Enemy> SpawnEnemys { get => _spawnEnemys; set => _spawnEnemys = value; }
+        public Tower Selected { get => _selected; set => _selected = value; }
 
 
         #region 세팅 및 
@@ -107,11 +108,13 @@ namespace Dev.cheol.Manager
             }
 
             var main = ServiceLocator.Instance.GetService<MainManager>();
-
+            var rankManager = ServiceLocator.Instance.GetService<RankManager>();
             tower.transform.position = selectTile.transform.position;
             tower.CurrentTile = selectTile;
             tower.Lank = getLank; // 증강에따라 달라지는 값일 수도 있음
             main.SpawnTowers.Add(tower);
+            selectTile._isUsed = true; //타일 사용여부 
+            rankManager.RequestRank(tower); //연결요청
         }
 
         /// <summary>
@@ -121,11 +124,22 @@ namespace Dev.cheol.Manager
         public void RemoveUnit(BaseUnit obj)
         {
             if (obj is Enemy enemy) _spawnEnemys.Remove(enemy);
-            else if (obj is Tower tower) _spawnTowers.Remove(tower);
+            else if (obj is Tower tower)
+            {
+                _spawnTowers.Remove(tower);
+                tower.CurrentTile._isUsed = false; // 커플링 발생 2호기
+
+                //UI 부분 초기화 세팅 부분 위치 나중에 리팩토링 요구
+                tower.StarUI.gameObject.SetActive(false);
+                tower.StarUI.Target = null; //널잡아주기
+                tower.StarUI = null;
+            }
 
             // 공통 초기화 및 반납 처리
             obj.OnReturnToPool();
+
             ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(obj);
+
         }
 
         private void Test()

@@ -1,7 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 namespace Dev.cheol.Manager
 {
@@ -15,13 +15,13 @@ namespace Dev.cheol.Manager
         [SerializeField] private int _life = 3; //생명력
         [SerializeField] private int _currentWave = 0;// 현재 웨이브
         [SerializeField] private int _max_Wave = 50; //마지막 웨이브
-        
-        
+
+
         // 알람(이벤트) 하나 만듭니다.
         public Action OnBuildCountChanged;
 
         // 프로퍼티를 수정해서, 값이 바뀔 때마다 알람을 울리게(Invoke) 합니다.
-        
+
 
 
         #region 프로퍼티
