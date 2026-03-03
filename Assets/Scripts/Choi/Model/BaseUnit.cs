@@ -15,7 +15,7 @@ namespace Dev.cheol.Model
     {
         [Header("기본 필드")]
         [SerializeField] protected StatusInfo _status;
-
+        //List<Buff> _buffs = null;
 
         [Header("상태관련")]
         public Coroutine currentStateCoroutine;
@@ -104,6 +104,14 @@ namespace Dev.cheol.Model
 
         public override void ObjectUpdate()
         {
+
+            //if (_buff.Count > 0)
+            //{
+            //    foreach (var item in _buff)
+            //    {
+            //        item.buffUpdate();
+            //    }
+            //}
 
         }
         public abstract void ActiveAttack();

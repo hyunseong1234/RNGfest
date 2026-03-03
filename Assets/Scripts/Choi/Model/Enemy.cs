@@ -71,6 +71,7 @@ public class Enemy : BaseUnit
     /// </summary>
     public override void ObjectUpdate()
     {
+        base.ObjectUpdate();
         // 타겟이 없으면 새로 경로를 찾음
         if (Target == null)
         {
