@@ -249,8 +249,9 @@ MonoBehaviour:
   _status:
     MaxHp: 100
     Hp: 100
-    Speed: 2
+    Speed: 1.5
     Range: 0
+    damage: 0
   currentState: 1
   _animator: {fileID: 0}
   _getGold: 10

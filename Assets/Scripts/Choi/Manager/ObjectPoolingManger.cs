@@ -87,18 +87,47 @@ namespace Dev.cheol.Manager
         /// <typeparam name="T"></typeparam>
         /// <param name="prefab"></param>
         /// <returns></returns>
+        //public T GetFromPool<T>(BaseObject prefab) where T : BaseObject
+        //{
+        //    if (prefab == null)
+        //    {
+        //        Debug.LogError("전달된 프리팹이 null입니다!");
+        //        return null;
+        //    }
+
+        //    // 프리팹의 이름을 키로 사용 (보통 프리팹 이름이 고유 태그 역할을 함)
+        //    string key = prefab.gameObject.name;
+
+        //    // 1. 해당 키의 풀이 아예 없다면 새로 생성해줌 (딕셔너리 초기화)
+        //    if (!pushs.ContainsKey(key))
+        //    {
+        //        pushs.Add(key, new Queue<BaseObject>());
+        //    }
+
+        //    Queue<BaseObject> poolQueue = pushs[key];
+        //    BaseObject objToUse = null;
+
+        //    if (poolQueue.Count > 0)
+        //    {
+        //        objToUse = poolQueue.Dequeue();
+        //    }
+        //    else
+        //    {
+        //        ServiceLocator.Instance.GetService<FactoryManager>().LoadDataCreatedObj(prefab.PoolTag, prefab);
+        //        objToUse = poolQueue.Dequeue();
+        //    }
+
+        //    objToUse.gameObject.SetActive(true);
+        //    objToUse.PoolTag = key; // 나중에 반납할 때를 위해 키 저장
+
+        //    return objToUse as T;
+        //}
         public T GetFromPool<T>(BaseObject prefab) where T : BaseObject
         {
-            if (prefab == null)
-            {
-                Debug.LogError("전달된 프리팹이 null입니다!");
-                return null;
-            }
+            if (prefab == null) return null;
 
-            // 프리팹의 이름을 키로 사용 (보통 프리팹 이름이 고유 태그 역할을 함)
             string key = prefab.gameObject.name;
 
-            // 1. 해당 키의 풀이 아예 없다면 새로 생성해줌 (딕셔너리 초기화)
             if (!pushs.ContainsKey(key))
             {
                 pushs.Add(key, new Queue<BaseObject>());
@@ -113,15 +142,29 @@ namespace Dev.cheol.Manager
             }
             else
             {
+                // 팩토리에 생성 요청
                 ServiceLocator.Instance.GetService<FactoryManager>().LoadDataCreatedObj(prefab.PoolTag, prefab);
-                objToUse = poolQueue.Dequeue();
+
+                // [수정 포인트] 팩토리가 풀에 제대로 넣었는지 다시 확인
+                if (poolQueue.Count > 0)
+                {
+                    objToUse = poolQueue.Dequeue();
+                }
+                else
+                {
+                    // 만약 팩토리가 풀에 안 넣어줬다면, 여기서 직접 생성하거나 에러 방지
+                    objToUse = Instantiate(prefab, poolTransform);
+                    objToUse.name = key; // 이름이 달라지면 다음 풀링에서 키값이 꼬일 수 있으니 맞춤
+                }
             }
 
             objToUse.gameObject.SetActive(true);
-            objToUse.PoolTag = key; // 나중에 반납할 때를 위해 키 저장
-
+            objToUse.PoolTag = key;
             return objToUse as T;
         }
+
+
+
         /// <summary>
         /// 오브젝트 풀링용 디스트로이 대용 함수 (삭제역활)
         /// </summary>
