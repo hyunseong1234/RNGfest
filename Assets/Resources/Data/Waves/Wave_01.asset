@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Wave_01
   m_EditorClassIdentifier: 
   waveName: 1 Wave
-  totalMonsterCount: 10
+  waveType: 0
+  delayBeforeWave: 3
   monsterTypes:
   - monsterPrefab: {fileID: -5820791943814646689, guid: 5d7c9fcb1c27d5740b49578befd15143, type: 3}
-    count: 6
+    count: 10
   - monsterPrefab: {fileID: 2963589889541125661, guid: 3e71d4a541abe864cb22bca7cb1451ae, type: 3}
     count: 4
-  hasBoss: 1
   bossPrefab: {fileID: 8392334666634562348, guid: c261d2b21d5f5c449a1ce8194b443eaf, type: 3}
