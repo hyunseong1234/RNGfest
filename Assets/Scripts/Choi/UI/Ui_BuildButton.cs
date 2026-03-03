@@ -28,7 +28,7 @@ public class Ui_BuildButton : UIObject
         int needGold = 10 + (system.BuildCount * 10);
         if (system.Gold < needGold)
         {
-            Debug.Log("µ·ÀÌ ¾ø¾î¿ë ¤Ì¤Ì");
+            Debug.Log("µ·ÀÌ ¾ø¾î¿ë ¤Ì¤Ì");     
             return;
         }
         system.Gold -= needGold;
