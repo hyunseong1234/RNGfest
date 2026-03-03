@@ -3,20 +3,18 @@ using Dev.cheol.Model;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
-using static UnityEngine.UI.Image;
 
 namespace Dev.Help
 {
     public class MergeManager : UpdateManager
     {
         #region Fields
-        [SerializeField] private Tower _draggingUnit = null;
+        [SerializeField] private Tower _draggingUnit = null; // 선택된 원본 타워
         private Vector3 _originalPosition;
-        [SerializeField] private LayerMask _targetLayer; // Tower와 Tile 레이어 포함
+        [SerializeField] private LayerMask _targetLayer;
+
+        [SerializeField] private GhostTower _ghost; // 홀로그램 제어 객체
         #endregion
 
         public override void HandleEvent(string data) => throw new System.NotImplementedException();
@@ -28,23 +26,13 @@ namespace Dev.Help
 
         private void HandleMouseInput()
         {
-            // 1. 클릭 시작 (Pick Up)
-            if (Input.GetMouseButtonDown(0))
-            {
-                AttemptPickUp();
-            }
+            if (Input.GetMouseButtonDown(0)) AttemptPickUp();
 
-            // 2. 드래그 중 (Dragging)
-            if (Input.GetMouseButton(0) && _draggingUnit != null)
-            {
-                UpdateDragging();
-            }
+            // 드래그 중
+            if (Input.GetMouseButton(0) && _draggingUnit != null) UpdateDragging();
 
-            // 3. 드래그 종료 (Drop)
-            if (Input.GetMouseButtonUp(0) && _draggingUnit != null)
-            {
-                AttemptDrop();
-            }
+            // 드래그 종료
+            if (Input.GetMouseButtonUp(0) && _draggingUnit != null) AttemptDrop();
         }
 
         private void AttemptPickUp()
@@ -54,53 +42,59 @@ namespace Dev.Help
             {
                 var unit = hit.collider.GetComponent<Tower>();
                 ServiceLocator.Instance.GetService<MainManager>().Selected = unit;
-                Debug.Log(hit.collider.name);
+
                 if (unit != null)
                 {
                     _draggingUnit = unit;
                     _originalPosition = unit.transform.position;
 
-                    // 드래그 시 레이캐스트 방해 금지 (임시 레이어 변경 혹은 콜라이더 비활성화)
-                    _draggingUnit.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+                    // 1. [고스트 생성] 원본은 가만히 두고 고스트를 띄웁니다.
+                    _ghost.ShowGhost(unit);
+
+                    // 2. [시각화] 형님이 만든 전체 타일 하이라이트 켜기
                     TileVisual();
+
+                    // 원본 타워가 마우스 레이캐스트를 가리지 않게 레이어 변경
+                    _draggingUnit.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
                 }
             }
         }
 
         private void UpdateDragging()
         {
-            // 마우스 위치를 월드 좌표로 변환 (바닥 평면 기준)
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Plane groundPlane = new Plane(Vector3.up, _originalPosition); // 유닛이 서있던 높이 기준
+            Plane groundPlane = new Plane(Vector3.up, _originalPosition);
 
             if (groundPlane.Raycast(ray, out float distance))
             {
                 Vector3 targetPos = ray.GetPoint(distance);
-                // 유닛이 공중에 살짝 떠 있는 연출을 위해 Y값 조절 가능
-                _draggingUnit.transform.position = targetPos + Vector3.up * 0.2f;
+
+                // 3. [고스트 이동] 원본(_draggingUnit) 대신 고스트가 마우스를 따라갑니다.
+                // 유닛이 공중에 살짝 떠 있는 연출
+                _ghost.transform.position = targetPos + Vector3.up * 0.2f;
             }
         }
 
-        /// <summary>
-        /// 드롭 놨을때 돌아가는 함수
-        /// </summary>
         private void AttemptDrop()
         {
-            // 레이어 복구는 일단 해줌 (드래그 시작 시 Ignore로 바꿨을 경우)
+            // 4. [고스트 숨기기] 드롭했으니 고스트는 퇴장
+            _ghost.HideGhost();
+
             _draggingUnit.gameObject.layer = LayerMask.NameToLayer("Tower");
 
-            // 1. 모든 타워 리스트 가져오기 (MainManager에 저장된 리스트 활용)
             var main = ServiceLocator.Instance.GetService<MainManager>();
             Tower closestTarget = null;
-            float minSqrDist = 1.0f; // 합성을 판정할 임계 거리 (예: 1칸 거리의 제곱)
+            float minSqrDist = 1.0f;
+
+            // 5. [판정 기준 변경] 원본 위치가 아니라 '고스트의 현재 위치'를 기준으로 타겟을 찾습니다.
+            Vector3 dropPos = _ghost.transform.position;
 
             foreach (var target in main.SpawnTowers)
             {
-                // 나 자신은 제외
                 if (target == _draggingUnit || target == null) continue;
 
-                // 2. 놓은 위치와 필드 타워들 간의 유클리드 제곱 거리 계산
-                float sqrDist = (target.transform.position - _draggingUnit.transform.position).sqrMagnitude;
+                // 고스트 좌표와 필드 타워들 간의 거리 계산
+                float sqrDist = (target.transform.position - dropPos).sqrMagnitude;
 
                 if (sqrDist < minSqrDist)
                 {
@@ -108,30 +102,26 @@ namespace Dev.Help
                     closestTarget = target;
                 }
             }
+
             var mapTiles = ServiceLocator.Instance.GetService<TileManager>().MapTile.ToList();
-            // 3. 가장 가까운 타워가 있고 합성 조건이 맞으면 실행
+
             if (closestTarget != null && CanMerge(_draggingUnit, closestTarget))
             {
-                Debug.Log("거리 기반 합성 성공!");
+                Debug.Log("고스트 드롭 기반 합성 성공!");
                 main.Selected = null;
                 ExecuteMerge(_draggingUnit, closestTarget);
-                mapTiles.ForEach(a => a.SetHighlight(0)); //모든타일 기본값 복원
+                mapTiles.ForEach(a => a.SetHighlight(0));
                 return;
             }
+
+            // 실패 시 원본은 제자리(어차피 움직이지도 않았지만 확행), 하이라이트 끄기
             main.Selected = null;
-            mapTiles.ForEach(a => a.SetHighlight(0)); //모든타일 기본값 복원
-            // 4. 실패 시 복귀
+            mapTiles.ForEach(a => a.SetHighlight(0));
+
             _draggingUnit.transform.position = _originalPosition;
             _draggingUnit = null;
-
         }
 
-        /// <summary>
-        /// 동일 태그 동일 랭크가 맞는지 확인 
-        /// </summary>
-        /// <param name="origin"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
         private bool CanMerge(Tower origin, Tower target)
         {
             return origin.PoolTag == target.PoolTag && origin.Lank == target.Lank;
@@ -139,57 +129,43 @@ namespace Dev.Help
 
         private void TileVisual()
         {
-            string tag = _draggingUnit.PoolTag;
             MainManager main = ServiceLocator.Instance.GetService<MainManager>();
 
             foreach (var tower in main.SpawnTowers)
             {
-                tower.CurrentTile.SetHighlight(CanMerge(_draggingUnit, tower) ? 1 : 2);
+                // 1. 만약 지금 내가 들고 있는 타워라면? 노란색으로 표시!
+                if (tower == _draggingUnit)
+                {
+                    tower.CurrentTile.SetHighlight(3); // 3번 처리 (Yellow)
+                    continue;
+                }
+
+                // 2. 나머지는 기존처럼 파랑/빨강 판단
+                bool canMerge = CanMerge(_draggingUnit, tower);
+                tower.CurrentTile.SetHighlight(canMerge ? 1 : 2);
             }
         }
 
-        /// <summary>
-        /// 거리 감지 최종 확인후 타워 합성하는 부분
-        /// </summary>
-        /// <param name="origin"></param>
-        /// <param name="target"></param>
         private void ExecuteMerge(Tower origin, Tower target)
         {
-            var pooling = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
             var main = ServiceLocator.Instance.GetService<MainManager>();
+            int nextLank = origin.Lank + 1;
 
-            int currentLank = origin.Lank;
-            int nextLank = currentLank + 1;
-
-            //if () 현성아 여기 보라 슬라임전용 로직도 추가해주라
-            //TODO : 각각의 타워의 (특수타워) 별떨어뜨리기나 확률 따지는 등등8성 초과 이런거 들어갈때 여기다가 넣으면되유 조상님
             if (!CanMergeDefault(nextLank, 7)) return;
 
             TileObject tempTile = target.CurrentTile;
             main.RemoveUnit(origin);
             main.RemoveUnit(target);
 
-            ServiceLocator.Instance.GetService<MainManager>().BuildTower(tempTile, nextLank);
+            main.BuildTower(tempTile, nextLank);
 
-            Debug.Log($"{origin.name}와 {target.name} 합성 실행!");
+            Debug.Log($"{origin.name} 합성 완료!");
             _draggingUnit = null;
         }
 
-        /// <summary>
-        /// 단순 맥스비교 불값 함수
-        /// </summary>
-        /// <param name="nextLank"></param>
-        /// <param name="maxLank"></param>
-        /// <returns></returns>
         private bool CanMergeDefault(int nextLank, int maxLank)
         {
-            if (nextLank > maxLank)
-            {
-                Debug.Log("최대 성급에 도달하여 더 이상 합성할 수 없습니다.");
-                // 실패 처리 (원래 위치로 복귀 등)
-                return false;
-            }
-
+            if (nextLank > maxLank) return false;
             return true;
         }
     }
