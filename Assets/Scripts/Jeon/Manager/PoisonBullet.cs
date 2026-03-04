@@ -69,7 +69,7 @@ namespace Dev.jeon.Bullet
                     // [이미 걸려있음] 새로운 독뎀이 기존 독뎀보다 쎈지 비교!
                     if (_poisonDamage > existingPoison.Damage)
                     {
-                       // existingPoison.UpgradePoison(_poisonDamage); // 더 강한 독으로 갱신
+                       existingPoison.UpgradePoison(_poisonDamage); // 더 강한 독으로 갱신
                         // Debug.Log($"<color=yellow>[독 강화]</color> {_poisonDamage} 맹독으로 갱신!");
                     }
                 }

@@ -3808,7 +3808,7 @@ MonoBehaviour:
   _currentTile: {fileID: 0}
   _lank: 0
   _starUI: {fileID: 0}
-  _bullet: {fileID: -2298236460351502730, guid: ff7239cd154b4a64691bd07c693e3e2d, type: 3}
+  _bullet: {fileID: 2442761043617072496, guid: 2d270dc71b093c948a74ba748deee81f, type: 3}
 --- !u!65 &7426433368521416228
 BoxCollider:
   m_ObjectHideFlags: 0
