@@ -66,6 +66,8 @@ namespace Dev.cheol.Model
         // 이넘을 인자로 받는 ChangeState
         public void ChangeState(EState newStateEnum)
         {
+            // [추가] 오브젝트가 꺼져있으면 코루틴을 돌릴 수 없으므로 리턴
+            if (!gameObject.activeInHierarchy) return;
 
             if (currentState == newStateEnum && currentStateCoroutine != null) return;
 
@@ -122,20 +124,32 @@ namespace Dev.cheol.Model
 
         public override void ObjectUpdate()
         {
-            //  매니저가 이 함수를 호출해주면, 여기서 버프들을 돌립니다.
-            if (_buffs.Count > 0)
-            {
-                // 역순으로 돌려야 삭제(RemoveAt)할 때 인덱스 에러가 안 납니다.
-                for (int i = _buffs.Count - 1; i >= 0; i--)
-                {
-                    // 1. 업데이트 실행
-                    _buffs[i].BuffUpdate(Time.deltaTime);
+            if (_buffs == null || _buffs.Count == 0) return;
 
-                    // 2. 수명 다한 버프 리스트에서 제거
-                    if (_buffs[i].IsFinished)
-                    {
-                        _buffs.RemoveAt(i);
-                    }
+            // 역순 순회는 맞게 하셨습니다. 하지만 더 안전하게 짭니다.
+            for (int i = _buffs.Count - 1; i >= 0; i--)
+            {
+                // [안전장치 1] 인덱스 유효성 즉시 검사
+                if (i >= _buffs.Count) continue;
+
+                var targetBuff = _buffs[i];
+                if (targetBuff == null)
+                {
+                    _buffs.RemoveAt(i);
+                    continue;
+                }
+
+                // 1. 업데이트 실행
+                targetBuff.BuffUpdate(Time.deltaTime);
+
+                // [안전장치 2] BuffUpdate 실행 도중 리스트가 변했을 가능성 체크
+                if (i >= _buffs.Count || _buffs[i] != targetBuff) continue;
+
+                // 2. 수명 다한 버프 리스트에서 제거
+                if (targetBuff.IsFinished)
+                {
+                    targetBuff.EndBuff(); // 끝날 때 처리 명시적 호출 (필요시)
+                    _buffs.RemoveAt(i);
                 }
             }
         }

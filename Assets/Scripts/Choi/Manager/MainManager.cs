@@ -11,11 +11,14 @@ namespace Dev.cheol.Manager
         [Header("Object Lists")]
         [SerializeField] private List<Enemy> _spawnEnemys; //기본적으로 사용되는 에너미들 객체용
         [SerializeField] private List<Tower> _spawnTowers; // 플레이어들의 타워
+        [SerializeField] private List<BaseScreenUI> _spawnUI; // Ui
+
 
         [SerializeField] private Tower _selected = null;
         public List<Tower> SpawnTowers { get => _spawnTowers; set => _spawnTowers = value; }
         public List<Enemy> SpawnEnemys { get => _spawnEnemys; set => _spawnEnemys = value; }
         public Tower Selected { get => _selected; set => _selected = value; }
+        public List<BaseScreenUI> SpawnUI { get => _spawnUI; set => _spawnUI = value; }
 
 
         #region 세팅 및 
@@ -45,6 +48,8 @@ namespace Dev.cheol.Manager
             //업데이트
             UpdateList(_spawnEnemys);
             UpdateList(_spawnTowers);
+            UpdateList(_spawnUI);
+
             //테스트용 인풋기능
             Test(); // 테스트때만 주석풀어용~
 
@@ -112,7 +117,7 @@ namespace Dev.cheol.Manager
             tower.transform.position = selectTile.transform.position;
             tower.CurrentTile = selectTile;
             tower.Lank = getLank; // 증강에따라 달라지는 값일 수도 있음
-            main.SpawnTowers.Add(tower);
+            main._spawnTowers.Add(tower);
             selectTile._isUsed = true; //타일 사용여부 
             rankManager.RequestRank(tower); //연결요청
         }
