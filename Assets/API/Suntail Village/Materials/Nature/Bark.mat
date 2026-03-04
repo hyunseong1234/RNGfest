@@ -8,7 +8,9 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Bark
-  m_Shader: {fileID: 4800000, guid: b50955928b87e714ab31f7fe9003b849, type: 3}
+  m_Shader: {fileID: 4800000, guid: d98c3eb5180d5b448bfa76f7b3525827, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _SMOOTHNESSSOURCE_METALLIC_ALPHA
   m_InvalidKeywords:
@@ -21,10 +23,15 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
     - _Albedo:
+        m_Texture: {fileID: 2800000, guid: 38cd991401e210d40a7dda2fa2f42159, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseMap:
         m_Texture: {fileID: 2800000, guid: 38cd991401e210d40a7dda2fa2f42159, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -85,7 +92,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 4d3696225e0ca5041b7e477bb0b1c9de, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -145,6 +152,7 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SNOW: 0
+    - _Smoothness: 1
     - _SmoothnessSource: 0
     - _SmoothnessTextureChannel: 0
     - _SnowAmount: 1
@@ -158,6 +166,7 @@ Material:
     - _ZWrite: 1
     - __dirty: 1
     m_Colors:
+    - _BaseColor: {r: 0.7176471, g: 0.5058824, b: 0.4666667, a: 1}
     - _Color: {r: 0.71800005, g: 0.5075517, b: 0.46628737, a: 1}
     - _CoverageColor: {r: 0.182825, g: 0.515, b: 0.27075368, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

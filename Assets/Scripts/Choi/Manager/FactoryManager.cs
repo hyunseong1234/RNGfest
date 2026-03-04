@@ -29,13 +29,17 @@ namespace Dev.cheol.Manager
             _prefabs_Enmey = Resources.LoadAll<BaseObject>("Prefabs/CYC/Enemy");
             _prefabs_Twoer = Resources.LoadAll<BaseObject>("Prefabs/CYC/Tower");
             _prefabs_Bullet = Resources.LoadAll<BaseObject>("Prefabs/CYC/Bullet");
-            _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).ToArray();
+            _prfavs_Ui = Resources.LoadAll<BaseObject>("Prefabs/CYC/UI/BaseUI");
+
+            _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).Concat(_prfavs_Ui).ToArray();
         }
 
         private void Start()
         {
             SettingObject(8, _prefabs_Enmey);
             SettingObject(20, _prefabs_Twoer);
+            SettingObject(50, _prfavs_Ui);
+
         }
 
         private void StartSetting()
@@ -126,18 +130,24 @@ namespace Dev.cheol.Manager
             for (int i = 0; i < targetArray.Length; i++)
             {
                 string tagName = targetArray[i].gameObject.name;
-                LoadDataCreatedObj<BaseObject>(tagName, targetArray[i]);
 
+                // [형님, 여기입니다!] 불렛이 아닌 '데미지 폰트'가 50개 생성되려면 이 루프가 필수입니다.
+                for (int j = 0; j < count; j++)
+                {
+                    // 여기서 루프를 돌아야 DamageFont가 50개 생성되어 풀로 들어갑니다.
+                    LoadDataCreatedObj<BaseObject>(tagName, targetArray[i]);
+                }
+
+                // 기존 타워/불렛 로직 (건드릴 필요 없음)
                 if (targetArray[i] is AttackTower attackTower)
                 {
                     if (attackTower.Bullet != null)
                     {
                         string bulletTag = attackTower.Bullet.gameObject.name;
-                        for (int j = 0; j < 10; j++)
+                        for (int k = 0; k < 10; k++)
                         {
                             LoadDataCreatedObj<BaseObject>(bulletTag, attackTower.Bullet);
                         }
-                        Debug.Log($"[Factory] {tagName}의 탄({bulletTag}) 풀링 완료");
                     }
                 }
             }

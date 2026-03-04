@@ -137,11 +137,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2775850426808694735, guid: f568d0d3f4674404eb8eff210b457512, type: 3}
   m_PrefabInstance: {fileID: 7496160336589964722}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &210985122 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4977153910064727085, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
-  m_PrefabInstance: {fileID: 8558689425625569588}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &307603053 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6053668262237026549, guid: f568d0d3f4674404eb8eff210b457512, type: 3}
@@ -670,11 +665,6 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 5328790394506899428, guid: f568d0d3f4674404eb8eff210b457512, type: 3}
   m_PrefabInstance: {fileID: 7496160336589964722}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &2045339519 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1089960355628324686, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
-  m_PrefabInstance: {fileID: 8558689425625569588}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &2056028003 stripped
 Transform:
@@ -1232,14 +1222,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Manager
       objectReference: {fileID: 0}
-    - target: {fileID: 4705839674293931283, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
-      propertyPath: poolTransformUI
-      value: 
-      objectReference: {fileID: 210985122}
-    - target: {fileID: 4705839674293931283, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
-      propertyPath: pushlTransformUI
-      value: 
-      objectReference: {fileID: 2045339519}
     - target: {fileID: 5442906083098329027, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
       propertyPath: rankUIParent
       value: 
@@ -1253,7 +1235,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 689457113}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4007031805854919582, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
