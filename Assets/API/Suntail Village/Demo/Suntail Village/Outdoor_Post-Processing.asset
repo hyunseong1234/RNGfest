@@ -75,7 +75,7 @@ MonoBehaviour:
     value: 0.05
   fastMode:
     overrideState: 1
-    value: 1
+    value: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1478,7 +1478,7 @@ MonoBehaviour:
     value: 27
   kernelSize:
     overrideState: 1
-    value: 1
+    value: 3
 --- !u!114 &7251593752016002370
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1517,8 +1517,8 @@ MonoBehaviour:
     overrideState: 1
     value: {r: 1, g: 0.9311576, b: 0.8726415, a: 1}
   fastMode:
-    overrideState: 1
-    value: 1
+    overrideState: 0
+    value: 0
   dirtTexture:
     overrideState: 0
     value: {fileID: 0}
@@ -1566,9 +1566,6 @@ MonoBehaviour:
   thicknessModifier:
     overrideState: 1
     value: 2
-  zBias:
-    overrideState: 0
-    value: 0.0001
   directLightingStrength:
     overrideState: 0
     value: 0

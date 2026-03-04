@@ -1,20 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-//Interacting with objects and doors
+//Interacting with physics objects and interactive objects
 namespace Suntail
 {
     public class PlayerInteractions : MonoBehaviour
     {
         [Header("Interaction variables")]
-        [Tooltip("Layer mask for interactive objects")]
-        [SerializeField] private LayerMask interactionLayer;
         [Tooltip("Maximum distance from player to object of interaction")]
         [SerializeField] private float interactionDistance = 3f;
-        [Tooltip("Tag for door object")]
-        [SerializeField] private string doorTag = "Door";
-        [Tooltip("Tag for pickable object")]
-        [SerializeField] private string itemTag = "Item";
         [Tooltip("The player's main camera")]
         [SerializeField] private Camera mainCamera;
         [Tooltip("Parent object where the object to be lifted becomes")]
@@ -39,22 +33,22 @@ namespace Suntail
         [SerializeField] private string itemPickUpText;
         [Tooltip("Text when an object can be drop")]
         [SerializeField] private string itemDropText;
-        [Tooltip("Text when the door can be opened")]
-        [SerializeField] private string doorOpenText;
-        [Tooltip("Text when the door can be closed")]
-        [SerializeField] private string doorCloseText;
+        [Tooltip("Text when an interactive object can be opened")]
+        [SerializeField] private string interactiveOpenText;
+        [Tooltip("Text when an interactive object can be closed")]
+        [SerializeField] private string interactiveCloseText;
 
         //Private variables.
         private PhysicsObject _physicsObject;
         private PhysicsObject _currentlyPickedUpObject;
         private PhysicsObject _lookObject;
         private Quaternion _lookRotation;
-        private Vector3 _raycastPosition;
         private Rigidbody _pickupRigidBody;
-        private Door _lookDoor;
+        private Interactive _lookInteractive;
         private float _currentSpeed = 0f;
         private float _currentDistance = 0f;
         private CharacterController _characterController;
+        private Collider _selection;
 
 
         private void Start()
@@ -69,44 +63,50 @@ namespace Suntail
             LegCheck();
         }
 
-        //Determine which object we are now looking at, depending on the tag and component
+        //Determine which object we are now looking at, depending on the component
         private void Interactions()
         {
-            _raycastPosition = mainCamera.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-            RaycastHit interactionHit;
-            if (Physics.Raycast(_raycastPosition, mainCamera.transform.forward, 
-                out interactionHit, interactionDistance, interactionLayer))
+            Ray ray = mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+
+            if (_selection == null)
             {
-                if (interactionHit.collider.CompareTag(itemTag))
+                _lookInteractive = null;
+                _lookObject = null;
+            }
+
+            if (Physics.Raycast(ray, out RaycastHit interactionHit, interactionDistance))
+            {
+
+                Collider selection = interactionHit.collider;
+
+                if (selection.GetComponent<PhysicsObject>() != null)
                 {
-                    _lookObject = interactionHit.collider.GetComponentInChildren<PhysicsObject>();
+                    _lookObject = selection.gameObject.GetComponent<PhysicsObject>();
                     ShowItemUI();
                 }
-                else if (interactionHit.collider.CompareTag(doorTag))
+                else if (selection.GetComponent<Interactive>() != null)
                 {
-                    _lookDoor = interactionHit.collider.gameObject.GetComponentInChildren<Door>();
-                    ShowDoorUI();
+                    _lookInteractive = selection.gameObject.GetComponent<Interactive>();
+                    ShowInteractiveUI();
                     if (Input.GetKeyDown(interactionKey))
                     {
-                        _lookDoor.PlayDoorAnimation();
+                        _lookInteractive.PlayInteractiveAnimation();
                     }
                 }
+                selection = _selection;
             }
-            else
+
+            if (_lookObject == null && _lookInteractive == null)
             {
-                _lookDoor = null;
-                _lookObject = null;
                 uiPanel.gameObject.SetActive(false);
             }
 
             if (Input.GetKeyDown(interactionKey))
             {
-                if (_currentlyPickedUpObject == null)
+                if (_currentlyPickedUpObject == null && _lookObject != null)
                 {
-                    if (_lookObject != null)
-                    {
-                        PickUpObject();
-                    }
+                    PickUpObject();
+
                 }
                 else
                 {
@@ -122,7 +122,7 @@ namespace Suntail
             RaycastHit legCheck;
             if (Physics.SphereCast(spherePosition, 0.3f, Vector3.down, out legCheck, 2.0f))
             {
-                if (legCheck.collider.CompareTag(itemTag))
+                if (legCheck.collider.GetComponent<PhysicsObject>())
                 {
                     BreakConnection();
                 }
@@ -161,25 +161,29 @@ namespace Suntail
             if (_currentlyPickedUpObject)
             {
                 _pickupRigidBody.constraints = RigidbodyConstraints.None;
-                _currentlyPickedUpObject = null;
                 _physicsObject.pickedUp = false;
+                _currentlyPickedUpObject = null;
+                _physicsObject = null;
+                _lookObject = null;
                 _currentDistance = 0;
             }
         }
 
         //Show interface elements when hovering over an object
-        private void ShowDoorUI()
+        private void ShowInteractiveUI()
         {
+
             uiPanel.gameObject.SetActive(true);
 
-            if (_lookDoor.doorOpen)
+            if (_lookInteractive.interactiveObjectOpen)
             {
-                panelText.text = doorCloseText;
+                panelText.text = interactiveCloseText;
             }
             else
             {
-                panelText.text = doorOpenText;
+                panelText.text = interactiveOpenText;
             }
+
         }
 
         private void ShowItemUI()
@@ -194,7 +198,6 @@ namespace Suntail
             {
                 panelText.text = itemDropText;
             }
-
         }
 
     }
