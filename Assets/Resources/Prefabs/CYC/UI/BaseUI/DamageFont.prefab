@@ -151,6 +151,13 @@ MonoBehaviour:
   _target: {fileID: 0}
   _isUI: 0
   rectTransform: {fileID: 5713574756360843580}
-  offset: {x: 0, y: 2, z: 0}
-  maxVisibleDistance: 50
+  offset: {x: 0, y: 0.5, z: 0}
   _damageText: {fileID: 7563608589711525571}
+  _lifeTime: 0.7
+  _minScale: 0.005
+  _maxScale: 0.009
+  _popStrength: 0.005
+  _referenceDistance: 12
+  _jumpHeight: 1
+  _bounceSpeed: 3
+  _sideForceRange: 1.2

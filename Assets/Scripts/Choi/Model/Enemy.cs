@@ -64,6 +64,7 @@ public class Enemy : BaseUnit
         if (damageObj != null)
         {
             damageObj.SetDamage(damage, transform);
+
             main.SpawnUI.Add(damageObj);
         }
 

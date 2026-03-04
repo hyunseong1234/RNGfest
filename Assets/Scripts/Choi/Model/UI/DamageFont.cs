@@ -1,68 +1,112 @@
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
 public class DamageFont : BaseScreenUI
 {
-    [Header("Text Settings")]
     [SerializeField] private TextMeshProUGUI _damageText;
 
-    private float _elapsedTime = 0f;
-    private float _sideForce;
-    private float _lifeTime = 1.0f;
+    [Space(10)]
+    [SerializeField] private float _lifeTime = 0.7f;
 
-    // 캐싱을 통해 매 프레임 GetService 호출을 방지합니다.
-    private MainManager _mainManager;
-    private ObjectPoolingManger _poolManager;
+    [Header("폰트 크기")]
+    [SerializeField] private float _minScale = 0.01f;
+    [SerializeField] private float _maxScale = 0.02f;
+    [SerializeField] private float _popStrength = 0.005f;
+    [SerializeField] private float _referenceDistance = 12f;
 
-    protected override void Awake()
-    {
-        base.Awake();
-        // 자주 쓰이는 매니저는 미리 캐싱합니다.
-        _mainManager = ServiceLocator.Instance.GetService<MainManager>();
-        _poolManager = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
-    }
+    [Header("점프 크기")]
+    [SerializeField] private float _jumpHeight = 1.0f;
+    [SerializeField] private float _bounceSpeed = 3.0f;
+    [SerializeField] private float _sideForceRange = 1.2f;
+
+    private Coroutine _animCoroutine;
 
     public override void OnSpawn()
     {
         base.OnSpawn();
-        _elapsedTime = 0f;
-        _sideForce = Random.Range(-80f, 80f); // 튀는 범위를 약간 조절
-        rectTransform.localScale = Vector3.zero;
+        // 풀링 매니저가 혹시 부를 수도 있으니 기본 세팅만 유지
     }
 
     public void SetDamage(int amount, Transform targetUnit)
     {
+        // 1. 데이터 세팅
         if (_damageText != null) _damageText.text = amount.ToString();
         _target = targetUnit;
+
+        // 2. 청소 후 연출 시작 (이 코루틴이 생명주기를 관리함)
+        if (_animCoroutine != null) StopCoroutine(_animCoroutine);
+
+        RefreshCamera();
+        _animCoroutine = StartCoroutine(Co_PlayAnimation());
     }
 
-    protected override void ApplyScreenPosition(Vector3 screenPos, float distance)
+    private IEnumerator Co_PlayAnimation()
     {
-        // 1. 부모의 좌표 갱신 실행
-        base.ApplyScreenPosition(screenPos, distance);
-
-        // [최적화] Update 주기에 맞춰 DeltaTime 보정
-        _elapsedTime += Time.deltaTime * 2f;
-
-        // 2. 통통 튀는 연출
-        Vector3 bounceOffset = GetBounceOffset(_elapsedTime, 2.0f, 1.5f, _sideForce);
-        rectTransform.position += bounceOffset;
-
-        // 3. 스케일 및 팝업 연출
-        // 나눗셈 최적화를 위해 distance에 아주 작은 값을 더해 0나누기 방지
-        float baseScale = Mathf.Clamp(15f / (distance + 0.01f), 0.2f, 0.5f);
-        float popCurve = Mathf.Sin(Mathf.Clamp01(_elapsedTime * 5f) * Mathf.PI);
-        rectTransform.localScale = Vector3.one * (baseScale + popCurve * 0.2f);
-
-        // 4. 수명 관리
-        if (_elapsedTime >= _lifeTime)
+        // 카메라가 잡힐 때까지 안전하게 대기 (NPE 방어)
+        while (mainCamera == null)
         {
-            // 캐싱된 매니저를 사용하여 성능 향상
-            if (_mainManager != null) _mainManager.SpawnUI.Remove(this);
-            _target = null;
-            if (_poolManager != null) _poolManager.ReturnPool(this);
+            RefreshCamera();
+            if (mainCamera == null) yield return null;
+        }
+
+        float elapsed = 0f;
+        float sideForce = Random.Range(-_sideForceRange, _sideForceRange);
+        transform.localScale = Vector3.zero;
+
+        while (elapsed < _lifeTime)
+        {
+            // 타겟이 사라지거나 객체가 꺼지면 즉시 탈출
+            if (_target == null || !gameObject.activeInHierarchy) break;
+
+            elapsed += Time.deltaTime;
+
+            // 1. 위치 추적 및 빌보드 (World Space)
+            transform.position = _target.position + offset;
+            transform.rotation = mainCamera.transform.rotation;
+
+            // 2. 통통 튀는 연출 (인스펙터 변수 적용)
+            transform.position += GetBounceOffset(elapsed, _jumpHeight, _bounceSpeed, sideForce);
+
+            // 3. 거리 기반 스케일링 (sqrMagnitude 최적화 적용)
+            Vector3 diff = mainCamera.transform.position - transform.position;
+            float sqrDist = diff.sqrMagnitude;
+            float dist = Mathf.Sqrt(sqrDist);
+
+            // 인스펙터 수치 기반 계산
+            float baseScale = Mathf.Clamp(_referenceDistance / (dist + 0.01f), _minScale, _maxScale);
+            float pop = Mathf.Sin(Mathf.Clamp01(elapsed * 8f) * Mathf.PI);
+
+            transform.localScale = Vector3.one * (baseScale + (pop * _popStrength));
+
+            yield return null;
+        }
+
+        // 루프 끝나면 스스로 반납
+        FinalizeAndReturn();
+    }
+
+    private void FinalizeAndReturn()
+    {
+        // 좀비 로직 방지
+        if (_animCoroutine != null) StopCoroutine(_animCoroutine);
+        _animCoroutine = null;
+        _target = null;
+
+        // 매니저 업데이트 리스트에 수동 등록된 경우 제거
+        var main = ServiceLocator.Instance.GetService<MainManager>();
+        if (main != null && main.SpawnUI.Contains(this))
+        {
+            main.SpawnUI.Remove(this);
+        }
+
+        // 풀링 매니저로 반납
+        var poolManager = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+        if (poolManager != null)
+        {
+            poolManager.ReturnPool(this);
         }
     }
 }

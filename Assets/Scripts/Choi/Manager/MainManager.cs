@@ -48,7 +48,7 @@ namespace Dev.cheol.Manager
             //업데이트
             UpdateList(_spawnEnemys);
             UpdateList(_spawnTowers);
-            UpdateList(_spawnUI);
+            //UpdateList(_spawnUI);
 
             //테스트용 인풋기능
             Test(); // 테스트때만 주석풀어용~
