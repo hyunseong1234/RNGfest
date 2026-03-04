@@ -37,7 +37,8 @@ namespace Dev.jeon.Model
             {
                 if (_owner is Enemy enemy)
                 {
-                    enemy.OnDamaged(Damage, FontColor.White);
+                    enemy.OnDamaged(Damage, FontColor.Green);
+
                     Debug.Log($"<color=green>[독 도트 피해]</color> 틱 데미지 {Damage}이(가) 들어갔습니다!");
                 }
                 _nextTick += _tickInterval;
