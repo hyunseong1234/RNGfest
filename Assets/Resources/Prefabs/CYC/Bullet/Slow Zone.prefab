@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5906375856216890158}
-  - component: {fileID: 4826924618447675167}
+  - component: {fileID: -4048382319474151516}
   m_Layer: 0
-  m_Name: Slow Bullet
+  m_Name: Slow Zone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,7 +33,7 @@ Transform:
   - {fileID: 555605488213652190}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4826924618447675167
+--- !u!114 &-4048382319474151516
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,16 +42,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 8953323700442454563}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e74be8e84965b64d9619a17e05ed564, type: 3}
+  m_Script: {fileID: 11500000, guid: 25469a39aecc2144291416ec05b94e4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _poolTag: 
   _target: {fileID: 0}
   _isUI: 0
-  _fontColor: 7
-  _damage: 10
-  _slowZonePrefab: {fileID: 4826924618447675167}
-  _randomOffset: 1
+  _radius: 1.5
+  _slowAmount: 0.5
 --- !u!1001 &4097267032591768841
 PrefabInstance:
   m_ObjectHideFlags: 0

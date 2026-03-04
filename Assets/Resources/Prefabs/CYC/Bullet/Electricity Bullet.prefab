@@ -51,6 +51,7 @@ MonoBehaviour:
   _poolTag: 
   _target: {fileID: 0}
   _isUI: 0
+  _fontColor: 1
   _speed: 20
   _damage: 10
   _bounceRadius: 5

@@ -59,7 +59,7 @@ namespace Dev.jeon.Bullet
             if (enemy != null)
             {
                 // 1. 총알 자체 데미지 (깡뎀 적용)
-                enemy.OnDamaged(_damage, FontColor.Green);
+                enemy.OnDamaged(_damage, _fontColor);
 
                 // 2. 적이 이미 독에 걸려있는지 확인
                 var existingPoison = enemy.GetBuff<PoisonBuff>();

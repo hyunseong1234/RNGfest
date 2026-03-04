@@ -211,7 +211,6 @@ namespace Dev.jeon.Bullet
 
         public override void ObjectUpdate()
         {
-            throw new System.NotImplementedException();
         }
     }
 }

@@ -4128,7 +4128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3901468142601562474}
-  - component: {fileID: 6138684215524662550}
+  - component: {fileID: 6448946560580412090}
   - component: {fileID: -6803420772769780372}
   m_Layer: 6
   m_Name: Tower_blayder
@@ -4153,7 +4153,7 @@ Transform:
   - {fileID: 350497974308277828}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6138684215524662550
+--- !u!114 &6448946560580412090
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4162,7 +4162,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5116557204495258647}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1eda0f4dc5547fb4987fd25733dbc5af, type: 3}
+  m_Script: {fileID: 11500000, guid: 88ad976dbef735b408a3c9110c09e715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _poolTag: 
@@ -4179,7 +4179,11 @@ MonoBehaviour:
   _currentTile: {fileID: 0}
   _lank: 0
   _starUI: {fileID: 0}
-  _bullet: {fileID: -2298236460351502730, guid: 1f351a3a9ae05334b9c1bdf1a3732a75, type: 3}
+  _bullet: {fileID: 4826924618447675167, guid: 820958ffaccc9014693d8da02dbd00d8, type: 3}
+  _skillPrefab: {fileID: -4048382319474151516, guid: 2ba40087a9dd54e4c8d3d280f87f74e9, type: 3}
+  _skillInterval: 5
+  _spawnAmount: 2
+  _objectDuration: 4
 --- !u!65 &-6803420772769780372
 BoxCollider:
   m_ObjectHideFlags: 0

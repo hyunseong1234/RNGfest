@@ -126,10 +126,8 @@ namespace Dev.cheol.Model
         {
             if (_buffs == null || _buffs.Count == 0) return;
 
-            // 역순 순회는 맞게 하셨습니다. 하지만 더 안전하게 짭니다.
             for (int i = _buffs.Count - 1; i >= 0; i--)
             {
-                // [안전장치 1] 인덱스 유효성 즉시 검사
                 if (i >= _buffs.Count) continue;
 
                 var targetBuff = _buffs[i];
