@@ -137,6 +137,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2775850426808694735, guid: f568d0d3f4674404eb8eff210b457512, type: 3}
   m_PrefabInstance: {fileID: 7496160336589964722}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &210985122 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4977153910064727085, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
+  m_PrefabInstance: {fileID: 8558689425625569588}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &307603053 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6053668262237026549, guid: f568d0d3f4674404eb8eff210b457512, type: 3}
@@ -666,6 +671,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5328790394506899428, guid: f568d0d3f4674404eb8eff210b457512, type: 3}
   m_PrefabInstance: {fileID: 7496160336589964722}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &2045339519 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1089960355628324686, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
+  m_PrefabInstance: {fileID: 8558689425625569588}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2056028003 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4189370918042563490, guid: f568d0d3f4674404eb8eff210b457512, type: 3}
@@ -783,6 +793,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 367177378506715879}
+    - target: {fileID: 5714267674012761897, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714267674012761897, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -468.14
+      objectReference: {fileID: 0}
     - target: {fileID: 6621684999815709805, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
       propertyPath: m_Name
       value: ScreenCanvas
@@ -1063,10 +1081,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1708603571134006762, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
-      propertyPath: flagPoints.Array.size
-      value: 17
-      objectReference: {fileID: 0}
-    - target: {fileID: 1708603571134006762, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
       propertyPath: flagPoints.Array.data[0]
       value: 
       objectReference: {fileID: 1378359591}
@@ -1218,6 +1232,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Manager
       objectReference: {fileID: 0}
+    - target: {fileID: 4705839674293931283, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
+      propertyPath: poolTransformUI
+      value: 
+      objectReference: {fileID: 210985122}
+    - target: {fileID: 4705839674293931283, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
+      propertyPath: pushlTransformUI
+      value: 
+      objectReference: {fileID: 2045339519}
     - target: {fileID: 5442906083098329027, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
       propertyPath: rankUIParent
       value: 

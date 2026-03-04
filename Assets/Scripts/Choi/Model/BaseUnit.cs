@@ -41,8 +41,9 @@ namespace Dev.cheol.Model
         #endregion
 
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             //상태 머신 등록
             stateDictionary.Add(EState.IDLE, new IIdleState());
             stateDictionary.Add(EState.MOVE, new IMoveState());

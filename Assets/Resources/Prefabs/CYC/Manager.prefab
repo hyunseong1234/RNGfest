@@ -72,9 +72,9 @@ Transform:
   - {fileID: 2280497946544995558}
   - {fileID: 8470156880558867507}
   - {fileID: 3345905278152842835}
+  - {fileID: 4958029529432126575}
   - {fileID: 8832501673696871806}
   - {fileID: 6303501719420077782}
-  - {fileID: 4958029529432126575}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &838506370981561267
@@ -658,6 +658,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   poolTransform: {fileID: 8832501673696871806}
   pushlTransform: {fileID: 6303501719420077782}
+  poolTransformUI: {fileID: 0}
+  pushlTransformUI: {fileID: 0}
 --- !u!1 &8581917976463406358
 GameObject:
   m_ObjectHideFlags: 0
