@@ -1,4 +1,4 @@
-using Dev.cheol.Manager;
+ï»¿using Dev.cheol.Manager;
 using Dev.cheol.Model;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,24 +7,31 @@ using UnityEngine;
 
 namespace Dev.jeon.Bullet
 {
-    public class ElectricityBullet : BaseBullet
+    public class ElectricBullet : BaseBullet
     {
-        [Header("Àü±â ¼Ó¼º ¼³Á¤")]
+        [Header("ì „ê¸° ì†ì„± ì„¤ì •")]
         [SerializeField] private float _speed = 20f;
         [SerializeField] private int _damage = 10;
-        [SerializeField] private float _bounceRadius = 5f;// ¹ø°³°¡ ´ÙÀ½ Àû¿¡°Ô Æ¨±æ ¼ö ÀÖ´Â ÃÖ´ë »ç°Å¸®
+        [SerializeField] private float _bounceRadius = 5f;
 
-        private int _maxTargets = 3; // ÆÃ±â´Â È½¼ö
+        [Header("ì‹œê° íš¨ê³¼")]
+        [SerializeField] private LineRenderer _lineRenderer; // ğŸŸ¢ ì¸ìŠ¤í™í„°ì—ì„œ í• ë‹¹!
+        [SerializeField] private float _lightningDuration = 0.2f; // ë²ˆê°œê°€ í™”ë©´ì— ë‚¨ì•„ìˆëŠ” ì‹œê°„
+        [SerializeField] private float _startWidth = 0.5f; // ì²˜ìŒ ë§ì•˜ì„ ë•Œ ë²ˆê°œ êµµê¸°
+        [SerializeField] private float _endWidth = 0.1f;   // ë§ˆì§€ë§‰ì— íŠ•ê¸¸ ë•Œ ë²ˆê°œ êµµê¸°
 
+        private int _maxTargets = 3;
         private float[] _damageMultipliers = { 1.0f, 0.7f, 0.4f };
-
         private Coroutine _moveCoroutine;
 
-        public override void Init(Transform target, int damage, float speed = 20)
+        public override void Init(Transform target, int damage, float speed = 20f)
         {
-            _target = target; ;
+            _target = target;
             _damage = damage;
             _speed = speed;
+
+            // ì´ì•Œì´ ë‚ ì•„ê°€ëŠ” ë™ì•ˆì€ ì„ ì„ ìˆ¨ê¹€
+            if (_lineRenderer != null) _lineRenderer.enabled = false;
 
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
             _moveCoroutine = StartCoroutine(MoveToTarget());
@@ -32,62 +39,84 @@ namespace Dev.jeon.Bullet
 
         private IEnumerator MoveToTarget()
         {
-            while(_target != null && _target.gameObject.activeSelf)
+            while (_target != null && _target.gameObject.activeSelf)
             {
-                transform.position = Vector3.MoveTowards(transform.position, _target.transform.position, _speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(
+                    transform.position,
+                    _target.transform.position,
+                    _speed * Time.deltaTime
+                );
 
                 if (Vector3.Distance(transform.position, _target.transform.position) < 0.05f)
                 {
-                    HitTarget();
+                    // ğŸŸ¢ ì¦‰ì‹œ ë°˜ë‚©í•˜ì§€ ì•Šê³ , ë²ˆê°œ ì—°ì¶œ ì½”ë£¨í‹´ì„ ì‹œì‘í•©ë‹ˆë‹¤!
+                    StartCoroutine(HitAndDrawLightning());
                     yield break;
                 }
+
                 yield return null;
             }
-
 
             ReturnToPool();
         }
 
-        private void HitTarget()
+        // ğŸŸ¢ ë°ë¯¸ì§€ë¥¼ ì£¼ê³  ì„ ì„ ê·¸ë¦¬ëŠ” ì½”ë£¨í‹´
+        private IEnumerator HitAndDrawLightning()
         {
             var primaryEnemy = _target.GetComponent<Enemy>();
             if (primaryEnemy == null)
             {
                 ReturnToPool();
-                return;
+                yield break;
             }
 
-            // 1. ÀÌ¹Ì ¹ø°³¸¦ ¸ÂÀº ÀûÀ» ÃßÀûÇÏ´Â ¸®½ºÆ® (¿Ô´Ù°¬´Ù Áßº¹ Å¸°İ ¹æÁö)
             List<Enemy> hitEnemies = new List<Enemy>();
+            List<Vector3> linePoints = new List<Vector3>(); // ì„ ì„ ê·¸ë¦´ ì¢Œí‘œë“¤
+
             Enemy currentTarget = primaryEnemy;
 
-            // 2. ÃÖ´ë 3¸¶¸® Å¸°İ ·çÇÁ
+            // ì„ ì˜ ì‹œì‘ì ì€ í˜„ì¬ ì´ì•Œì˜ ìœ„ì¹˜(ì²« ë²ˆì§¸ íƒ€ê²Ÿ ìœ„ì¹˜)
+            linePoints.Add(transform.position);
+
             for (int i = 0; i < _maxTargets; i++)
             {
-                // Å¸°ÙÀÌ Á×¾ú°Å³ª ºñÈ°¼ºÈ­¸é ¿¬¼â Á¾·á
                 if (currentTarget == null || !currentTarget.gameObject.activeSelf) break;
 
-                // 3. ¼ø¼­¿¡ ¸Â´Â µ¥¹ÌÁö °è»ê (100% -> 70% -> 40%)
+                // 1. ë°ë¯¸ì§€ ì ìš©
                 int finalDamage = Mathf.RoundToInt(_damage * _damageMultipliers[i]);
                 currentTarget.OnDamaged(finalDamage);
                 hitEnemies.Add(currentTarget);
 
-                Debug.Log($"<color=cyan>[Ã¼ÀÎ ¶óÀÌÆ®´×]</color> {i + 1}¹øÂ° Å¸°Ù({currentTarget.name}) ÀûÁß! µ¥¹ÌÁö: {finalDamage}");
+                // 2. ì„ ì„ ì´ì„ ë‹¤ìŒ ì¢Œí‘œ ì¶”ê°€ (ëª¬ìŠ¤í„°ì˜ ìœ„ì¹˜)
+                linePoints.Add(currentTarget.transform.position);
 
-                // 4. ´ÙÀ½ Å¸°Ù Ã£±â (¸¶Áö¸· Å¸°İÀÌ ¾Æ´Ò ¶§¸¸)
+                // 3. ë‹¤ìŒ íƒ€ê²Ÿ ì°¾ê¸°
                 if (i < _maxTargets - 1)
                 {
                     Enemy nextTarget = FindNextTarget(currentTarget, hitEnemies);
-
-                    // ´ÙÀ½ Å¸°ÙÀÌ ÁÖº¯¿¡ ¾øÀ¸¸é ±×´ë·Î ¿¬¼â Á¾·á
                     if (nextTarget == null) break;
-
-                    // ´ÙÀ½ ·çÇÁ¸¦ À§ÇØ Å¸°Ù ±³Ã¼
                     currentTarget = nextTarget;
                 }
             }
 
-            // ¿¬¼â °ø°İÀÌ ÀüºÎ ³¡³­ ÈÄ ÃÑ¾Ë ¹İ³³
+            // ğŸŸ¢ ì‹œê° íš¨ê³¼ ê·¸ë¦¬ê¸° (LineRenderer ì„¸íŒ…)
+            if (_lineRenderer != null && linePoints.Count > 1)
+            {
+                _lineRenderer.positionCount = linePoints.Count;
+                _lineRenderer.SetPositions(linePoints.ToArray());
+
+                // ê°ˆìˆ˜ë¡ ì–‡ì•„ì§€ëŠ” ì—°ì¶œ ì ìš© (ì‹œì‘ êµµê¸°ì™€ ë êµµê¸° ë‹¤ë¥´ê²Œ ì„¤ì •)
+                _lineRenderer.startWidth = _startWidth;
+                _lineRenderer.endWidth = _endWidth;
+
+                _lineRenderer.enabled = true; // ì„  ì¼œê¸°
+            }
+
+            // ë²ˆê°œê°€ ë²ˆì©! í•˜ê³  í™”ë©´ì— ì ì‹œ ë‚¨ì•„ìˆë„ë¡ ëŒ€ê¸°
+            yield return new WaitForSeconds(_lightningDuration);
+
+            // ëŒ€ê¸° í›„ ì„  ë„ê³  ì´ì•Œ í’€ë¡œ ë°˜ë‚©
+            if (_lineRenderer != null) _lineRenderer.enabled = false;
             ReturnToPool();
         }
 
@@ -97,11 +126,11 @@ namespace Dev.jeon.Bullet
             if (mainManager == null) return null;
 
             return mainManager.SpawnEnemys
-                .Where(e => e != null && e.gameObject.activeSelf) // »ì¾ÆÀÖ´Â Àû¸¸
-                .Where(e => !alreadyHit.Contains(e)) //  ÇÙ½É: ÀÌ¹Ì ¹ø°³ ¸ÂÀº ³ğÀº Á¦¿Ü!
-                .Where(e => (e.transform.position - currentEnemy.transform.position).sqrMagnitude <= (_bounceRadius * _bounceRadius)) // Æ¨±â´Â »ç°Å¸® ¾ÈÂÊ
-                .OrderBy(e => (e.transform.position - currentEnemy.transform.position).sqrMagnitude) // °¡Àå °¡±î¿î ¼ø¼­´ë·Î Á¤·Ä
-                .FirstOrDefault(); // Ã¹ ¹øÂ° ³ğ(°¡Àå °¡±î¿î ³ğ) ÇÈ!
+                .Where(e => e != null && e.gameObject.activeSelf)
+                .Where(e => !alreadyHit.Contains(e))
+                .Where(e => (e.transform.position - currentEnemy.transform.position).sqrMagnitude <= (_bounceRadius * _bounceRadius))
+                .OrderBy(e => (e.transform.position - currentEnemy.transform.position).sqrMagnitude)
+                .FirstOrDefault();
         }
 
         private void ReturnToPool()
@@ -116,6 +145,7 @@ namespace Dev.jeon.Bullet
                 StopCoroutine(_moveCoroutine);
                 _moveCoroutine = null;
             }
+            if (_lineRenderer != null) _lineRenderer.enabled = false;
             _target = null;
         }
 
