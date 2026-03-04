@@ -15,8 +15,8 @@ namespace Dev.jeon.Model
         {
             Damage = damage;
 
-        //    _effectPrefabName = "PoisonEffect";
-        //    _effectOffset = new Vector3(0, 1.2f, 0);
+            //    _effectPrefabName = "PoisonEffect";
+            //    _effectOffset = new Vector3(0, 1.2f, 0);
         }
 
         public void UpgradePoison(int newDamage)
@@ -37,7 +37,7 @@ namespace Dev.jeon.Model
             {
                 if (_owner is Enemy enemy)
                 {
-                    enemy.OnDamaged(Damage);
+                    enemy.OnDamaged(Damage, FontColor.White);
                     Debug.Log($"<color=green>[독 도트 피해]</color> 틱 데미지 {Damage}이(가) 들어갔습니다!");
                 }
                 _nextTick += _tickInterval;

@@ -4,109 +4,146 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-public class DamageFont : BaseScreenUI
+namespace Dev.cheol.Model
 {
-    [SerializeField] private TextMeshProUGUI _damageText;
-
-    [Space(10)]
-    [SerializeField] private float _lifeTime = 0.7f;
-
-    [Header("폰트 크기")]
-    [SerializeField] private float _minScale = 0.01f;
-    [SerializeField] private float _maxScale = 0.02f;
-    [SerializeField] private float _popStrength = 0.005f;
-    [SerializeField] private float _referenceDistance = 12f;
-
-    [Header("점프 크기")]
-    [SerializeField] private float _jumpHeight = 1.0f;
-    [SerializeField] private float _bounceSpeed = 3.0f;
-    [SerializeField] private float _sideForceRange = 1.2f;
-
-    private Coroutine _animCoroutine;
-
-    public override void OnSpawn()
+    // 형님 요청대로 맛깔나는 색상 10종 + @로 구성했습니다.
+    public enum FontColor
     {
-        base.OnSpawn();
-        // 풀링 매니저가 혹시 부를 수도 있으니 기본 세팅만 유지
+        White,      // 흰색 (기본)
+        Yellow,     // 노랑 (크리티컬 등)
+        Black,      // 블랙 (암흑 등)
+        Cyan,       // 카얀 (빙결/마나 등)
+        Green,      // 연두 (회복/독 등)
+        Pink,       // 분홍 (러블리?)
+        Red,        // 빨강 (강력한 데미지)
+        Orange,     // 주황 (화상)
+        Purple,     // 보라 (저주)
+        Blue,       // 파랑 (마법)
+        Gold,       // 금색 (전설급)
+        Max
     }
 
-    public void SetDamage(int amount, Transform targetUnit)
+    public class DamageFont : BaseScreenUI
     {
-        // 1. 데이터 세팅
-        if (_damageText != null) _damageText.text = amount.ToString();
-        _target = targetUnit;
+        [SerializeField] private TextMeshProUGUI _damageText;
 
-        // 2. 청소 후 연출 시작 (이 코루틴이 생명주기를 관리함)
-        if (_animCoroutine != null) StopCoroutine(_animCoroutine);
+        [Space(10)]
+        [SerializeField] private float _lifeTime = 0.7f;
 
-        RefreshCamera();
-        _animCoroutine = StartCoroutine(Co_PlayAnimation());
-    }
+        [Header("폰트 크기")]
+        [SerializeField] private float _minScale = 0.01f;
+        [SerializeField] private float _maxScale = 0.02f;
+        [SerializeField] private float _popStrength = 0.005f;
+        [SerializeField] private float _referenceDistance = 12f;
 
-    private IEnumerator Co_PlayAnimation()
-    {
-        // 카메라가 잡힐 때까지 안전하게 대기 (NPE 방어)
-        while (mainCamera == null)
+        [Header("점프 크기")]
+        [SerializeField] private float _jumpHeight = 1.0f;
+        [SerializeField] private float _bounceSpeed = 3.0f;
+        [SerializeField] private float _sideForceRange = 1.2f;
+
+        private Coroutine _animCoroutine;
+
+        public override void OnSpawn()
         {
+            base.OnSpawn();
+        }
+
+        // 색상 매칭 함수: colorNum(int)이 들어오면 FontColor enum에 맞춰 색상을 반환합니다.
+        private Color GetColor(FontColor colorNum)
+        {
+            FontColor colorType = colorNum;
+
+            return colorType switch
+            {
+                FontColor.White => Color.white,
+                FontColor.Yellow => Color.yellow,
+                FontColor.Black => Color.black,
+                FontColor.Cyan => Color.cyan,
+                FontColor.Green => new Color(0.2f, 1f, 0.2f), // 맛깔나는 연두
+                FontColor.Pink => new Color(1f, 0.4f, 0.7f), // 핫핑크
+                FontColor.Red => Color.red,
+                FontColor.Orange => new Color(1f, 0.6f, 0f),   // 쨍한 주황
+                FontColor.Purple => new Color(0.6f, 0.2f, 1f), // 진보라
+                FontColor.Blue => Color.blue,
+                FontColor.Gold => new Color(1f, 0.84f, 0f),  // 골드
+                _ => Color.white                // 기본 흰색
+            };
+        }
+
+        public void SetDamage(int amount, Transform targetUnit, FontColor colorType)
+        {
+            // 1. 데이터 및 색상 세팅
+            if (_damageText != null)
+            {
+                _damageText.text = amount.ToString();
+                _damageText.color = GetColor(colorType); // 여기서 색상 변경!
+            }
+            _target = targetUnit;
+
+            // 2. 청소 후 연출 시작
+            if (_animCoroutine != null) StopCoroutine(_animCoroutine);
+
             RefreshCamera();
-            if (mainCamera == null) yield return null;
+            _animCoroutine = StartCoroutine(Co_PlayAnimation());
         }
 
-        float elapsed = 0f;
-        float sideForce = Random.Range(-_sideForceRange, _sideForceRange);
-        transform.localScale = Vector3.zero;
-
-        while (elapsed < _lifeTime)
+        private IEnumerator Co_PlayAnimation()
         {
-            // 타겟이 사라지거나 객체가 꺼지면 즉시 탈출
-            if (_target == null || !gameObject.activeInHierarchy) break;
+            while (mainCamera == null)
+            {
+                RefreshCamera();
+                if (mainCamera == null) yield return null;
+            }
 
-            elapsed += Time.deltaTime;
+            float elapsed = 0f;
+            float sideForce = Random.Range(-_sideForceRange, _sideForceRange);
+            transform.localScale = Vector3.zero;
 
-            // 1. 위치 추적 및 빌보드 (World Space)
-            transform.position = _target.position + offset;
-            transform.rotation = mainCamera.transform.rotation;
+            while (elapsed < _lifeTime)
+            {
+                if (_target == null || !gameObject.activeInHierarchy) break;
 
-            // 2. 통통 튀는 연출 (인스펙터 변수 적용)
-            transform.position += GetBounceOffset(elapsed, _jumpHeight, _bounceSpeed, sideForce);
+                elapsed += Time.deltaTime;
 
-            // 3. 거리 기반 스케일링 (sqrMagnitude 최적화 적용)
-            Vector3 diff = mainCamera.transform.position - transform.position;
-            float sqrDist = diff.sqrMagnitude;
-            float dist = Mathf.Sqrt(sqrDist);
+                // 1. 위치 추적 및 빌보드
+                transform.position = _target.position + offset;
+                transform.rotation = mainCamera.transform.rotation;
 
-            // 인스펙터 수치 기반 계산
-            float baseScale = Mathf.Clamp(_referenceDistance / (dist + 0.01f), _minScale, _maxScale);
-            float pop = Mathf.Sin(Mathf.Clamp01(elapsed * 8f) * Mathf.PI);
+                // 2. 통통 튀는 연출
+                transform.position += GetBounceOffset(elapsed, _jumpHeight, _bounceSpeed, sideForce);
 
-            transform.localScale = Vector3.one * (baseScale + (pop * _popStrength));
+                // 3. 거리 기반 스케일링
+                Vector3 diff = mainCamera.transform.position - transform.position;
+                float dist = Mathf.Sqrt(diff.sqrMagnitude);
 
-            yield return null;
+                float baseScale = Mathf.Clamp(_referenceDistance / (dist + 0.01f), _minScale, _maxScale);
+                float pop = Mathf.Sin(Mathf.Clamp01(elapsed * 8f) * Mathf.PI);
+
+                transform.localScale = Vector3.one * (baseScale + (pop * _popStrength));
+
+                yield return null;
+            }
+
+            FinalizeAndReturn();
         }
 
-        // 루프 끝나면 스스로 반납
-        FinalizeAndReturn();
-    }
-
-    private void FinalizeAndReturn()
-    {
-        // 좀비 로직 방지
-        if (_animCoroutine != null) StopCoroutine(_animCoroutine);
-        _animCoroutine = null;
-        _target = null;
-
-        // 매니저 업데이트 리스트에 수동 등록된 경우 제거
-        var main = ServiceLocator.Instance.GetService<MainManager>();
-        if (main != null && main.SpawnUI.Contains(this))
+        private void FinalizeAndReturn()
         {
-            main.SpawnUI.Remove(this);
-        }
+            if (_animCoroutine != null) StopCoroutine(_animCoroutine);
+            _animCoroutine = null;
+            _target = null;
 
-        // 풀링 매니저로 반납
-        var poolManager = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
-        if (poolManager != null)
-        {
-            poolManager.ReturnPool(this);
+            var main = ServiceLocator.Instance.GetService<MainManager>();
+            if (main != null && main.SpawnUI.Contains(this))
+            {
+                main.SpawnUI.Remove(this);
+            }
+
+            var poolManager = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+            if (poolManager != null)
+            {
+                poolManager.ReturnPool(this);
+            }
         }
     }
 }

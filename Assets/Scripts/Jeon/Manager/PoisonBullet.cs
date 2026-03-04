@@ -16,7 +16,7 @@ namespace Dev.jeon.Bullet
         private Coroutine _moveCoroutine;
 
         // damage 와 poisonDamage의 분리
-        public override void Init(Transform target, int damage, float speed = 20f) 
+        public override void Init(Transform target, int damage, float speed = 20f)
         {
             _target = target;
             _damage = damage;
@@ -59,7 +59,7 @@ namespace Dev.jeon.Bullet
             if (enemy != null)
             {
                 // 1. 총알 자체 데미지 (깡뎀 적용)
-                enemy.OnDamaged(_damage);
+                enemy.OnDamaged(_damage, FontColor.Green);
 
                 // 2. 적이 이미 독에 걸려있는지 확인
                 var existingPoison = enemy.GetBuff<PoisonBuff>();
@@ -69,7 +69,7 @@ namespace Dev.jeon.Bullet
                     // [이미 걸려있음] 새로운 독뎀이 기존 독뎀보다 쎈지 비교!
                     if (_poisonDamage > existingPoison.Damage)
                     {
-                       existingPoison.UpgradePoison(_poisonDamage); // 더 강한 독으로 갱신
+                        existingPoison.UpgradePoison(_poisonDamage); // 더 강한 독으로 갱신
                         // Debug.Log($"<color=yellow>[독 강화]</color> {_poisonDamage} 맹독으로 갱신!");
                     }
                 }

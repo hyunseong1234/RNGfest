@@ -54,7 +54,7 @@ namespace Dev.jeon.Bullet
 
                 // 3. 평면 이동 위치에 높이(Y값) 더하기
                 currentPos.y += heightOffset;
-                
+
                 // 총알이 날아가는 방향을 자연스럽게 바라보게 회전 (선택 사항)
                 Vector3 moveDirection = currentPos - transform.position;
                 if (moveDirection != Vector3.zero)
@@ -84,7 +84,7 @@ namespace Dev.jeon.Bullet
             var enemy = _target.GetComponent<Enemy>();
             if (enemy != null)
             {
-                enemy.OnDamaged(_damage);
+                enemy.OnDamaged(_damage, _fontColor);
             }
 
             ReturnToPool();

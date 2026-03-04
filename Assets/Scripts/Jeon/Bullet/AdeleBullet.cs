@@ -98,7 +98,7 @@ namespace Dev.jeon.Bullet
                         {
                             if (Time.time >= _nextAttackTime)
                             {
-                                _currentTarget.OnDamaged(_damage);
+                                _currentTarget.OnDamaged(_damage, _fontColor);
                                 _nextAttackTime = Time.time + _attackInterval;
                             }
 

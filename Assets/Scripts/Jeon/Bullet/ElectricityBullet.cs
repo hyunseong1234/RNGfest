@@ -84,7 +84,7 @@ namespace Dev.jeon.Bullet
 
                 // 1. 데미지 적용
                 int finalDamage = Mathf.RoundToInt(_damage * _damageMultipliers[i]);
-                currentTarget.OnDamaged(finalDamage);
+                currentTarget.OnDamaged(finalDamage, _fontColor);
                 hitEnemies.Add(currentTarget);
 
                 // 2. 선을 이을 다음 좌표 추가 (몬스터의 위치)

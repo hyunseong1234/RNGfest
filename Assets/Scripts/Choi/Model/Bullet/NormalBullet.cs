@@ -53,7 +53,7 @@ public class NormalBullet : BaseBullet
         var enemy = _target.GetComponent<Enemy>();
         if (enemy != null)
         {
-            enemy.OnDamaged(_damage);
+            enemy.OnDamaged(_damage, 0);
         }
 
         ReturnToPool();

@@ -54,7 +54,7 @@ public class Enemy : BaseUnit
 
 
 
-    public void OnDamaged(int damage)
+    public void OnDamaged(int damage, FontColor colortype)
     {
         var main = ServiceLocator.Instance.GetService<MainManager>();
         _status.Hp -= damage; // StatusInfo에 hp가 있다고 가정
@@ -63,7 +63,7 @@ public class Enemy : BaseUnit
         var damageObj = ServiceLocator.Instance.GetService<ObjectPoolingManger>().GetFromPool<DamageFont>("DamageFont");
         if (damageObj != null)
         {
-            damageObj.SetDamage(damage, transform);
+            damageObj.SetDamage(damage, transform, colortype);
 
             main.SpawnUI.Add(damageObj);
         }
