@@ -19,11 +19,11 @@ namespace Dev.jeon.Model
         //    _effectOffset = new Vector3(0, 1.2f, 0);
         }
 
-        public void UpgradePoison(int newDamage)
-        {
-            Damage = newDamage;
-            Debug.Log($"<color=yellow>[독 강화]</color> 더 강력한 맹독({Damage})으로 갱신되었습니다!"); // 갱신 로그도 추가해두면 좋습니다
-        }
+        //public void UpgradePoison(int newDamage)
+        //{
+        //    Damage = newDamage;
+        //    Debug.Log($"<color=yellow>[독 강화]</color> 더 강력한 맹독({Damage})으로 갱신되었습니다!"); // 갱신 로그도 추가해두면 좋습니다
+        //}
 
         protected override void OnStart()
         {

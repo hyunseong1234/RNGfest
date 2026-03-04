@@ -3796,6 +3796,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _poolTag: 
   _target: {fileID: 0}
+  _isUI: 0
   _status:
     MaxHp: 0
     Hp: 0
@@ -3804,9 +3805,9 @@ MonoBehaviour:
     damage: 10
   currentState: 1
   _animator: {fileID: 0}
-  _animConfig: {fileID: 11400000, guid: f7fe9575ba2d8394f8b6e925415840ee, type: 2}
   _currentTile: {fileID: 0}
   _lank: 0
+  _starUI: {fileID: 0}
   _bullet: {fileID: -2298236460351502730, guid: ff7239cd154b4a64691bd07c693e3e2d, type: 3}
 --- !u!65 &7426433368521416228
 BoxCollider:

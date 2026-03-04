@@ -4743,6 +4743,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _poolTag: 
   _target: {fileID: 0}
+  _isUI: 0
   _status:
     MaxHp: 0
     Hp: 0
@@ -4754,7 +4755,7 @@ MonoBehaviour:
   _currentTile: {fileID: 0}
   _lank: 0
   _starUI: {fileID: 0}
-  _bullet: {fileID: -2298236460351502730, guid: cb7e98141422c18478b63ee8fe18c37a, type: 3}
+  _bullet: {fileID: -719021856359690728, guid: cb7e98141422c18478b63ee8fe18c37a, type: 3}
 --- !u!65 &-2390547759027132000
 BoxCollider:
   m_ObjectHideFlags: 0
