@@ -1,8 +1,10 @@
 using Dev.cheol.Comon;
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
+using Dev.jeon.Object;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -54,14 +56,22 @@ public class Enemy : BaseUnit
 
     public void OnDamaged(int damage)
     {
-
+        var main = ServiceLocator.Instance.GetService<MainManager>();
         _status.Hp -= damage; // StatusInfo에 hp가 있다고 가정
+
+        //데미지 폰트 출력
+        var damageObj = ServiceLocator.Instance.GetService<ObjectPoolingManger>().GetFromPool<DamageFont>("DamageFont");
+        if (damageObj != null)
+        {
+            damageObj.SetDamage(damage, transform);
+            main.SpawnUI.Add(damageObj);
+        }
 
         if (_status.Hp <= 0)
         {
             var system = ServiceLocator.Instance.GetService<SystemManager>();
             //디지는 판정은 여기서 하기 때문에 돈주는거랑 더미 연출도 여기다가 넣을 예정
-            ServiceLocator.Instance.GetService<MainManager>().RemoveUnit(this);
+            main.RemoveUnit(this);
             system.Gold += _getGold;
         }
     }

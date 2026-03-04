@@ -153,3 +153,4 @@ MonoBehaviour:
   rectTransform: {fileID: 5713574756360843580}
   offset: {x: 0, y: 2, z: 0}
   maxVisibleDistance: 50
+  _damageText: {fileID: 7563608589711525571}
