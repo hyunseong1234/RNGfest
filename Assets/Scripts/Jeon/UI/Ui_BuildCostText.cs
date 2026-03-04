@@ -34,14 +34,14 @@ namespace Dev.jeon.UI
         // 주의: 스크립트가 파괴될 때는 알람 구독을 취소해야 메모리 누수가 없습니다.
         private void OnDestroy()
         {
+            if (ServiceLocator.Instance == null) return;
+
             var system = ServiceLocator.Instance.GetService<SystemManager>();
             if (system != null)
             {
                 system.OnBuildCountChanged -= updateCostUI; // 구독 취소
             }
         }
-
-
     }
 }
 

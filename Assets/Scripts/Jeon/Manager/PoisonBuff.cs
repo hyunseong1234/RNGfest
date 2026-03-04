@@ -7,13 +7,22 @@ namespace Dev.jeon.Model
 {
     public class PoisonBuff : BaseBuff
     {
-        private int _damage;
+        public int Damage { get; private set; }
         private float _tickInterval = 1.0f;
         private float _nextTick = 0f;
 
         public PoisonBuff(int damage) // 생성자로 데이터 받기
         {
-            _damage = damage;
+            Damage = damage;
+
+        //    _effectPrefabName = "PoisonEffect";
+        //    _effectOffset = new Vector3(0, 1.2f, 0);
+        }
+
+        public void UpgradePoison(int newDamage)
+        {
+            Damage = newDamage;
+            Debug.Log($"<color=yellow>[독 강화]</color> 더 강력한 맹독({Damage})으로 갱신되었습니다!"); // 갱신 로그도 추가해두면 좋습니다
         }
 
         protected override void OnStart()
@@ -26,15 +35,12 @@ namespace Dev.jeon.Model
         {
             if (_timer >= _nextTick)
             {
-                // 주인(Owner)이 Enemy라면 데미지 입힘
                 if (_owner is Enemy enemy)
                 {
-                    enemy.OnDamaged(_damage);
-                    Debug.Log($"<color=green>[독 도트 피해]</color> 앗 따가워! 틱 데미지 {_damage}이(가) 들어갔습니다!");
-
+                    enemy.OnDamaged(Damage);
+                    Debug.Log($"<color=green>[독 도트 피해]</color> 틱 데미지 {Damage}이(가) 들어갔습니다!");
                 }
-
-                _nextTick += _tickInterval; // 다음 틱 설정
+                _nextTick += _tickInterval;
             }
         }
     }

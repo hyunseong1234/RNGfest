@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5906375856216890158}
-  - component: {fileID: -2298236460351502730}
+  - component: {fileID: -719021856359690728}
   m_Layer: 0
   m_Name: Poison Bullet
   m_TagString: Untagged
@@ -35,7 +35,7 @@ Transform:
   - {fileID: 3897618562844927933}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-2298236460351502730
+--- !u!114 &-719021856359690728
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,12 +44,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 8953323700442454563}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee9f523745e5c834fb6b268c4435dd67, type: 3}
+  m_Script: {fileID: 11500000, guid: 3b7925578b91a6c40805abb4e85968e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _poolTag: 
   _target: {fileID: 0}
-  _damage: 10
+  _hitDamage: 10
+  _poisonDamage: 5
 --- !u!1001 &89714870194019272
 PrefabInstance:
   m_ObjectHideFlags: 0

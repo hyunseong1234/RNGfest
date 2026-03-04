@@ -11,12 +11,12 @@ namespace Dev.jeon.Bullet
     public class PoisonBullet : BaseBullet
     {
         private float _speed = 20f;
-        [SerializeField] private int _damage = 10;
-
+        [SerializeField] private int _damage = 10;      // 총알 자체 데미지
+        [SerializeField] private int _poisonDamage = 5;  // 틱당 들어가는 독뎀
         private Coroutine _moveCoroutine;
 
-
-        public override void Init(Transform target, int damage, float speed = 20f)
+        // damage 와 poisonDamage의 분리
+        public override void Init(Transform target, int damage, float speed = 20f) 
         {
             _target = target;
             _damage = damage;
@@ -55,30 +55,36 @@ namespace Dev.jeon.Bullet
         private void HitTarget()
         {
             var enemy = _target.GetComponent<Enemy>();
-            // 타겟이 BaseUnit을 상속받은 Enemy인지 확인 (is 캐스팅)
+
             if (enemy != null)
             {
-                enemy.OnDamaged(_damage); // 1. 총알 자체 데미지 (깡뎀)
+                // 1. 총알 자체 데미지 (깡뎀 적용)
+                enemy.OnDamaged(_damage);
 
-                // 2. 적이 이미 독에 걸려있는지 확인!
+                // 2. 적이 이미 독에 걸려있는지 확인
                 var existingPoison = enemy.GetBuff<PoisonBuff>();
 
                 if (existingPoison != null)
                 {
-                    // [이미 걸려있음] 버프 시간만 다시 5초로 리셋!
-                    existingPoison.Refresh(5.0f);
-                    Debug.Log("<color=yellow>[독 갱신]</color> 지속 시간이 다시 5초로 늘어났습니다!");
+                    // [이미 걸려있음] 새로운 독뎀이 기존 독뎀보다 쎈지 비교!
+                    if (_poisonDamage > existingPoison.Damage)
+                    {
+                        existingPoison.UpgradePoison(_poisonDamage); // 더 강한 독으로 갱신
+                        // Debug.Log($"<color=yellow>[독 강화]</color> {_poisonDamage} 맹독으로 갱신!");
+                    }
                 }
                 else
                 {
-                    // [안 걸려있음] 새 독 버프를 만들어서 주입
-                    var newPoison = new PoisonBuff(5); // 틱당 5뎀
-                    newPoison.Init(enemy, 5.0f);       // 5초 지속
+                    // [안 걸려있음] 새 독 버프 주입
+                    var newPoison = new PoisonBuff(_poisonDamage); // 독뎀 전달
+
+                    // 무한 지속(PositiveInfinity)으로 설정 (BaseUnit이 죽을 때 알아서 꺼줌)
+                    newPoison.Init(enemy, float.PositiveInfinity);
+
                     enemy.AddBuff(newPoison);
-                    Debug.Log("<color=orange>[독 감염]</color> 적이 독에 감염되었습니다! (5초 지속)");
+                    // Debug.Log($"<color=orange>[독 감염]</color> 적이 맹독({_poisonDamage})에 감염됨!");
                 }
 
-                // 임무를 마친 총알은 풀로 복귀
                 ReturnToPool();
             }
         }

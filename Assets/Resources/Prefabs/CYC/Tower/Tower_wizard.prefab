@@ -4753,7 +4753,8 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _currentTile: {fileID: 0}
   _lank: 0
-  _bullet: {fileID: -2298236460351502730, guid: ff7239cd154b4a64691bd07c693e3e2d, type: 3}
+  _starUI: {fileID: 0}
+  _bullet: {fileID: -2298236460351502730, guid: cb7e98141422c18478b63ee8fe18c37a, type: 3}
 --- !u!65 &-2390547759027132000
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -1,8 +1,8 @@
 using Dev.cheol.Model; // BaseUnit이 있는 네임스페이스
 using UnityEngine;
 
-namespace Dev.jeon.Model // 유저님의 아키텍처에 맞춘 네임스페이스
-{
+namespace Dev.jeon.Model
+{ 
     // [System.Serializable]을 붙이면 유니티 인스펙터창에서 BaseUnit을 클릭했을 때
     // 현재 무슨 버프가 몇 초 남았는지 디버깅하기 아주 좋습니다.
     [System.Serializable]
