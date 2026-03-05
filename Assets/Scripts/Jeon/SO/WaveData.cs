@@ -5,6 +5,7 @@ using UnityEngine;
 public enum WaveType
 {
     Normal, // 일반 몬스터 웨이브
+    Elite, // 엘리트 몬스터 웨이브
     Boss    // 보스 웨이브
 }
 
@@ -15,6 +16,12 @@ public class WaveMonsterInfo
     public Enemy monsterPrefab;
     [Header("소환할 마리 수")]
     public int count;
+
+    [Header("스탯 오버라이드 (0이면 기본값 사용)")]
+    [Tooltip("기본 몬스터 체력 대신 사용할 값입니다.")]
+    public float hpOverride;
+    [Tooltip("처치 시 지급할 골드 양입니다.")]
+    public int goldReward;
 }
 
 [CreateAssetMenu(fileName = "Wave_00", menuName = "Wave/WaveData")]
@@ -33,26 +40,21 @@ public class WaveData : ScriptableObject
     [Space(20)]
     [Header("일반 웨이브 설정")]
     public List<WaveMonsterInfo> monsterTypes = new List<WaveMonsterInfo>();
-
     [Space(10)]
     [Header("보스 웨이브 설정")]
     public Enemy bossPrefab;
+    public float bossHp;
+    public int bossGoldReward;
 
     // 총 몬스터 수를 수동으로 입력하지 않고 자동으로 계산해주는 프로퍼티
     public int TotalMonsterCount
     {
         get
         {
-            if (waveType == WaveType.Boss)
-            {
-                return 1; // 보스 웨이브는 무조건 1마리
-            }
+            if (waveType == WaveType.Boss) return 1;
 
             int total = 0;
-            foreach (var info in monsterTypes)
-            {
-                total += info.count;
-            }
+            foreach (var info in monsterTypes) total += info.count;
             return total;
         }
     }

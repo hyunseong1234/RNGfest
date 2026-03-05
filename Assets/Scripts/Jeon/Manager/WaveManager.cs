@@ -58,10 +58,6 @@ namespace Dev.jeon.Manager
             // 2. 2초 팝업 연출 실행 (보스면 DANGER, 아니면 WAVE X)
             if (_wavePopup != null) _wavePopup.PlayPopup(_currentWaveIndex, data.waveType);
 
-            if (data.delayBeforeWave >0)
-            {
-                yield return new WaitForSeconds(data.delayBeforeWave);
-            }
 
             // 몬스터 웨이브 대기 시간
             if (data.delayBeforeWave > 0)
@@ -74,9 +70,10 @@ namespace Dev.jeon.Manager
 
             if (data.waveType == WaveType.Boss)
             {
+                // 보스 스폰 (보스 전용 스탯 전달)
                 if (data.bossPrefab != null)
                 {
-                    SpawnEntity(data.bossPrefab);
+                   //SpawnEntity(data.bossPrefab, data.bossHp, data.bossGoldReward);
                 }
             }
             else
@@ -89,7 +86,7 @@ namespace Dev.jeon.Manager
 
                         if (info.monsterPrefab != null)
                         {
-                            SpawnEntity(info.monsterPrefab);
+                           // SpawnEntity(info.monsterPrefab, info.hpOverride, info.goldReward);
                         }
 
                         yield return new WaitForSeconds(_spawnDelay);
@@ -106,16 +103,27 @@ namespace Dev.jeon.Manager
             }
         }
 
-        private void SpawnEntity(Enemy prefab)
-        {
-            Enemy entity = _pool.GetFromPool<Enemy>(prefab.gameObject.name);
-            if (entity != null)
-            {
-                _main.SpawnEnemys.Add(entity);
-                entity.transform.position = _map.FlagPoints[0].position;
-                entity.RefreshPath();
-            }
-        }
+        //private void SpawnEntity(Enemy prefab, float hpOverride, int goldReward)
+        //{
+        //    Enemy entity = _pool.GetFromPool<Enemy>(prefab.gameObject.name);
+        //    if (entity != null)
+        //    {
+        //        // 스탯 주입 (hpOverride가 0보다 클 때만 적용)
+        //        if (hpOverride > 0)
+        //        {
+        //            entity.Status.MaxHp = hpOverride;
+        //            entity.Status.Hp = hpOverride;
+        //        }
+
+        //        // 골드 보상 설정
+        //        entity.Status.Gold = goldReward;
+
+        //        // 위치 설정 및 관리 리스트 추가
+        //        _main.SpawnEnemys.Add(entity);
+        //        entity.transform.position = _map.FlagPoints[0].position;
+        //        entity.RefreshPath();
+        //    }
+        //}
 
         // TODO : 추후 다른 매니저에서 관리 하는 순간 삭제 할것
         public void GameOver()
@@ -127,7 +135,6 @@ namespace Dev.jeon.Manager
 
         public override void HandleEvent(string data)
         {
-            throw new System.NotImplementedException();
         }
     }
 }
