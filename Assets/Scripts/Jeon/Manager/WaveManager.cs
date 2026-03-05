@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Dev.cheol.Manager;
+using Dev.jeon.UI;
 
 namespace Dev.jeon.Manager
 {
@@ -9,6 +10,9 @@ namespace Dev.jeon.Manager
     {
         [SerializeField] private List<WaveData> _waves;
         [SerializeField] private float _spawnDelay = 0.5f;
+
+        [SerializeField] private WaveUIController _waveUI;
+        [SerializeField] private WavePopupUI _wavePopup;
 
         private int _currentWaveIndex = 0;
         private bool _isGameOver = false;
@@ -46,6 +50,19 @@ namespace Dev.jeon.Manager
 
         private IEnumerator WaveRoutine(WaveData data)
         {
+            // 웨이브 실행 UI
+
+            // 1. 상시 UI 업데이트 (단순 숫자)
+            if (_waveUI != null) _waveUI.ShowWave(_currentWaveIndex);
+
+            // 2. 2초 팝업 연출 실행 (보스면 DANGER, 아니면 WAVE X)
+            if (_wavePopup != null) _wavePopup.PlayPopup(_currentWaveIndex, data.waveType);
+
+            if (data.delayBeforeWave >0)
+            {
+                yield return new WaitForSeconds(data.delayBeforeWave);
+            }
+
             // 몬스터 웨이브 대기 시간
             if (data.delayBeforeWave > 0)
             {
