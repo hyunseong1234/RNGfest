@@ -5,12 +5,11 @@ using UnityEngine;
 
 public class SlowBullet : BaseBullet
 {
-    private float _speed = 20f;
-    [SerializeField] private int _damage = 10;
+
     private Coroutine _moveCoroutine;
 
     // 풀에서 꺼낼 때 호출할 초기화 함수
-    public override void Init(Transform target, int damage, float speed = 20f)
+    public override void Init(Transform target, float damage, float speed = 20f)
     {
         _target = target;
         _damage = damage;

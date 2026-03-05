@@ -70,12 +70,13 @@ namespace Dev.cheol.Model
             };
         }
 
-        public void SetDamage(int amount, Transform targetUnit, FontColor colorType)
+        public void SetDamage(float amount, Transform targetUnit, FontColor colorType)
         {
             // 1. 데이터 및 색상 세팅
             if (_damageText != null)
             {
-                _damageText.text = amount.ToString();
+                int finalDamage = Mathf.RoundToInt(amount);
+                _damageText.text = finalDamage.ToString();
                 _damageText.color = GetColor(colorType); // 여기서 색상 변경!
             }
             _target = targetUnit;

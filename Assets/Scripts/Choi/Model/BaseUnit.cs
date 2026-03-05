@@ -15,9 +15,7 @@ namespace Dev.cheol.Model
 
     public abstract class BaseUnit : BaseObject
     {
-        [Header("기본 필드")]
-        [SerializeField] protected StatusInfo _status;
-
+        public BaseUnitStats _stat;
         [Header("버프 관리")]
         protected List<BaseBuff> _buffs = new List<BaseBuff>();
 
@@ -35,7 +33,7 @@ namespace Dev.cheol.Model
 
 
         #region  프로퍼티
-        public StatusInfo Status { get => _status; set => _status = value; }
+
         public Animator Animator { get => _animator; set => _animator = value; }
 
         #endregion

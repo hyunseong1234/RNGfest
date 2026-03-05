@@ -75,7 +75,7 @@ GameObject:
   - component: {fileID: 432442095994066160}
   - component: {fileID: -5820791943814646689}
   m_Layer: 0
-  m_Name: Mini_poho_A
+  m_Name: Normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

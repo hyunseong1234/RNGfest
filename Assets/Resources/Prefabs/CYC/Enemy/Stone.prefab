@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 5756651686657215719}
   - component: {fileID: 8527523970361274601}
   m_Layer: 0
-  m_Name: Mini_poho_baby_A
+  m_Name: Stone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

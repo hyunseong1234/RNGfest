@@ -1,5 +1,6 @@
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
+using Dev.cheol.Stats;
 using Dev.cheol.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,7 +23,6 @@ namespace Dev.cheol.Model
         {
             throw new System.NotImplementedException();
         }
-
         public override void ObjectUpdate()
         {
         }

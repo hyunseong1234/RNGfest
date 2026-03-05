@@ -10,8 +10,7 @@ namespace Dev.jeon.Bullet
     public class ElectricityBullet : BaseBullet
     {
         [Header("전기 속성 설정")]
-        [SerializeField] private float _speed = 20f;
-        [SerializeField] private int _damage = 10;
+
         [SerializeField] private float _bounceRadius = 5f; // 번개가 튕길 수 있는 사거리
 
         [Header("번개 시각 효과 설정")]
@@ -24,7 +23,7 @@ namespace Dev.jeon.Bullet
         private float[] _damageMultipliers = { 1.0f, 0.7f, 0.4f };
         private Coroutine _moveCoroutine;
 
-        public override void Init(Transform target, int damage, float speed = 20)
+        public override void Init(Transform target, float damage, float speed = 20)
         {
             _target = target;
             _damage = damage;
@@ -80,7 +79,7 @@ namespace Dev.jeon.Bullet
 
                 // 순서에 맞는 데미지 계산 및 적용
                 int finalDamage = Mathf.RoundToInt(_damage * _damageMultipliers[i]);
-                currentTarget.OnDamaged(finalDamage,_fontColor);
+                currentTarget.OnDamaged(finalDamage, _fontColor);
                 hitEnemies.Add(currentTarget);
 
                 //  몬스터가 맞은 위치를 번개가 지나갈 좌표에 추가

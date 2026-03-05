@@ -1,6 +1,9 @@
 using Dev.cheol.Model;
+using Dev.cheol.Stats;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -15,7 +18,7 @@ namespace Dev.cheol.Comon
         }
         public IEnumerator Execute(BaseUnit unit)
         {
-            if (unit.Status.Speed <= 0) yield break;
+            if (unit._stat.Speed.Value <= 0) yield break;
 
             while (true)
             {
@@ -26,7 +29,7 @@ namespace Dev.cheol.Comon
                 unit.transform.position = Vector3.MoveTowards(
                     unit.transform.position,
                     unit.Target.position,
-                    unit.Status.Speed * Time.deltaTime
+                    unit._stat.Speed.Value * Time.deltaTime
                 );
 
                 yield return null;

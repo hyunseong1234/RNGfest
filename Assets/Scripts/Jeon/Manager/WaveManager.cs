@@ -1,8 +1,8 @@
-﻿using System.Collections;
+﻿using Dev.cheol.Manager;
+using Dev.jeon.UI;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Dev.cheol.Manager;
-using Dev.jeon.UI;
 
 namespace Dev.jeon.Manager
 {
@@ -27,10 +27,33 @@ namespace Dev.jeon.Manager
             _map = ServiceLocator.Instance.GetService<MapManager>();
             _main = ServiceLocator.Instance.GetService<MainManager>();
 
+            LoadWaveResources();
             Debug.Log("게임 시작! 첫 웨이브를 자동으로 호출합니다.");
             StartNextWave();
         }
 
+        /// <summary>
+        /// 데이터 불러오기
+        /// </summary>
+        private void LoadWaveResources()
+        {
+            // 1. Resources/Waves 폴더에 있는 모든 WaveData 로드
+            WaveData[] loadedWaves = Resources.LoadAll<WaveData>("Data/Waves");
+
+            if (loadedWaves.Length == 0)
+            {
+                Debug.LogError("Resources/Waves 폴더에 WaveData가 없습니다! 컨버터를 먼저 돌리세요.");
+                return;
+            }
+
+            // 2. 리스트에 담기
+            _waves = new List<WaveData>(loadedWaves);
+
+            // 3. 이름순으로 정렬 (Wave_01, Wave_02 순서대로 진행하기 위함)
+            _waves.Sort((a, b) => string.Compare(a.name, b.name));
+
+            Debug.Log($"{_waves.Count}개의 웨이브 데이터를 성공적으로 로드했습니다.");
+        }
         public void StartNextWave()
         {
             if (_isGameOver) return;
@@ -73,7 +96,7 @@ namespace Dev.jeon.Manager
                 // 보스 스폰 (보스 전용 스탯 전달)
                 if (data.bossPrefab != null)
                 {
-                   //SpawnEntity(data.bossPrefab, data.bossHp, data.bossGoldReward);
+                    //SpawnEntity(data.bossPrefab, data.bossHp, data.bossGoldReward);
                 }
             }
             else
@@ -86,7 +109,7 @@ namespace Dev.jeon.Manager
 
                         if (info.monsterPrefab != null)
                         {
-                           // SpawnEntity(info.monsterPrefab, info.hpOverride, info.goldReward);
+                            // SpawnEntity(info.monsterPrefab, info.hpOverride, info.goldReward);
                         }
 
                         yield return new WaitForSeconds(_spawnDelay);

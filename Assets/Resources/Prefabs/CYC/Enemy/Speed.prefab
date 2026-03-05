@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 15960668117481702}
   - component: {fileID: 2963589889541125661}
   m_Layer: 0
-  m_Name: Angez_A
+  m_Name: Speed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

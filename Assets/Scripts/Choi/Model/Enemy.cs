@@ -1,6 +1,7 @@
 using Dev.cheol.Comon;
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
+using Dev.cheol.Stats;
 using Dev.jeon.Object;
 using System.Collections;
 using System.Collections.Generic;
@@ -48,16 +49,16 @@ public class Enemy : BaseUnit
     {
         base.OnReturnToPool();
         _waypointIndex = 0;
-        _status.Hp = _status.MaxHp;
+        _stat.CurrentHp = _stat.MaxHp.Value;
     }
 
 
 
 
-    public void OnDamaged(int damage, FontColor colortype)
+    public void OnDamaged(float damage, FontColor colortype)
     {
         var main = ServiceLocator.Instance.GetService<MainManager>();
-        _status.Hp -= damage; // StatusInfo에 hp가 있다고 가정
+        _stat.CurrentHp -= damage; // StatusInfo에 hp가 있다고 가정
 
         //데미지 폰트 출력
         var damageObj = ServiceLocator.Instance.GetService<ObjectPoolingManger>().GetFromPool<DamageFont>("DamageFont");
@@ -68,7 +69,7 @@ public class Enemy : BaseUnit
             main.SpawnUI.Add(damageObj);
         }
 
-        if (_status.Hp <= 0)
+        if (_stat.CurrentHp <= 0)
         {
             var system = ServiceLocator.Instance.GetService<SystemManager>();
             //디지는 판정은 여기서 하기 때문에 돈주는거랑 더미 연출도 여기다가 넣을 예정
@@ -104,7 +105,7 @@ public class Enemy : BaseUnit
         }
 
         // 4. 상태 머신 연동
-        if (Status.Speed > 0)
+        if (_stat.Speed.Value > 0)
         {
             ChangeState(EState.MOVE);
         }
