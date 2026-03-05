@@ -17,5 +17,5 @@ MonoBehaviour:
   delayBeforeWave: 3
   monsterTypes: []
   bossPrefab: {fileID: 0}
-  bossHp: 35000000
+  bossHp: 3500000
   bossGoldReward: 3000000

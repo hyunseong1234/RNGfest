@@ -2,6 +2,7 @@
 using Dev.jeon.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Security;
 using UnityEngine;
 
 namespace Dev.jeon.Manager
@@ -134,12 +135,42 @@ namespace Dev.jeon.Manager
                 // 스탯 주입 (hpOverride가 0보다 클 때만 적용)
                 if (hpOverride > 0)
                 {
-                    entity.Status.MaxHp = hpOverride;
-                    entity.Status.Hp = hpOverride;
+                    if (entity.PoolTag == "Stone")
+                    {
+                        entity._stat.MaxHp.BaseValue = hpOverride * 1.5f;
+                        entity._stat.CurrentHp = hpOverride * 1.5f;
+                    }
+                    else
+                    {
+
+                        entity._stat.MaxHp.BaseValue = hpOverride;
+                        entity._stat.CurrentHp = hpOverride;
+                    }
                 }
 
                 // 골드 보상 설정
-                entity.Status.Gold = goldReward;
+                entity.GetGold = goldReward;
+
+
+                float speed = 1;
+
+                //현재 기획상 시트에서 몬스터 SO에서 스탯 관리 따로 안하기때문에 클라이언트 처리
+                switch (entity.PoolTag)
+                {
+                    case "Speed":
+                        speed = 1.3f;
+                        break;
+                    case "Stone":
+                    case "Branch":
+                        speed = 1f * 0.7f;
+                        break;
+                    case "Normal":
+                        speed = 1f;
+                        break;
+                    default:
+                        break;
+                }
+                entity._stat.Speed.BaseValue = speed;
 
                 // 위치 설정 및 관리 리스트 추가
                 _main.SpawnEnemys.Add(entity);

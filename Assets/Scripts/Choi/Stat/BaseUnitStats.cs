@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace Dev.cheol.Stats
 {
-    [Serializable]
-    public abstract class BaseUnitStats
+    [System.Serializable]
+    public class BaseUnitStats
     {
         public Stat Speed; // 에너미 : 이동속도  / 타워 : 공격속도
         public Stat MaxHp;//hp
