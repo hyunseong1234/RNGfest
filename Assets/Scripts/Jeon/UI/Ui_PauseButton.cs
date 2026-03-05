@@ -14,6 +14,7 @@ namespace Dev.jeon.UI
             {
                 // 꺼져있는 오브젝트를 여기서 켜준다!
                 _pausePopupPanel.SetActive(true);
+                Time.timeScale = 0f;
             }
         }
     }

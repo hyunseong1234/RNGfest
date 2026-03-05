@@ -13,11 +13,7 @@ namespace Dev.jeon.UI
         // [중요] 인스펙터에서 진짜 꺼야 할 'Setting_Image' 패널을 여기에 드래그하세요!
         [SerializeField] private GameObject _pausePanel;
 
-        private void OnEnable()
-        {
-            Time.timeScale = 0f;
-        }
-
+       
         public void ClosePauseMenu()
         {
             Time.timeScale = 1f;
