@@ -18,6 +18,12 @@ MonoBehaviour:
   monsterTypes:
   - monsterPrefab: {fileID: -5820791943814646689, guid: 5d7c9fcb1c27d5740b49578befd15143, type: 3}
     count: 10
+    hpOverride: 10
+    goldReward: 10
   - monsterPrefab: {fileID: 2963589889541125661, guid: 3e71d4a541abe864cb22bca7cb1451ae, type: 3}
     count: 4
+    hpOverride: 10
+    goldReward: 10
   bossPrefab: {fileID: 0}
+  bossHp: 0
+  bossGoldReward: 0

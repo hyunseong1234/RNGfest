@@ -51,7 +51,7 @@ namespace Dev.cheol.Manager
             //UpdateList(_spawnUI);
 
             //테스트용 인풋기능
-            Test(); // 테스트때만 주석풀어용~
+            //Test(); // 테스트때만 주석풀어용~
 
 
             //업데이트 매니저 업데이트 호출해주는 구간
@@ -146,6 +146,19 @@ namespace Dev.cheol.Manager
             ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(obj);
 
         }
+        public void TogglePause()
+        {
+            if (Time.timeScale == 0)
+            {
+                Time.timeScale = 1;
+                Debug.Log("게임 재개 (TimeScale: 1)");
+            }
+            else
+            {
+                Time.timeScale = 0;
+                Debug.Log("게임 일시정지 (TimeScale: 0)");
+            }
+        }
 
         private void Test()
         {
@@ -166,18 +179,11 @@ namespace Dev.cheol.Manager
                 var system = ServiceLocator.Instance.GetService<SystemManager>();
                 system.Gold += 100000;
             }
-            //멈추게하는
+
+            // 일시정지 치트키
             if (Input.GetKeyDown(KeyCode.F4))
             {
-                if (Time.timeScale == 0)
-                {
-                    Time.timeScale = 1;
-
-                }
-                else
-                {
-                    Time.timeScale = 0;
-                }
+                TogglePause();
             }
 
         }
