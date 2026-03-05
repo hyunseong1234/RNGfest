@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 // 웨이브의 종류를 명확히 구분하기 위한 열거형(Enum)
 public enum WaveType
@@ -30,7 +30,7 @@ public class WaveData : ScriptableObject
     [Tooltip("이 웨이브가 시작되기 전에 몇 초를 기다릴지 설정합니다.")]
     public float delayBeforeWave = 3.0f;
 
-    [Space(10)]
+    [Space(20)]
     [Header("일반 웨이브 설정")]
     public List<WaveMonsterInfo> monsterTypes = new List<WaveMonsterInfo>();
 
