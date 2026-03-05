@@ -96,7 +96,7 @@ namespace Dev.jeon.Manager
                 // 보스 스폰 (보스 전용 스탯 전달)
                 if (data.bossPrefab != null)
                 {
-                    //SpawnEntity(data.bossPrefab, data.bossHp, data.bossGoldReward);
+                    SpawnEntity(data.bossPrefab, data.bossHp, data.bossGoldReward);
                 }
             }
             else
@@ -109,7 +109,7 @@ namespace Dev.jeon.Manager
 
                         if (info.monsterPrefab != null)
                         {
-                            // SpawnEntity(info.monsterPrefab, info.hpOverride, info.goldReward);
+                            SpawnEntity(info.monsterPrefab, info.hpOverride, info.goldReward);
                         }
 
                         yield return new WaitForSeconds(_spawnDelay);
@@ -126,27 +126,27 @@ namespace Dev.jeon.Manager
             }
         }
 
-        //private void SpawnEntity(Enemy prefab, float hpOverride, int goldReward)
-        //{
-        //    Enemy entity = _pool.GetFromPool<Enemy>(prefab.gameObject.name);
-        //    if (entity != null)
-        //    {
-        //        // 스탯 주입 (hpOverride가 0보다 클 때만 적용)
-        //        if (hpOverride > 0)
-        //        {
-        //            entity.Status.MaxHp = hpOverride;
-        //            entity.Status.Hp = hpOverride;
-        //        }
+        private void SpawnEntity(Enemy prefab, float hpOverride, int goldReward)
+        {
+            Enemy entity = _pool.GetFromPool<Enemy>(prefab.gameObject.name);
+            if (entity != null)
+            {
+                // 스탯 주입 (hpOverride가 0보다 클 때만 적용)
+                if (hpOverride > 0)
+                {
+                    entity.Status.MaxHp = hpOverride;
+                    entity.Status.Hp = hpOverride;
+                }
 
-        //        // 골드 보상 설정
-        //        entity.Status.Gold = goldReward;
+                // 골드 보상 설정
+                entity.Status.Gold = goldReward;
 
-        //        // 위치 설정 및 관리 리스트 추가
-        //        _main.SpawnEnemys.Add(entity);
-        //        entity.transform.position = _map.FlagPoints[0].position;
-        //        entity.RefreshPath();
-        //    }
-        //}
+                // 위치 설정 및 관리 리스트 추가
+                _main.SpawnEnemys.Add(entity);
+                entity.transform.position = _map.FlagPoints[0].position;
+                entity.RefreshPath();
+            }
+        }
 
         // TODO : 추후 다른 매니저에서 관리 하는 순간 삭제 할것
         public void GameOver()
