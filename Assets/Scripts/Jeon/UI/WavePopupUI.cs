@@ -6,23 +6,39 @@ namespace Dev.jeon.UI
 {
     public class WavePopupUI : MonoBehaviour
     {
-        [SerializeField] private GameObject _popupObject; // 팝업 부모 오브젝트
+        [Header("UI 내용물 (자식 오브젝트)")]
+        [SerializeField] private GameObject _popupObject; // 실제 UI가 담긴 자식
         [SerializeField] private TextMeshProUGUI _popupText;
-       // [SerializeField] private Animator _animator; // 애니메이션 쓸 거면 연결
+
+        [Header("보스전 연출")]
+        [SerializeField] private CanvasGroup _dangerOverlay;
 
         public void PlayPopup(int waveIndex, WaveType type)
         {
-            StopAllCoroutines(); // 이전 팝업이 실행 중이면 중지
+            if (!gameObject.activeSelf)
+            {
+                gameObject.SetActive(true);
+            }
+            // 이제 이 스크립트가 붙은 오브젝트가 켜져 있으므로 코루틴 실행 가능!
+            StopAllCoroutines();
             StartCoroutine(PopupRoutine(waveIndex, type));
         }
 
         private IEnumerator PopupRoutine(int waveIndex, WaveType type)
         {
-            // 1. 텍스트 설정
+            //  알파 0 초기화
+            if (_dangerOverlay != null)
+            {
+                _dangerOverlay.alpha = 0;
+            }
+
+            // 2. 웨이브 타입에 따른 텍스트 설정
             if (type == WaveType.Boss)
             {
-                _popupText.text = "BOSS";
+                _popupText.text = "DANGER";
                 _popupText.color = Color.red;
+
+                if (_dangerOverlay != null) StartCoroutine(FlashDangerScreen());
             }
             else
             {
@@ -30,15 +46,35 @@ namespace Dev.jeon.UI
                 _popupText.color = Color.white;
             }
 
-            // 2. 팝업 활성화 및 애니메이션 실행
-            //_popupObject.SetActive(true);
-            //if (_animator != null) _animator.SetTrigger("Show");
+            // 본체(this.gameObject)가 아니라 자식 내용물만 켬
+            _popupObject.SetActive(true);
 
-            // 3. 2초 대기
             yield return new WaitForSeconds(2.0f);
 
-            // 4. 팝업 비활성화
             _popupObject.SetActive(false);
+            if (_dangerOverlay != null) _dangerOverlay.alpha = 0;
+        }
+
+        private IEnumerator FlashDangerScreen()
+        {
+            //깜빡이 로직
+            for (int i = 0; i < 3; i++)
+            {
+                float timer = 0;
+                while (timer < 0.2f)
+                {
+                    timer += Time.deltaTime;
+                    _dangerOverlay.alpha = Mathf.Lerp(0, 0.4f, timer / 0.2f);
+                    yield return null;
+                }
+                timer = 0;
+                while (timer < 0.2f)
+                {
+                    timer += Time.deltaTime;
+                    _dangerOverlay.alpha = Mathf.Lerp(0.4f, 0, timer / 0.2f);
+                    yield return null;
+                }
+            }
         }
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Wave_10
   m_EditorClassIdentifier: 
   waveName: 
-  waveType: 0
+  waveType: 1
   delayBeforeWave: 3
   monsterTypes: []
   bossPrefab: {fileID: 0}
