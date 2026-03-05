@@ -13,7 +13,7 @@ namespace Dev.cheol.Stats
         public Stat Defense; // 방어력
         public float CurrentHp; //현재 체력
         public Stat Damage; //데미지
-        public Stat Range; //
-        public List<Stat> SpecialValues = new List<Stat>();
+        public Stat Range; // 사거리
+        public List<Stat> SpecialValues = new List<Stat>(); //각 타워의 능력 offset값
     }
 }

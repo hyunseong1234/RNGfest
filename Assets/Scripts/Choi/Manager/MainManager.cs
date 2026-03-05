@@ -112,11 +112,21 @@ namespace Dev.cheol.Manager
                 return;
             }
 
+            var towerData = factory.GetTowerData(tower.PoolTag);
+
+            if (towerData != null)
+            {
+                tower.Setup(towerData, getLank);
+            }
+            else
+            {
+                Debug.LogWarning($"[Data Error] {tower.PoolTag}의 SO 데이터를 찾을 수 없습니다.");
+            }
+
             var main = ServiceLocator.Instance.GetService<MainManager>();
             var rankManager = ServiceLocator.Instance.GetService<RankManager>();
             tower.transform.position = selectTile.transform.position;
             tower.CurrentTile = selectTile;
-            tower.Lank = getLank; // 증강에따라 달라지는 값일 수도 있음
             main._spawnTowers.Add(tower);
             selectTile._isUsed = true; //타일 사용여부 
             rankManager.RequestRank(tower); //연결요청
@@ -160,33 +170,7 @@ namespace Dev.cheol.Manager
             }
         }
 
-        private void Test()
-        {
-            if (Input.GetKeyDown(KeyCode.F1))
-            {
-                Debug.Log("몬스터 생성");
-                var factory = ServiceLocator.Instance.GetService<FactoryManager>();
-                var monster = ServiceLocator.Instance.GetService<ObjectPoolingManger>().GetFromPool<Enemy>(factory.Prefabs_Enmey[0].gameObject.name);
 
-                var mapmanager = ServiceLocator.Instance.GetService<MapManager>();
-                _spawnEnemys.Add(monster);
-                monster.transform.position = mapmanager.FlagPoints[0].position;
-            }
-
-            //돈 주는 치트키
-            if (Input.GetKeyDown(KeyCode.F2))
-            {
-                var system = ServiceLocator.Instance.GetService<SystemManager>();
-                system.Gold += 100000;
-            }
-
-            // 일시정지 치트키
-            if (Input.GetKeyDown(KeyCode.F4))
-            {
-                TogglePause();
-            }
-
-        }
 
         public override void HandleEvent(string data) { }
         #endregion

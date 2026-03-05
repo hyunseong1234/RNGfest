@@ -1,10 +1,4 @@
-using Dev.cheol.Manager;
-using Dev.cheol.Model;
-using Dev.cheol.Stats;
 using Dev.cheol.UI;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Dev.cheol.Model
@@ -25,6 +19,39 @@ namespace Dev.cheol.Model
         }
         public override void ObjectUpdate()
         {
+        }
+        /// <summary>
+        /// 랭크에 맞게 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="rank"></param>
+        public void Setup(TowerData data, int rank)
+        {
+            this.Lank = rank;
+
+            // SO에서 해당 랭크의 스탯을 찾음
+            var targetStat = data.stats.Find(s => s.rank == rank);
+
+            if (targetStat != null && _stat != null)
+            {
+                // 핵심: _stat 내부의 Stat 객체들의 BaseValue에 직접 주입
+                _stat.Damage.BaseValue = targetStat.attack;
+                _stat.Speed.BaseValue = targetStat.speed;
+                _stat.Range.BaseValue = targetStat.range;
+
+                for (int i = 0; i < targetStat.specialValues.Count; i++)
+                {
+                    if (i < _stat.SpecialValues.Count)
+                    {
+                        _stat.SpecialValues[i].BaseValue = targetStat.specialValues[i];
+                    }
+                    else
+                    {
+                        // 만약 타워에 미리 정의된 Stat 객체가 부족하면 새로 생성하거나 경고
+                        Debug.LogWarning($"{gameObject.name}: 타워에 정의된 SpecialStat 개수가 CSV 데이터보다 적습니다.");
+                    }
+                }
+            }
         }
 
 
