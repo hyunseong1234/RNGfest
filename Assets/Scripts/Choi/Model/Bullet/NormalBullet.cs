@@ -22,18 +22,32 @@ public class NormalBullet : BaseBullet
 
     private IEnumerator MoveToTarget()
     {
+        Vector3 temp = _target.position;
         // 타겟이 활성화되어 있는 동안 계속 추적
-        while (_target != null && _target.gameObject.activeSelf)
+        while (_target.gameObject.activeSelf)
         {
-            // MoveTowards로 부드럽게 이동
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                _target.position,
-                _speed * Time.deltaTime
-            );
+            if (_target != null)
+            {
+                // MoveTowards로 부드럽게 이동
+                transform.position = Vector3.MoveTowards(
+                    transform.position,
+                    _target.position,
+                    _speed * Time.deltaTime
+                );
+            }
+            else
+            {
+                // MoveTowards로 부드럽게 이동
+                transform.position = Vector3.MoveTowards(
+                    transform.position,
+                    temp,
+                    _speed * Time.deltaTime
+                );
+            }
+
 
             // 타겟과의 거리가 아주 가까워지면 충돌 처리
-            if (Vector3.Distance(transform.position, _target.position) < 0.05f)
+            if (Vector3.Distance(transform.position, _target.position) < 0.005f)
             {
                 HitTarget();
                 yield break; // 코루틴 종료

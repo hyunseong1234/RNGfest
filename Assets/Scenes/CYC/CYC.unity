@@ -817,22 +817,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2093486578}
     m_Modifications:
-    - target: {fileID: 367331525715397889, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1326646945490224743, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 8558689425625569589}
-    - target: {fileID: 1326646945490224743, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnClick_Settings
-      objectReference: {fileID: 0}
-    - target: {fileID: 1326646945490224743, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: Dev.jeon.UI.Ui_PausePopup, Assembly-CSharp
-      objectReference: {fileID: 0}
     - target: {fileID: 3069894412195324653, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -841,14 +829,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 8558689425625569589}
-    - target: {fileID: 3904497253731636784, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ClosePauseMenu
-      objectReference: {fileID: 0}
-    - target: {fileID: 3904497253731636784, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: Dev.jeon.UI.Ui_PausePopup, Assembly-CSharp
-      objectReference: {fileID: 0}
     - target: {fileID: 5190452906620881061, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -861,14 +841,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 8558689425625569589}
-    - target: {fileID: 7126397192499126506, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnClick_Replay
-      objectReference: {fileID: 0}
-    - target: {fileID: 7126397192499126506, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: Dev.jeon.UI.Ui_PausePopup, Assembly-CSharp
-      objectReference: {fileID: 0}
     - target: {fileID: 7462796305870620231, guid: 81d859f619b08d5439d24e78a12c8dc8, type: 3}
       propertyPath: m_Pivot.x
       value: 0
