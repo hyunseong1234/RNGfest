@@ -1,3 +1,4 @@
+using Dev.cheol.Manager;
 using Dev.cheol.UI;
 using UnityEngine;
 
@@ -9,6 +10,9 @@ namespace Dev.cheol.Model
         [SerializeField] private TileObject _currentTile;
         [SerializeField] private int _lank;
         [SerializeField] private LankStarUI _starUI;
+
+        [SerializeField] private bool _isSealed = false; // 봉인 여부
+        public bool IsSealed => _isSealed; //봉인 상태 여부
         public TileObject CurrentTile { get => _currentTile; set => _currentTile = value; }
         public int Lank { get => _lank; set => _lank = value; }
         public LankStarUI StarUI { get => _starUI; set => _starUI = value; }
@@ -19,6 +23,14 @@ namespace Dev.cheol.Model
         }
         public override void ObjectUpdate()
         {
+            base.ObjectUpdate(); // 버프 업데이트 실행
+
+            // [추가] 봉인 상태라면 공격 로직을 실행하지 않음
+            if (_isSealed)
+            {
+                ChangeState(EState.IDLE);
+                return;
+            }
         }
         /// <summary>
         /// 랭크에 맞게 
@@ -52,8 +64,39 @@ namespace Dev.cheol.Model
                     }
                 }
             }
+
+        }
+        public void Seal()
+        {
+            _isSealed = true;
+            // 시각적 피드백 (예: 얼음 이펙트 활성화)
+            Debug.Log($"{gameObject.name} 봉인됨!");
         }
 
+        public void UnSeal()
+        {
+            _isSealed = false;
+            // 시각적 피드백 해제
+            Debug.Log($"{gameObject.name} 봉인 해제!");
+        }
+
+        public void Downgrade()
+        {
+            if (Lank > 1)
+            {
+                var factory = ServiceLocator.Instance.GetService<FactoryManager>();
+                var data = factory.GetTowerData(PoolTag); // 자신의 데이터를 가져옴
+                if (data != null)
+                {
+                    Setup(data, Lank - 1);
+                }
+            }
+        }
+        public override void OnReturnToPool()
+        {
+            base.OnReturnToPool();
+            _isSealed = false; // 풀에 들어갈 때 봉인 해제
+        }
 
     }
 }

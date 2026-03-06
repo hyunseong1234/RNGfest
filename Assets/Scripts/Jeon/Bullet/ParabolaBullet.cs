@@ -19,11 +19,9 @@ namespace Dev.jeon.Bullet
             _damage = damage;
             _speed = speed;
 
-            if (_moveCoroutine != null)
-            {
-                StopCoroutine(_moveCoroutine);
-                _moveCoroutine = StartCoroutine(MoveToTarget());
-            }
+            // 기존에 돌던 코루틴이 있다면 방어적으로 중지
+            if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
+            _moveCoroutine = StartCoroutine(MoveToTarget());
         }
 
         private IEnumerator MoveToTarget()
@@ -105,7 +103,6 @@ namespace Dev.jeon.Bullet
 
         public override void ObjectUpdate()
         {
-            throw new System.NotImplementedException();
         }
     }
 }
