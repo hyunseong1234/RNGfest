@@ -97,7 +97,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5756651686647931651}
   - component: {fileID: 5756651686657215719}
-  - component: {fileID: 8527523970361274601}
+  - component: {fileID: -3649689987639668965}
   m_Layer: 0
   m_Name: Stone
   m_TagString: Untagged
@@ -143,7 +143,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &8527523970361274601
+--- !u!114 &-3649689987639668965
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -152,18 +152,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 5756651686647709475}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a03aace6ca5960478b2ae0fde4c297d, type: 3}
+  m_Script: {fileID: 11500000, guid: e78dd1eb733b46c40b859c46c144c1f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _poolTag: Enemy
+  _poolTag: 
   _target: {fileID: 0}
-  _status:
-    MaxHp: 100
-    Hp: 100
-    Speed: 1
-    Range: 0
+  _isUI: 0
+  _stat:
+    Speed:
+      _baseValue: 0
+    MaxHp:
+      _baseValue: 0
+    Defense:
+      _baseValue: 0
+    CurrentHp: 0
+    Damage:
+      _baseValue: 0
+    Range:
+      _baseValue: 0
+    SpecialValues: []
   currentState: 1
   _animator: {fileID: 0}
+  _getGold: 10
+  _skillInterval: 4
+  _skillMotionDuration: 1.5
 --- !u!1 &5756651686647709477
 GameObject:
   m_ObjectHideFlags: 0

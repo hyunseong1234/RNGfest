@@ -68,8 +68,17 @@ namespace Dev.cheol.Model
         }
         public void Seal()
         {
+            if (_isSealed) return;
+
             _isSealed = true;
             // 시각적 피드백 (예: 얼음 이펙트 활성화)
+            ChangeState(EState.IDLE);
+
+            // 시각적 피드백
+            if (_animator != null)
+            {
+                _animator.speed = 0; // 애니메이션까지 완전히 멈추고 싶을 때
+            }
             Debug.Log($"{gameObject.name} 봉인됨!");
         }
 
@@ -77,6 +86,10 @@ namespace Dev.cheol.Model
         {
             _isSealed = false;
             // 시각적 피드백 해제
+            if (_animator != null)
+            {
+                _animator.speed = 1; // 애니메이션 다시 재생
+            }
             Debug.Log($"{gameObject.name} 봉인 해제!");
         }
 

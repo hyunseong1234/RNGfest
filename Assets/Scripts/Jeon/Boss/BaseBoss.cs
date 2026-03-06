@@ -38,7 +38,7 @@ namespace Dev.jeon.Model
 
             yield return new WaitForSeconds(_skillMotionDuration);
 
-            // ApplySkillEffect();
+            ApplySkillEffect();
 
             _isUsingSkill = false;
             ChangeState(EState.MOVE);
