@@ -17,7 +17,6 @@ namespace Dev.jeon.Bullet
 
         [Header("소환검 공격 설정")]
         [SerializeField] private float _attackSpeed = 40f;
-        [SerializeField] private int _damage = 10;
         [SerializeField] private float _attackInterval = 0.2f;
 
         [Header("3D 입체 기동 및 불규칙성 설정")]
@@ -51,7 +50,7 @@ namespace Dev.jeon.Bullet
             _pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
         }
 
-        public override void Init(Transform owner, int damage, float speed = 20f)
+        public override void Init(Transform owner, float damage, float speed = 20f)
         {
             _owner = owner;
             _damage = damage;

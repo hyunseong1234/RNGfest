@@ -27,7 +27,7 @@ namespace Dev.cheol.Comon
                 unit.transform.rotation = Quaternion.Slerp(
                     unit.transform.rotation,
                     targetRotation,
-                    Time.deltaTime * (unit.Status.Speed + 10)  // Status에 정의된 속도 사용
+                    Time.deltaTime * 10f  // 회전값에 대한 정보가 없음 그래서 매직 넘버 
                 );
 
                 yield return null; // 다음 프레임까지 대기

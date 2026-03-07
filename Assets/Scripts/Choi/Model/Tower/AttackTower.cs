@@ -1,10 +1,10 @@
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
+using Dev.cheol.Stats;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace Dev.cheol.Model
 {
@@ -24,8 +24,6 @@ namespace Dev.cheol.Model
             {
                 _enemyList = mainManager.SpawnEnemys;
             }
-
-
 
 
         }
@@ -51,7 +49,7 @@ namespace Dev.cheol.Model
             Debug.Log("불렛호출됨");
             BaseBullet bullet = ServiceLocator.Instance.GetService<ObjectPoolingManger>().GetFromPool<BaseBullet>(_bullet);
             bullet.transform.position = transform.position;
-            bullet.Init(_target, Status.damage, 5);
+            bullet.Init(_target, _stat.Damage.Value, 5);
 
         }
 
@@ -80,7 +78,7 @@ namespace Dev.cheol.Model
         {
             // Target이 null일 때 호출되지 않도록 IsTargetValid에서 순서 제어됨
             float sqrDistance = (Target.position - transform.position).sqrMagnitude;
-            return sqrDistance > (Status.Range * Status.Range);
+            return sqrDistance > (_stat.Range.Value * _stat.Range.Value);
         }
 
         private Transform FindNearestEnemy()

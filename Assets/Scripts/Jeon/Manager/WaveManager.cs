@@ -1,8 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Dev.cheol.Manager;
+﻿using Dev.cheol.Manager;
 using Dev.jeon.UI;
+using System.Collections;
+using System.Collections.Generic;
+using System.Net.Security;
+using UnityEngine;
 
 namespace Dev.jeon.Manager
 {
@@ -27,10 +28,33 @@ namespace Dev.jeon.Manager
             _map = ServiceLocator.Instance.GetService<MapManager>();
             _main = ServiceLocator.Instance.GetService<MainManager>();
 
+            LoadWaveResources();
             Debug.Log("게임 시작! 첫 웨이브를 자동으로 호출합니다.");
             StartNextWave();
         }
 
+        /// <summary>
+        /// 데이터 불러오기
+        /// </summary>
+        private void LoadWaveResources()
+        {
+            // 1. Resources/Waves 폴더에 있는 모든 WaveData 로드
+            WaveData[] loadedWaves = Resources.LoadAll<WaveData>("Data/Waves");
+
+            if (loadedWaves.Length == 0)
+            {
+                Debug.LogError("Resources/Waves 폴더에 WaveData가 없습니다! 컨버터를 먼저 돌리세요.");
+                return;
+            }
+
+            // 2. 리스트에 담기
+            _waves = new List<WaveData>(loadedWaves);
+
+            // 3. 이름순으로 정렬 (Wave_01, Wave_02 순서대로 진행하기 위함)
+            _waves.Sort((a, b) => string.Compare(a.name, b.name));
+
+            Debug.Log($"{_waves.Count}개의 웨이브 데이터를 성공적으로 로드했습니다.");
+        }
         public void StartNextWave()
         {
             if (_isGameOver) return;
@@ -73,7 +97,7 @@ namespace Dev.jeon.Manager
                 // 보스 스폰 (보스 전용 스탯 전달)
                 if (data.bossPrefab != null)
                 {
-                   //SpawnEntity(data.bossPrefab, data.bossHp, data.bossGoldReward);
+                    SpawnEntity(data.bossPrefab, data.bossHp, data.bossGoldReward);
                 }
             }
             else
@@ -86,7 +110,7 @@ namespace Dev.jeon.Manager
 
                         if (info.monsterPrefab != null)
                         {
-                           // SpawnEntity(info.monsterPrefab, info.hpOverride, info.goldReward);
+                            SpawnEntity(info.monsterPrefab, info.hpOverride, info.goldReward);
                         }
 
                         yield return new WaitForSeconds(_spawnDelay);
@@ -103,27 +127,57 @@ namespace Dev.jeon.Manager
             }
         }
 
-        //private void SpawnEntity(Enemy prefab, float hpOverride, int goldReward)
-        //{
-        //    Enemy entity = _pool.GetFromPool<Enemy>(prefab.gameObject.name);
-        //    if (entity != null)
-        //    {
-        //        // 스탯 주입 (hpOverride가 0보다 클 때만 적용)
-        //        if (hpOverride > 0)
-        //        {
-        //            entity.Status.MaxHp = hpOverride;
-        //            entity.Status.Hp = hpOverride;
-        //        }
+        private void SpawnEntity(Enemy prefab, float hpOverride, int goldReward)
+        {
+            Enemy entity = _pool.GetFromPool<Enemy>(prefab.gameObject.name);
+            if (entity != null)
+            {
+                // 스탯 주입 (hpOverride가 0보다 클 때만 적용)
+                if (hpOverride > 0)
+                {
+                    if (entity.PoolTag == "Stone")
+                    {
+                        entity._stat.MaxHp.BaseValue = hpOverride * 1.5f;
+                        entity._stat.CurrentHp = hpOverride * 1.5f;
+                    }
+                    else
+                    {
 
-        //        // 골드 보상 설정
-        //        entity.Status.Gold = goldReward;
+                        entity._stat.MaxHp.BaseValue = hpOverride;
+                        entity._stat.CurrentHp = hpOverride;
+                    }
+                }
 
-        //        // 위치 설정 및 관리 리스트 추가
-        //        _main.SpawnEnemys.Add(entity);
-        //        entity.transform.position = _map.FlagPoints[0].position;
-        //        entity.RefreshPath();
-        //    }
-        //}
+                // 골드 보상 설정
+                entity.GetGold = goldReward;
+
+
+                float speed = 1;
+
+                //현재 기획상 시트에서 몬스터 SO에서 스탯 관리 따로 안하기때문에 클라이언트 처리
+                switch (entity.PoolTag)
+                {
+                    case "Speed":
+                        speed = 1.3f;
+                        break;
+                    case "Stone":
+                    case "Branch":
+                        speed = 1f * 0.7f;
+                        break;
+                    case "Normal":
+                        speed = 1f;
+                        break;
+                    default:
+                        break;
+                }
+                entity._stat.Speed.BaseValue = speed;
+
+                // 위치 설정 및 관리 리스트 추가
+                _main.SpawnEnemys.Add(entity);
+                entity.transform.position = _map.FlagPoints[0].position;
+                entity.RefreshPath();
+            }
+        }
 
         // TODO : 추후 다른 매니저에서 관리 하는 순간 삭제 할것
         public void GameOver()

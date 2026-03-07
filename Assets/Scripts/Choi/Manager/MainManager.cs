@@ -51,7 +51,7 @@ namespace Dev.cheol.Manager
             //UpdateList(_spawnUI);
 
             //테스트용 인풋기능
-            Test(); // 테스트때만 주석풀어용~
+            //Test(); // 테스트때만 주석풀어용~
 
 
             //업데이트 매니저 업데이트 호출해주는 구간
@@ -112,11 +112,21 @@ namespace Dev.cheol.Manager
                 return;
             }
 
+            var towerData = factory.GetTowerData(tower.PoolTag);
+
+            if (towerData != null)
+            {
+                tower.Setup(towerData, getLank);
+            }
+            else
+            {
+                Debug.LogWarning($"[Data Error] {tower.PoolTag}의 SO 데이터를 찾을 수 없습니다.");
+            }
+
             var main = ServiceLocator.Instance.GetService<MainManager>();
             var rankManager = ServiceLocator.Instance.GetService<RankManager>();
             tower.transform.position = selectTile.transform.position;
             tower.CurrentTile = selectTile;
-            tower.Lank = getLank; // 증강에따라 달라지는 값일 수도 있음
             main._spawnTowers.Add(tower);
             selectTile._isUsed = true; //타일 사용여부 
             rankManager.RequestRank(tower); //연결요청
@@ -146,41 +156,21 @@ namespace Dev.cheol.Manager
             ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(obj);
 
         }
-
-        private void Test()
+        public void TogglePause()
         {
-            if (Input.GetKeyDown(KeyCode.F1))
+            if (Time.timeScale == 0)
             {
-                Debug.Log("몬스터 생성");
-                var factory = ServiceLocator.Instance.GetService<FactoryManager>();
-                var monster = ServiceLocator.Instance.GetService<ObjectPoolingManger>().GetFromPool<Enemy>(factory.Prefabs_Enmey[0].gameObject.name);
-
-                var mapmanager = ServiceLocator.Instance.GetService<MapManager>();
-                _spawnEnemys.Add(monster);
-                monster.transform.position = mapmanager.FlagPoints[0].position;
+                Time.timeScale = 1;
+                Debug.Log("게임 재개 (TimeScale: 1)");
             }
-
-            //돈 주는 치트키
-            if (Input.GetKeyDown(KeyCode.F2))
+            else
             {
-                var system = ServiceLocator.Instance.GetService<SystemManager>();
-                system.Gold += 100000;
+                Time.timeScale = 0;
+                Debug.Log("게임 일시정지 (TimeScale: 0)");
             }
-            //멈추게하는
-            if (Input.GetKeyDown(KeyCode.F4))
-            {
-                if (Time.timeScale == 0)
-                {
-                    Time.timeScale = 1;
-
-                }
-                else
-                {
-                    Time.timeScale = 0;
-                }
-            }
-
         }
+
+
 
         public override void HandleEvent(string data) { }
         #endregion

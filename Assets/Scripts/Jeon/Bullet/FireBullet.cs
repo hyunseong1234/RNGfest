@@ -10,8 +10,7 @@ namespace Dev.jeon.Bullet
 {
     public class FireBullet : BaseBullet
     {
-        private float _speed = 20f;
-        [SerializeField] private int _damage = 10;           // 화염 스플래시 데미지
+        // 화염 스플래시 데미지
         [SerializeField] private float _splashRadius = 1.5f; // 스플래시 범위 (반경 1.5)
 
         [Header("시각 효과")]
@@ -20,7 +19,7 @@ namespace Dev.jeon.Bullet
 
         private Coroutine _moveCoroutine;
 
-        public override void Init(Transform target, int damage, float speed = 20f)
+        public override void Init(Transform target, float damage, float speed = 20f)
         {
             _target = target;
             _damage = damage;

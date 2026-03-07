@@ -7,25 +7,21 @@ namespace Dev.jeon.Bullet
 {
     public class ParabolaBullet : BaseBullet
     {
-        private float _speed = 20f;
-        [SerializeField] private int _damage = 10;
         private Coroutine _moveCoroutine;
 
         [Header("포물선 설정")]
         [Tooltip("포물선의 최대 솟구치는 높이")]
         [SerializeField] private float _arcHeight = 5f;
 
-        public override void Init(Transform target, int damage, float speed = 20f)
+        public override void Init(Transform target, float damage, float speed = 20f)
         {
             _target = target;
             _damage = damage;
             _speed = speed;
 
-            if (_moveCoroutine != null)
-            {
-                StopCoroutine(_moveCoroutine);
-                _moveCoroutine = StartCoroutine(MoveToTarget());
-            }
+            // 기존에 돌던 코루틴이 있다면 방어적으로 중지
+            if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
+            _moveCoroutine = StartCoroutine(MoveToTarget());
         }
 
         private IEnumerator MoveToTarget()
@@ -107,7 +103,6 @@ namespace Dev.jeon.Bullet
 
         public override void ObjectUpdate()
         {
-            throw new System.NotImplementedException();
         }
     }
 }

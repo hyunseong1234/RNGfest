@@ -1,50 +1,46 @@
 using Dev.cheol.Model;
+using Dev.cheol.Stats;
 using UnityEngine;
 
 namespace Dev.jeon.Model
 {
     public class SlowBuff : BaseBuff
     {
-        private float _slowAmount;   // 감속 비율
-        private float _originalSpeed; // 원래 속도 저장용
+        private float _slowAmount;      // 감속 비율 (예: 0.3f 면 30% 감소)
+        private StatModifier _modifier; // 생성된 수정치를 저장해뒀다가 나중에 제거함
 
         public SlowBuff(float slowAmount)
         {
-            _slowAmount = slowAmount;
+            // 기획에 따라 다르지만, 보통 30% 감소면 -0.3f를 넘기거나 
+            // 0.3f를 넘기고 내부에서 음수로 바꿉니다.
+            _slowAmount = -Mathf.Abs(slowAmount);
         }
 
         protected override void OnStart()
         {
             if (_owner != null)
             {
-                // 1. 원본 Status를 로컬 변수에 복사
-                var tempStatus = _owner.Status;
+                // 1. 수정치 데이터 생성 (퍼센트 방식)
+                // Source에 this를 넣어서 이 버프가 준 값임을 명시합니다.
+                _modifier = new StatModifier(_slowAmount, StatModType.Percent, this);
 
-                // 2. 원래 속도 저장 및 로컬 변수 값 수정
-                _originalSpeed = tempStatus.Speed;
-                tempStatus.Speed = _originalSpeed * _slowAmount;
+                // 2. 주인의 스탯에서 Speed를 찾아 Modifier 추가
+                // GetUnitStats()는 BaseUnitStats를 반환하므로 바로 Speed에 접근 가능
+                _owner._stat.Speed.AddModifier(_modifier);
 
-                // 3. 수정된 복사본을 다시 원본에 덮어씌움
-                _owner.Status = tempStatus;
-
-                Debug.Log($"<color=blue>[Slow]</color> 속도 감소: {_originalSpeed} -> {_owner.Status.Speed}");
+                Debug.Log($"<color=blue>[Slow]</color> 버프 시작: {_slowAmount * 100}% 감소");
             }
         }
 
         protected override void OnEnd()
         {
-            if (_owner != null)
+            if (_owner != null && _modifier != null)
             {
-                // 1. 원본 Status를 로컬 변수에 복사
-                var tempStatus = _owner.Status;
+                // 3. 버프가 끝나면 내가 넣었던 Modifier만 쏙 제거
+                // 이러면 다른 버프가 걸려있어도 내 지분만 빠지므로 수치가 안전함
+                _owner._stat.Speed.RemoveModifier(_modifier);
 
-                // 2. 원래 속도로 값 수정
-                tempStatus.Speed = _originalSpeed;
-
-                // 3. 수정된 복사본을 다시 원본에 덮어씌움
-                _owner.Status = tempStatus;
-
-                Debug.Log("<color=blue>[Slow]</color> 속도 복구됨");
+                Debug.Log("<color=blue>[Slow]</color> 버프 종료: 속도 복구됨");
             }
         }
     }

@@ -10,13 +10,12 @@ namespace Dev.jeon.Bullet
     // 유저님의 완벽한 뼈대인 BaseBullet을 상속받습니다!
     public class PoisonBullet : BaseBullet
     {
-        private float _speed = 20f;
-        [SerializeField] private int _damage = 10;      // 총알 자체 데미지
+
         [SerializeField] private int _poisonDamage = 5;  // 틱당 들어가는 독뎀
         private Coroutine _moveCoroutine;
 
         // damage 와 poisonDamage의 분리
-        public override void Init(Transform target, int damage, float speed = 20f)
+        public override void Init(Transform target, float damage, float speed = 20f)
         {
             _target = target;
             _damage = damage;

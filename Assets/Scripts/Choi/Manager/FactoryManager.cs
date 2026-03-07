@@ -17,6 +17,7 @@ namespace Dev.cheol.Manager
         [SerializeField] private BaseObject[] _prfavs_Ui = null;
 
         [SerializeField] private BaseObject[] _prefabs = null;
+        private Dictionary<string, TowerData> _towerDataCache = new Dictionary<string, TowerData>();
 
         public BaseObject[] Prefabs_Twoer { get => _prefabs_Twoer; set => _prefabs_Twoer = value; }
         public BaseObject[] Prefabs_Enmey { get => _prefabs_Enmey; set => _prefabs_Enmey = value; }
@@ -32,6 +33,21 @@ namespace Dev.cheol.Manager
             _prfavs_Ui = Resources.LoadAll<BaseObject>("Prefabs/CYC/UI/BaseUI");
 
             _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).Concat(_prfavs_Ui).ToArray();
+            var allDatas = Resources.LoadAll<TowerData>("Data/Towers");
+            foreach (var data in allDatas)
+            {
+                if (!_towerDataCache.ContainsKey(data.towerName))
+                {
+                    _towerDataCache.Add(data.towerName, data);
+                }
+            }
+            Debug.Log($"[Factory] {_towerDataCache.Count}개의 타워 SO 캐싱 완료.");
+        }
+
+        public TowerData GetTowerData(string towerName)
+        {
+            _towerDataCache.TryGetValue(towerName, out var data);
+            return data;
         }
 
         private void Start()
