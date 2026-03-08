@@ -75,7 +75,7 @@ namespace Dev.jeon.Bullet
             }
         }
 
-        private void HitTarget()
+        protected virtual void HitTarget()
         {
             var enemy = _target.GetComponent<Enemy>();
             if (enemy != null)
@@ -91,7 +91,7 @@ namespace Dev.jeon.Bullet
             ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(this);
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             if (_moveCoroutine != null)
             {

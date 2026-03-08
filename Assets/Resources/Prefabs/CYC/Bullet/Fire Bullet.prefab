@@ -48,11 +48,10 @@ MonoBehaviour:
   _poolTag: 
   _target: {fileID: 0}
   _isUI: 0
-  _fontColor: 6
   _damage: 10
+  _fontColor: 6
   _splashRadius: 1.5
-  _explosionEffectPrefab: {fileID: -1917249792843679332}
-  _effectDuration: 0.5
+  _explosionEffectPrefab: {fileID: -2972275325847575571, guid: 83cda4479da10224fb12329c881cce85, type: 3}
 --- !u!1001 &9212767874075175750
 PrefabInstance:
   m_ObjectHideFlags: 0

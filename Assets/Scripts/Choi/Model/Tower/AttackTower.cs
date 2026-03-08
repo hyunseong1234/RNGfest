@@ -30,6 +30,9 @@ namespace Dev.cheol.Model
 
         public override void ObjectUpdate()
         {
+            if (IsSealed) return;
+
+            base.ObjectUpdate();
             if (!IsTargetValid())
             {
                 Target = FindNearestEnemy();

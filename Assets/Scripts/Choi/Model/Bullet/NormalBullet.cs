@@ -22,42 +22,34 @@ public class NormalBullet : BaseBullet
 
     private IEnumerator MoveToTarget()
     {
-        Vector3 temp = _target.position;
+        // 1. 타겟의 마지막 위치를 계속 기억할 변수
+        Vector3 lastTargetPos = _target.position;
         // 타겟이 활성화되어 있는 동안 계속 추적
-        while (_target.gameObject.activeSelf)
+        // 2. 루프 조건: 타겟 생존 여부와 상관없이 '도착할 때까지' 무한 루프
+        while (true) 
         {
-            if (_target != null)
+            // 타겟이 살아있고 활성화되어 있다면 매 프레임 위치를 갱신 (추적 기능)
+            if (_target != null && _target.gameObject.activeSelf)
             {
-                // MoveTowards로 부드럽게 이동
-                transform.position = Vector3.MoveTowards(
-                    transform.position,
-                    _target.position,
-                    _speed * Time.deltaTime
-                );
-            }
-            else
-            {
-                // MoveTowards로 부드럽게 이동
-                transform.position = Vector3.MoveTowards(
-                    transform.position,
-                    temp,
-                    _speed * Time.deltaTime
-                );
+                lastTargetPos = _target.position;
             }
 
+            // 3. '마지막으로 확인된 위치'를 향해 이동
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                lastTargetPos,
+                _speed * Time.deltaTime
+            );
 
-            // 타겟과의 거리가 아주 가까워지면 충돌 처리
-            if (Vector3.Distance(transform.position, _target.position) < 0.005f)
+            // 4. 도착 체크 (타겟 오브젝트가 아니라 '저장된 위치 좌표'와 비교)
+            if (Vector3.Distance(transform.position, lastTargetPos) < 0.01f)
             {
-                HitTarget();
+                HitTarget(); // 도착했으니 데미지 판정 시도
                 yield break; // 코루틴 종료
             }
 
             yield return null;
         }
-
-        // 타겟이 사라지거나 비활성화되면 총알도 제거(풀 반납)
-        ReturnToPool();
     }
 
     private void HitTarget()

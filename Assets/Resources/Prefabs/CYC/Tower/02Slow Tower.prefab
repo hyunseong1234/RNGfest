@@ -4128,7 +4128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3901468142601562474}
-  - component: {fileID: 6448946560580412090}
+  - component: {fileID: 9183420250528446731}
   - component: {fileID: -6803420772769780372}
   m_Layer: 6
   m_Name: 02Slow Tower
@@ -4153,7 +4153,7 @@ Transform:
   - {fileID: 350497974308277828}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6448946560580412090
+--- !u!114 &9183420250528446731
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4162,28 +4162,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 5116557204495258647}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88ad976dbef735b408a3c9110c09e715, type: 3}
+  m_Script: {fileID: 11500000, guid: 1eda0f4dc5547fb4987fd25733dbc5af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _poolTag: 
   _target: {fileID: 0}
   _isUI: 0
-  _status:
-    MaxHp: 0
-    Hp: 0
-    Speed: 0
-    Range: 0
-    damage: 0
+  _stat:
+    Speed:
+      _baseValue: 0
+    MaxHp:
+      _baseValue: 0
+    Defense:
+      _baseValue: 0
+    CurrentHp: 0
+    Damage:
+      _baseValue: 0
+    Range:
+      _baseValue: 0
+    SpecialValues: []
   currentState: 1
   _animator: {fileID: 0}
+  _iceEffect: {fileID: 0}
   _currentTile: {fileID: 0}
   _lank: 0
   _starUI: {fileID: 0}
-  _bullet: {fileID: 4826924618447675167, guid: 820958ffaccc9014693d8da02dbd00d8, type: 3}
-  _skillPrefab: {fileID: -4048382319474151516, guid: 2ba40087a9dd54e4c8d3d280f87f74e9, type: 3}
-  _skillInterval: 5
-  _spawnAmount: 2
-  _objectDuration: 4
+  _isSealed: 0
+  _bullet: {fileID: 354830502181743013, guid: 820958ffaccc9014693d8da02dbd00d8, type: 3}
 --- !u!65 &-6803420772769780372
 BoxCollider:
   m_ObjectHideFlags: 0

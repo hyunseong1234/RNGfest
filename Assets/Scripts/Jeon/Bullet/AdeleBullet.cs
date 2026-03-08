@@ -8,92 +8,100 @@ namespace Dev.jeon.Bullet
 {
     public class AdeleBullet : BaseBullet
     {
-        private enum SwordState
-        {
-            Chasing,
-            Overshooting,
-            Returning
-        }
+        private enum SwordState { Chasing, Overshooting, Returning }
 
         [Header("소환검 공격 설정")]
         [SerializeField] private float _attackSpeed = 40f;
         [SerializeField] private float _attackInterval = 0.2f;
 
-        [Header("3D 입체 기동 및 불규칙성 설정")]
-        [Tooltip("최소 ~ 최대 뚫고 지나가는 거리")]
+        [Header("3D 입체 기동 설정")]
         [SerializeField] private float _minOvershoot = 2.0f;
         [SerializeField] private float _maxOvershoot = 6.0f;
-
-        [Tooltip("기수를 돌리기 전 대기 시간 (짧을수록 빠릿함)")]
         [SerializeField] private float _minTurnDelay = 0.05f;
         [SerializeField] private float _maxTurnDelay = 0.2f;
 
-        [Tooltip("몬스터의 정중앙이 아닌, 무작위 3D 위치(어깨, 다리 등)를 찌르기 위한 오차 범위")]
-        [SerializeField] private float _hitOffsetRadius = 1.0f;
-
+        private SwordState _currentState = SwordState.Chasing;
         private Transform _owner;
         private Enemy _currentTarget;
         private Coroutine _behaviorCoroutine;
-        private ObjectPoolingManger _pool;
 
-        private SwordState _currentState = SwordState.Chasing;
-
-        // --- 동적 기동을 위한 변수들 ---
-        private Vector3 _targetAttackPos;
-        private Vector3 _currentRandomOffset; // 이번 찌르기의 3D 오차 위치
-        private float _currentOvershootLimit; // 이번에 뚫고 지나갈 무작위 거리
-        private float _currentTurnDelay;      // 이번 턴의 무작위 딜레이
         private float _nextAttackTime = 0f;
+        private float _currentOvershootLimit;
+        private float _currentTurnDelay;
 
-        private void Awake()
+        // BaseBullet의 추상 메서드 구현
+        public override void Init(Transform targetOrOwner, float damage, float speed = 40f)
         {
-            _pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
-        }
-
-        public override void Init(Transform owner, float damage, float speed = 20f)
-        {
-            _owner = owner;
+            _owner = targetOrOwner;
             _damage = damage;
-
-            PrepareNextAttack(); // 첫 공격을 위한 무작위 값 세팅
+            _attackSpeed = speed;
             _currentState = SwordState.Chasing;
 
             if (_behaviorCoroutine != null) StopCoroutine(_behaviorCoroutine);
             _behaviorCoroutine = StartCoroutine(SwordRoutine());
         }
 
+        // BaseBullet의 추상 메서드 구현 (검은 코루틴으로 돌리므로 비워둠)
+        public override void ObjectUpdate() { }
+
         private IEnumerator SwordRoutine()
         {
             var main = ServiceLocator.Instance.GetService<MainManager>();
+            float searchTimer = 0f;
+
+            // [최적화] 루프 시작 전 주인의 타워 스크립트를 미리 찾아둡니다 (캐싱)
+            Tower ownerTower = _owner != null ? _owner.GetComponent<Tower>() : null;
 
             while (true)
             {
-                if (_currentState != SwordState.Returning && (main.SpawnEnemys.Count == 0 || _owner == null))
+                // --- 실시간 상태 체크 ---
+                bool shouldReturn = false;
+
+                // 1. 주인이 파괴되었는가?
+                if (_owner == null)
+                {
+                    shouldReturn = true;
+                }
+                // 2. 주인이 쉬고(IDLE) 있는가? (적이 사거리 밖으로 나갔을 때 등)
+                else if (ownerTower != null && ownerTower.CurrentState == EState.IDLE)
+                {
+                    shouldReturn = true;
+                }
+                // 3. 맵에 적이 아예 없는가?
+                else if (main.SpawnEnemys.Count == 0)
+                {
+                    shouldReturn = true;
+                }
+
+                // 체크 결과 돌아가야 한다면 상태 변경
+                if (_currentState != SwordState.Returning && shouldReturn)
                 {
                     _currentState = SwordState.Returning;
                 }
+                // -------------------------
 
                 switch (_currentState)
                 {
                     case SwordState.Chasing:
+                        // ... 기존 추적 로직 ...
                         if (_currentTarget == null || !_currentTarget.gameObject.activeSelf)
                         {
-                            _currentTarget = FindNearestTarget(main.SpawnEnemys);
-                            if (_currentTarget == null)
+                            searchTimer += Time.deltaTime;
+                            if (searchTimer >= 0.1f)
                             {
-                                _currentState = SwordState.Returning;
-                                break;
+                                _currentTarget = FindNearestTarget(main.SpawnEnemys);
+                                searchTimer = 0f;
                             }
-                            PrepareNextAttack(); // 타겟이 바뀌면 새로운 타격점 세팅
+
+                            if (_currentTarget == null) break;
                         }
 
-                        // 몬스터의 중심 + 3D 무작위 오차 공간을 향해 돌진 (상하좌우 입체적 찌르기)
-                        _targetAttackPos = _currentTarget.transform.position + _currentRandomOffset;
-                        transform.position = Vector3.MoveTowards(transform.position, _targetAttackPos, _attackSpeed * Time.deltaTime);
-                        LookAtDirection(_targetAttackPos);
+                        Vector3 targetPos = _currentTarget.transform.position;
+                        transform.position = Vector3.MoveTowards(transform.position, targetPos, _attackSpeed * Time.deltaTime);
+                        LookAtDirection(targetPos);
 
-                        // 목표 지점(무작위 타격점)에 도달했을 때
-                        if (Vector3.Distance(transform.position, _targetAttackPos) < 0.2f)
+                        // sqrMagnitude 사용: $$d^2 = (x_2-x_1)^2 + (y_2-y_1)^2 + (z_2-z_1)^2$$
+                        if ((transform.position - targetPos).sqrMagnitude < 0.04f)
                         {
                             if (Time.time >= _nextAttackTime)
                             {
@@ -101,43 +109,36 @@ namespace Dev.jeon.Bullet
                                 _nextAttackTime = Time.time + _attackInterval;
                             }
 
-                            // 뚫고 지나갈 무작위 거리와 딜레이를 새롭게 뽑음
                             _currentOvershootLimit = Random.Range(_minOvershoot, _maxOvershoot);
                             _currentTurnDelay = Random.Range(_minTurnDelay, _maxTurnDelay);
-
                             _currentState = SwordState.Overshooting;
                         }
                         break;
 
                     case SwordState.Overshooting:
-                        // 뚫고 지나가기
+                        // ... 기존 관통 로직 ...
                         transform.Translate(Vector3.forward * _attackSpeed * Time.deltaTime, Space.Self);
 
                         if (_currentTarget != null)
                         {
-                            // 무작위로 설정된 거리(_currentOvershootLimit)만큼 멀어졌는가?
-                            float distFromTarget = Vector3.Distance(transform.position, _currentTarget.transform.position);
-                            if (distFromTarget >= _currentOvershootLimit)
+                            float sqrDist = (transform.position - _currentTarget.transform.position).sqrMagnitude;
+                            if (sqrDist >= (_currentOvershootLimit * _currentOvershootLimit))
                             {
                                 yield return new WaitForSeconds(_currentTurnDelay);
-                                PrepareNextAttack(); // 다시 돌진하기 전, 다음 찌를 3D 위치 재설정
                                 _currentState = SwordState.Chasing;
                             }
                         }
-                        else
-                        {
-                            PrepareNextAttack();
-                            _currentState = SwordState.Chasing;
-                        }
+                        else { _currentState = SwordState.Chasing; }
                         break;
 
                     case SwordState.Returning:
+                        // 복귀 로직
                         if (_owner != null)
                         {
-                            transform.position = Vector3.MoveTowards(transform.position, _owner.position, (_attackSpeed * 0.5f) * Time.deltaTime);
+                            transform.position = Vector3.MoveTowards(transform.position, _owner.position, _attackSpeed * Time.deltaTime);
                             LookAtDirection(_owner.position);
 
-                            if (Vector3.Distance(transform.position, _owner.position) < 0.5f)
+                            if ((transform.position - _owner.position).sqrMagnitude < 0.25f)
                             {
                                 ReturnToPool();
                                 yield break;
@@ -150,32 +151,22 @@ namespace Dev.jeon.Bullet
                         }
                         break;
                 }
-
                 yield return null;
             }
         }
-
-        // 다음 돌진을 위한 3D 타격 오차 범위를 생성하는 헬퍼 함수
-        private void PrepareNextAttack()
-        {
-            // UnitSphere를 사용해 x, y, z 전방향으로 구체 형태의 무작위 좌표 생성
-            // 몬스터의 중심만 때리지 않고, 머리 위, 다리 아래, 왼쪽 어깨 등으로 파고들게 만듦
-            _currentRandomOffset = Random.insideUnitSphere * _hitOffsetRadius;
-        }
-
         private Enemy FindNearestTarget(List<Enemy> enemies)
         {
             Enemy nearest = null;
-            float minDistance = float.MaxValue;
+            float minSqrDist = float.MaxValue;
 
             foreach (var enemy in enemies)
             {
                 if (enemy != null && enemy.gameObject.activeSelf)
                 {
-                    float dist = Vector3.Distance(transform.position, enemy.transform.position);
-                    if (dist < minDistance)
+                    float sqrDist = (transform.position - enemy.transform.position).sqrMagnitude;
+                    if (sqrDist < minSqrDist)
                     {
-                        minDistance = dist;
+                        minSqrDist = sqrDist;
                         nearest = enemy;
                     }
                 }
@@ -194,22 +185,15 @@ namespace Dev.jeon.Bullet
 
         private void ReturnToPool()
         {
-            if (_pool != null) _pool.ReturnPool(this);
+            var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+            if (pool != null) pool.ReturnPool(this);
         }
 
         private void OnDisable()
         {
-            if (_behaviorCoroutine != null)
-            {
-                StopCoroutine(_behaviorCoroutine);
-                _behaviorCoroutine = null;
-            }
+            if (_behaviorCoroutine != null) StopCoroutine(_behaviorCoroutine);
             _currentTarget = null;
             _owner = null;
-        }
-
-        public override void ObjectUpdate()
-        {
         }
     }
 }

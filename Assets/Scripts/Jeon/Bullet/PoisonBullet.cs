@@ -28,29 +28,35 @@ namespace Dev.jeon.Bullet
 
         private IEnumerator MoveToTarget()
         {
-            // 타겟이 살아있는 동안 계속 추적
-            while (_target != null && _target.gameObject.activeSelf)
+            // 1. 타겟의 마지막 위치를 기억할 변수 초기화
+            Vector3 lastTargetPos = _target.position;
+
+            // 2. 루프 조건: 타겟 생존 여부와 상관없이 '도착할 때까지' 계속 실행
+            while (true)
             {
-                // 타겟이 BaseObject이므로 .transform.position으로 접근
+                // 타겟이 살아있다면 실시간으로 목표 좌표 갱신 (추적)
+                if (_target != null && _target.gameObject.activeSelf)
+                {
+                    lastTargetPos = _target.position;
+                }
+
+                // 3. '마지막으로 확인된 위치'를 향해 이동
                 transform.position = Vector3.MoveTowards(
                     transform.position,
-                    _target.transform.position,
+                    lastTargetPos,
                     _speed * Time.deltaTime
                 );
 
-                if (Vector3.Distance(transform.position, _target.transform.position) < 0.05f)
+                // 4. 도착 체크 (타겟 오브젝트가 아니라 '저장된 좌표'와 비교)
+                if (Vector3.Distance(transform.position, lastTargetPos) < 0.05f)
                 {
                     HitTarget();
-                    yield break;
+                    yield break; // 코루틴 종료
                 }
 
                 yield return null;
             }
-
-            // 날아가는 도중 몬스터가 다른 타워에 맞아 죽어서 풀로 돌아갔다면, 총알도 조용히 반납
-            ReturnToPool();
         }
-
         private void HitTarget()
         {
             var enemy = _target.GetComponent<Enemy>();

@@ -1,8 +1,6 @@
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
-using Dev.cheol.Stats;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -10,12 +8,12 @@ namespace Dev.jeon.Bullet
 {
     public class FireBullet : BaseBullet
     {
-        // 화염 스플래시 데미지
-        [SerializeField] private float _splashRadius = 1.5f; // 스플래시 범위 (반경 1.5)
+        [Header("화염 스플래시 설정")]
+        [SerializeField] private float _splashRadius = 1.5f;
 
         [Header("시각 효과")]
-        [SerializeField] private BaseObject _explosionEffectPrefab;// 풀링에 등록할 폭발 파티클
-        [SerializeField] private float _effectDuration = 0.5f; // 파티클 유지 시간
+        [SerializeField] private BaseObject _explosionEffectPrefab;
+        // _effectDuration은 이제 이펙트 스크립트가 관리하므로 여기서 지워도 됩니다.
 
         private Coroutine _moveCoroutine;
 
@@ -25,50 +23,52 @@ namespace Dev.jeon.Bullet
             _damage = damage;
             _speed = speed;
 
-            // 기존에 돌던 코루틴이 있다면 방어적으로 중지
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
             _moveCoroutine = StartCoroutine(MoveToTarget());
         }
 
         private IEnumerator MoveToTarget()
         {
-            // 타겟이 살아있는 동안 계속 추적
-            while (_target != null && _target.gameObject.activeSelf)
+            // 1. 처음 조준했던 타겟의 위치를 일단 기억
+            Vector3 lastTargetPos = _target.position;
+
+            // 2. 도착할 때까지 멈추지 않는 루프
+            while (true)
             {
+                // 타겟이 아직 살아있다면 실시간으로 위치를 계속 갱신 (유도탄)
+                if (_target != null && _target.gameObject.activeSelf)
+                {
+                    lastTargetPos = _target.position;
+                }
+
+                // 3. '마지막으로 확인된 위치'를 향해 계속 이동
                 transform.position = Vector3.MoveTowards(
                     transform.position,
-                    _target.transform.position,
+                    lastTargetPos,
                     _speed * Time.deltaTime
                 );
 
-                if (Vector3.Distance(transform.position, _target.transform.position) < 0.05f)
+                // 4. 드디어 목적지(마지막 위치)에 도달했다면?
+                if (Vector3.Distance(transform.position, lastTargetPos) < 0.05f)
                 {
-                    // 목표에 도달하면 파티클 폭발과 스플래시 데미지를 주는 코루틴으로 전환
-                    StartCoroutine(HitAndExplode());
-                    yield break;
+                    // 여기서 중요! 타겟이 있든 없든 '이 좌표'에서 폭발을 일으킵니다.
+                    Explode(lastTargetPos);
+                    yield break; // 코루틴 종료
                 }
 
                 yield return null;
             }
-
-            // 날아가는 도중 타겟이 죽었다면 총알 조용히 반납
-            ReturnToPool();
         }
 
-        private IEnumerator HitAndExplode()
+        private void Explode(Vector3 explosionCenter)
         {
-            // 폭발 중심점 (타겟이 날아가는 도중 죽었을 수도 있으니, 현재 총알 위치를 중심으로 잡음)
-            Vector3 explosionCenter = transform.position;
-            if (_target != null) explosionCenter = _target.transform.position;
-
             var mainManager = ServiceLocator.Instance.GetService<MainManager>();
             var poolManager = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
 
-            // 1. 반경 1.5 이내의 모든 적 탐색 후 스플래시 데미지 적용
+            // 1. 데미지 처리
             if (mainManager != null)
             {
-                float sqrRadius = _splashRadius * _splashRadius; // 최적화를 위해 제곱근 연산
-
+                float sqrRadius = _splashRadius * _splashRadius;
                 var enemiesInRange = mainManager.SpawnEnemys
                     .Where(e => e != null && e.gameObject.activeSelf)
                     .Where(e => (e.transform.position - explosionCenter).sqrMagnitude <= sqrRadius)
@@ -80,32 +80,20 @@ namespace Dev.jeon.Bullet
                 }
             }
 
-            // 2. 쾅! 터지는 폭발 파티클 띄우기
-            BaseObject explosionEffect = null;
+            // 2. 이펙트 생성 (생성만 하고 신경 끕니다)
             if (poolManager != null && _explosionEffectPrefab != null)
             {
-                // 유저님의 풀링 매니저 함수인 GetFromPool 적용
-                explosionEffect = poolManager.GetFromPool<BaseObject>(_explosionEffectPrefab);
-
+                var explosionEffect = poolManager.GetFromPool<BaseObject>(_explosionEffectPrefab);
                 if (explosionEffect != null)
                 {
                     explosionEffect.transform.position = explosionCenter + new Vector3(0, 0.5f, 0);
-                    explosionEffect.gameObject.SetActive(true);
                 }
             }
 
-            // 3. 파티클이 터질 시간(0.5초) 동안 대기
-            yield return new WaitForSeconds(_effectDuration);
-
-            // 4. 대기가 끝나면 파티클 끄고 풀에 반납
-            if (poolManager != null && explosionEffect != null)
-            {
-                poolManager.ReturnPool(explosionEffect);
-            }
-
-            // 5. 총알도 임무를 완수했으므로 풀에 반납
+            // 3. 총알은 즉시 퇴근!
             ReturnToPool();
         }
+
 
         private void ReturnToPool()
         {
@@ -122,7 +110,6 @@ namespace Dev.jeon.Bullet
             _target = null;
         }
 
-        // BaseObject 상속 시 필수 구현부
         public override void ObjectUpdate() { }
     }
 }
