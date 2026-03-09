@@ -6995,7 +6995,7 @@ GameObject:
   - component: {fileID: 3297123137186994763}
   - component: {fileID: 7773275962948525925}
   m_Layer: 6
-  m_Name: 07stationary Tower
+  m_Name: 07Stationary Tower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
