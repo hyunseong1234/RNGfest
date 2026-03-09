@@ -27,6 +27,7 @@ namespace Dev.cheol.Model
 
         [Header("¾Æ´Ï¸Þ")]
         [SerializeField] protected Animator _animator = null;
+
         //[SerializeField] protected AnimData _animData;
         //[SerializeField] private AnimConfig _animConfig;
         //private Dictionary<AniModel, int> _animTable = new Dictionary<AniModel, int>();

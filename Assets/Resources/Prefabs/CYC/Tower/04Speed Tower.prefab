@@ -6382,10 +6382,13 @@ MonoBehaviour:
     SpecialValues: []
   currentState: 1
   _animator: {fileID: 0}
+  _iceEffect: {fileID: 0}
   _currentTile: {fileID: 0}
   _lank: 0
   _starUI: {fileID: 0}
-  _bullet: {fileID: -2298236460351502730, guid: ff7239cd154b4a64691bd07c693e3e2d, type: 3}
+  _isSealed: 0
+  _state: 0
+  _bullet: {fileID: -2298236460351502730, guid: d3827aab730b26941ac9e33d5459e6e0, type: 3}
 --- !u!65 &-5071040003666071183
 BoxCollider:
   m_ObjectHideFlags: 0
