@@ -10,15 +10,13 @@ namespace Dev.cheol.Comon
 {
     public class IAttackState : IState
     {
-        private bool _hasFired = false; // 한 번의 공격 애니메이션에서 발사 여부 체크
         public IEnumerator Enter(BaseUnit unit)
         {
             unit.Animator.SetInteger("animation", unit.AttackAniNum);
 
-            unit.Animator.Play("ATK0", 0, 0f);
+            //unit.Animator.Play("ATK0", 0, 0f);
             unit.ActiveAttack();
-            // 3. 발사 플래그 초기화
-            _hasFired = false;
+
             yield break;
         }
 
@@ -58,7 +56,6 @@ namespace Dev.cheol.Comon
 
         public IEnumerator Exit(BaseUnit unit)
         {
-            Debug.Log("T시팔 호출됫나??");
             yield break;
         }
 

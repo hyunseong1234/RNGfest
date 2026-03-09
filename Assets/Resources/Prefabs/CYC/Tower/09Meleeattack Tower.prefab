@@ -6992,8 +6992,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 105108992657031803}
-  - component: {fileID: 3297123137186994763}
   - component: {fileID: 7773275962948525925}
+  - component: {fileID: -1713142755417167129}
   m_Layer: 6
   m_Name: 09Meleeattack Tower
   m_TagString: Untagged
@@ -7017,43 +7017,6 @@ Transform:
   - {fileID: 2717760836631737731}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3297123137186994763
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8771279749115720085}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02c0d94b3178d81439a54d21a873af53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _poolTag: 
-  _target: {fileID: 0}
-  _isUI: 0
-  _stat:
-    Speed:
-      _baseValue: 0
-    MaxHp:
-      _baseValue: 0
-    Defense:
-      _baseValue: 0
-    CurrentHp: 0
-    Damage:
-      _baseValue: 0
-    Range:
-      _baseValue: 0
-    SpecialValues: []
-  currentState: 1
-  _animator: {fileID: 0}
-  _iceEffect: {fileID: 0}
-  _currentTile: {fileID: 0}
-  _lank: 0
-  _starUI: {fileID: 0}
-  _isSealed: 0
-  _adeleBulletPrefab: {fileID: -601938864270665016, guid: a166148e47a842849a68d5e53bbc9f52, type: 3}
-  _maxSwordCount: 2
 --- !u!65 &7773275962948525925
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7075,6 +7038,44 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-1713142755417167129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8771279749115720085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eda0f4dc5547fb4987fd25733dbc5af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _poolTag: 
+  _target: {fileID: 0}
+  _isUI: 0
+  _stat:
+    Speed:
+      _baseValue: 0
+    MaxHp:
+      _baseValue: 0
+    Defense:
+      _baseValue: 0
+    CurrentHp: 0
+    Damage:
+      _baseValue: 0
+    Range:
+      _baseValue: 0
+    SpecialValues: []
+  currentState: 1
+  _animator: {fileID: 0}
+  _attackAniNum: 2
+  _iceEffect: {fileID: 0}
+  _currentTile: {fileID: 0}
+  _lank: 0
+  _starUI: {fileID: 0}
+  _isSealed: 0
+  _state: 0
+  _bullet: {fileID: 830387878796414879, guid: ac459faa95f571b4e94254642405f6df, type: 3}
 --- !u!1 &8776602002487350396
 GameObject:
   m_ObjectHideFlags: 0

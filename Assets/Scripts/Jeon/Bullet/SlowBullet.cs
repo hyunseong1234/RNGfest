@@ -55,13 +55,10 @@ public class SlowBullet : BaseBullet
     {
         if (_target != null && _target.gameObject.activeSelf)
         {
-            var enemy = _target.GetComponent<Enemy>();
-            if (enemy != null)
+            if (_target.TryGetComponent(out Enemy enemy))
             {
-                // 1. 기본 데미지 입힘
                 enemy.OnDamaged(_damage, _fontColor);
 
-                // 2. [SlowZone 참고] 슬로우 버프 적용 로직
                 var existingSlow = enemy.GetBuff<SlowBuff>();
 
                 if (existingSlow == null)
@@ -73,8 +70,7 @@ public class SlowBullet : BaseBullet
                 }
                 else
                 {
-                    // 이미 있다면 시간만 갱신 (Refresh)
-                    // 필요하다면 Refresh 인자에 _slowDuration을 전달하도록 SlowBuff를 수정하세요.
+                    // 이미 있다면 시간만 갱신
                     existingSlow.Refresh(_slowDuration);
                 }
             }
