@@ -1,4 +1,6 @@
 ﻿using Dev.cheol.Model;
+using Dev.jeon.Bullet;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -122,5 +124,10 @@ namespace Dev.cheol.Manager
         }
 
         public override void HandleEvent(string data) { }
+
+        internal void ReturnPool(SkillBullet skillBullet)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

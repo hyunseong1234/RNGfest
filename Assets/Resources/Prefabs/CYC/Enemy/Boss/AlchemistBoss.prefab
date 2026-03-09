@@ -97,9 +97,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5756651686647931651}
   - component: {fileID: 5756651686657215719}
-  - component: {fileID: -6388949019487391825}
+  - component: {fileID: 1318980273943653002}
   m_Layer: 0
-  m_Name: Stone 4
+  m_Name: AlchemistBoss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143,7 +143,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-6388949019487391825
+--- !u!114 &1318980273943653002
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -1,7 +1,8 @@
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
 using Dev.jeon.Model;
-using Dev.jeon.Bullet; // SkillBullet 사용을 위해 추가
+using Dev.jeon.Bullet;
+using System.Collections;
 using UnityEngine;
 
 namespace Dev.jeon.Boss
@@ -9,17 +10,19 @@ namespace Dev.jeon.Boss
     public class IceBoss : BaseBoss
     {
         [Header("Projectile Settings")]
-        [SerializeField] private string _bulletKey = "IceSkillBullet"; // 풀링용 키값
+        // [수정] 인스펙터에서 직접 드래그할 수 있게 프리팹 슬롯으로 변경 (선택사항이나 권장)
+        [SerializeField] private SkillBullet _bulletPrefab;
         [SerializeField] private float _bulletSpeed = 15f;
 
-        protected override void ApplySkillEffect()
+        // [수정] 부모 클래스의 추상 함수 이름과 리턴 타입에 맞춤
+        protected override IEnumerator ApplySkillEffectRoutine()
         {
             var main = ServiceLocator.Instance.GetService<MainManager>();
             var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
 
-            if (main.SpawnTowers == null || main.SpawnTowers.Count == 0) return;
+            if (main.SpawnTowers == null || main.SpawnTowers.Count == 0) yield break;
 
-            // 봉인되지 않은 타워 찾기
+            // 봉인되지 않은 타워 중 랜덤 선택
             var availableTowers = main.SpawnTowers.FindAll(t => !t.IsSealed);
 
             if (availableTowers.Count > 0)
@@ -27,21 +30,30 @@ namespace Dev.jeon.Boss
                 int rand = Random.Range(0, availableTowers.Count);
                 Tower target = availableTowers[rand];
 
-                // 1. 오브젝트 풀에서 스킬 탄 가져오기
-                var bullet = pool.GetFromPool<SkillBullet>(_bulletKey);
+                // 프리팹 혹은 키값을 사용하여 풀에서 탄환 소환
+                var bullet = pool.GetFromPool<SkillBullet>(_bulletPrefab);
 
                 if (bullet != null)
                 {
-                    // 2. 발사 위치 설정 (보스의 위치 + 머리 위 오프셋)
                     bullet.transform.position = transform.position + Vector3.up * 2f;
 
-                    // 3. 총알 초기화 및 발사 (타겟, 속도, 스킬 타입 전달)
-                    // 이제 총알이 날아가서 맞을 때 tower.Seal()을 호출하게 됩니다.
+                    // ICE 타입으로 초기화 (직선 비행)
                     bullet.InitSkill(target, _bulletSpeed, SkillBullet.ESkillType.ICE);
 
-                    Debug.Log($"[빙결 보스] {target.name}에게 얼음 구체를 발사했습니다!");
+                    Debug.Log($"[빙결 보스] {target.name}에게 빙결탄 발사! (타일 기반 발동)");
                 }
             }
+
+            // 탄환 발사는 즉시 일어나므로 한 프레임 대기 후 종료
+            yield return null;
+        }
+
+        public override void OnReturnToPool()
+        {
+            base.OnReturnToPool();
+            // 타일 카운터 초기화 (부모 클래스 변수)
+            _movedTileCount = 0;
+            _lastWaypointIndex = 0;
         }
     }
 }

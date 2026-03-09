@@ -10,8 +10,7 @@ namespace Dev.jeon.Bullet
         private Coroutine _moveCoroutine;
 
         [Header("포물선 설정")]
-        [Tooltip("포물선의 최대 솟구치는 높이")]
-        [SerializeField] private float _arcHeight = 5f;
+        [SerializeField] protected float _arcHeight = 5f;
 
         public override void Init(Transform target, float damage, float speed = 20f)
         {
@@ -19,7 +18,6 @@ namespace Dev.jeon.Bullet
             _damage = damage;
             _speed = speed;
 
-            // 기존에 돌던 코루틴이 있다면 방어적으로 중지
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
             _moveCoroutine = StartCoroutine(MoveToTarget());
         }
@@ -27,68 +25,56 @@ namespace Dev.jeon.Bullet
         private IEnumerator MoveToTarget()
         {
             Vector3 startPos = transform.position;
+            // 발사 시점의 타겟 위치 저장 (타겟이 사라져도 그 지점까지는 가기 위함)
+            Vector3 lastTargetPos = _target.position;
 
-            // 타겟까지의 거리와 도달하는 데 걸리는 총 시간 계산
-            float distance = Vector3.Distance(startPos, _target.position);
+            float distance = Vector3.Distance(startPos, lastTargetPos);
             float totalTime = distance / _speed;
             float elapsedTime = 0f;
 
-            // 타겟이 살아있는 동안 & 정해진 시간 동안 이동
-            while (elapsedTime < totalTime && _target != null && _target.gameObject.activeSelf)
+            // [수정] 타겟이 사라져도 끝까지 날아가도록 totalTime 기준으로만 체크
+            while (elapsedTime < totalTime)
             {
                 elapsedTime += Time.deltaTime;
-
-                // 진행률 t (0에서 시작해 1로 끝남)
                 float t = elapsedTime / totalTime;
 
-                // 1. 시작점부터 타겟의 '현재 위치'까지 평면적인(직선) 이동 위치 계산
-                Vector3 currentPos = Vector3.Lerp(startPos, _target.position, t);
+                // 타겟이 살아있다면 실시간 위치 갱신, 죽었다면 마지막 위치 유지
+                if (_target != null && _target.gameObject.activeSelf)
+                    lastTargetPos = _target.position;
 
-                // 2. 포물선 높이 계산 (Sin 곡선 활용)
-                // t가 0일 때 0, 0.5일 때 1, 1일 때 0이 되는 완벽한 아치형 곡선
+                Vector3 currentPos = Vector3.Lerp(startPos, lastTargetPos, t);
                 float heightOffset = Mathf.Sin(t * Mathf.PI) * _arcHeight;
-
-                // 3. 평면 이동 위치에 높이(Y값) 더하기
                 currentPos.y += heightOffset;
 
-                // 총알이 날아가는 방향을 자연스럽게 바라보게 회전 (선택 사항)
                 Vector3 moveDirection = currentPos - transform.position;
                 if (moveDirection != Vector3.zero)
-                {
                     transform.rotation = Quaternion.LookRotation(moveDirection);
-                }
 
                 transform.position = currentPos;
-
                 yield return null;
             }
 
-            // 루프가 끝났을 때 타겟이 여전히 살아있다면 명중 처리
-            if (_target != null && _target.gameObject.activeSelf)
-            {
-                HitTarget();
-            }
-            else
-            {
-                // 날아가는 도중 몬스터가 죽었다면 그냥 사라짐
-                ReturnToPool();
-            }
+            // [수정] 도착했을 때의 판단은 HitTarget 하나로 통일합니다.
+            HitTarget();
         }
 
         protected virtual void HitTarget()
         {
-            var enemy = _target.GetComponent<Enemy>();
-            if (enemy != null)
+            // 타겟이 유효할 때만 데미지
+            if (_target != null && _target.gameObject.activeSelf)
             {
-                enemy.OnDamaged(_damage, _fontColor);
+                var enemy = _target.GetComponent<Enemy>();
+                if (enemy != null) enemy.OnDamaged(_damage, _fontColor);
             }
 
             ReturnToPool();
         }
 
-        private void ReturnToPool()
+        // [핵심] private을 protected virtual로 바꿔야 SkillBullet이 에러 없이 오버라이드합니다.
+        protected virtual void ReturnToPool()
         {
-            ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(this);
+            var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+            if (pool != null) pool.ReturnPool(this);
         }
 
         protected virtual void OnDisable()

@@ -105,49 +105,35 @@ namespace Dev.cheol.Model
         {
             if (Lank > 1)
             {
-                // 1. 랭크 감소
-                Lank--;
+                Lank--; // 등급 하락
 
-                // 2. FactoryManager를 통해 내 데이터(TowerData)를 다시 가져와서 Setup 재실행
+                // 1. 스탯 갱신 (데이터 재설정)
                 var factory = ServiceLocator.Instance.GetService<FactoryManager>();
-                var data = factory.GetTowerData(PoolTag); // PoolTag 기반으로 데이터 탐색
+                var data = factory.GetTowerData(PoolTag);
+                if (data != null) Setup(data, Lank);
 
-                if (data != null)
+                // 2. [핵심] 별 UI 갱신!!
+                if (StarUI != null)
                 {
-                    Setup(data, Lank); // 낮아진 랭크로 스탯 및 별 UI 갱신
-                    Debug.Log($"{gameObject.name} 등급 하락! 현재 등급: {Lank}");
+                    StarUI.Init(this); // 다시 Init을 호출하면 깎인 Lank에 맞춰 별이 바뀜
                 }
-
-                // 3. (선택 사항) 등급 하락 이펙트 재생
             }
             else
             {
-                // [수정된 부분] 1성일 때 등급이 깎이면 타워 완전 파괴!
-                Debug.Log($"{gameObject.name} 1성 타워 저주를 이기지 못하고 파괴됨!");
+                // 1성일 때 다운그레이드 시 파괴 로직 (이전 답변 참고)
+                Debug.Log($"{gameObject.name}이 1성에서 강등되어 파괴됩니다!");
 
-                // 1. 메인 매니저의 타워 리스트에서 이 타워를 제거
-                var mainManager = ServiceLocator.Instance.GetService<MainManager>();
-                if (mainManager != null)
-                {
-                    mainManager.SpawnTowers.Remove(this);
-                    // 만약 타워 전용 Remove 함수(예: RemoveTower(this))가 있다면 그걸 쓰셔도 됩니다.
-                }
-
-                // 2. 타워가 서 있던 타일 비워주기 (중요: 그래야 그 자리에 타워를 다시 지음)
+                // 1. 타일 점유 해제 (유저님이 만든 _isUsed 활용)
                 if (CurrentTile != null)
                 {
                     CurrentTile._isUsed = false;
                 }
 
-                // 3. 풀 매니저로 타워 반납 (화면에서 사라짐)
-                var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
-                if (pool != null)
+                // 2. 메인 매니저를 통해 리스트에서 지우고 풀로 반납
+                var mainManager = ServiceLocator.Instance.GetService<MainManager>();
+                if (mainManager != null)
                 {
-                    pool.ReturnPool(this);
-                }
-                else
-                {
-                    gameObject.SetActive(false); // 안전장치
+                    mainManager.RemoveUnit(this);
                 }
             }
         }

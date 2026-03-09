@@ -7,74 +7,74 @@ using UnityEngine;
 
 namespace Dev.jeon.Boss
 {
-    public class AlchemistBoss : BaseBoss // 연금술사
+    public class AlchemistBoss : BaseBoss
     {
-        protected override void ApplySkillEffect()
+        [Header("Alchemist Settings")]
+        [SerializeField] private float _healPercent = 0.05f;
+        [SerializeField] private float _healDelay = 1.0f;
+
+        protected override IEnumerator ApplySkillEffectRoutine()
         {
             var main = ServiceLocator.Instance.GetService<MainManager>();
             var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
-            var factory = ServiceLocator.Instance.GetService<FactoryManager>();
 
-            if (main == null || pool == null || factory == null) return;
+            if (main == null || pool == null) yield break;
 
-            // 1. 강제 합성 로직
-            var activeTowers = main.SpawnTowers
-                .Where(t => t != null && t.gameObject.activeSelf)
-                .ToList();
+            // 1. 강제 합성 로직 (기존과 동일)
+            HandleForceMerge(main);
 
-            // 이름(PoolTag)과 랭크(Lank)가 같은 타워끼리 그룹화
-            var mergeableGroups = activeTowers
-                .GroupBy(t => new { t.PoolTag, t.Lank })
-                .Where(g => g.Count() >= 2)
-                .ToList();
+            // 2. 기획 조건: 1초 대기
+            yield return new WaitForSeconds(_healDelay);
+
+            // 3. 체력 회복 및 폰트 출력
+            if (_stat != null)
+            {
+                float healAmount = _stat.MaxHp.Value * _healPercent;
+                _stat.CurrentHp += healAmount;
+                if (_stat.CurrentHp > _stat.MaxHp.Value) _stat.CurrentHp = _stat.MaxHp.Value;
+
+                // [핵심] 회복 폰트 띄우기
+                ShowHealFont(pool, main, healAmount);
+
+                Debug.Log($"[연금술사 보스] {healAmount} 회복 완료!");
+            }
+        }
+
+        private void ShowHealFont(ObjectPoolingManger pool, MainManager main, float amount)
+        {
+            // Enemy.cs에 있는 데미지 폰트 로직을 그대로 활용합니다.
+            var healFont = pool.GetFromPool<DamageFont>("DamageFont");
+            if (healFont != null)
+            {
+                // 데미지 폰트 사이즈 크기 증가 3배로 증가
+                healFont.transform.localScale = Vector3.one * 3.0f;
+                healFont.SetDamage(amount, transform, FontColor.Yellow);
+
+                // UI 리스트에 추가하여 화면에 표시
+                main.SpawnUI.Add(healFont);
+            }
+        }
+
+        private void HandleForceMerge(MainManager main)
+        {
+            var activeTowers = main.SpawnTowers.Where(t => t != null && t.gameObject.activeSelf).ToList();
+            var mergeableGroups = activeTowers.GroupBy(t => t.Lank).Where(g => g.Count() >= 2).ToList();
 
             if (mergeableGroups.Count > 0)
             {
                 var targetGroup = mergeableGroups[Random.Range(0, mergeableGroups.Count)].ToList();
-                Tower target1 = targetGroup[0]; // 진화할 타워
-                Tower target2 = targetGroup[1]; // 제물 타워
+                Tower t1 = targetGroup[0];
+                Tower t2 = targetGroup[1];
+                int nextLank = t1.Lank + 1;
 
-                Debug.Log($"[연금술사 보스] {target1.name}({target1.Lank}성) 강제 합성 실시!");
-
-                // 제물을 풀에 반납하고, 타겟 타워의 랭크를 올림
-                pool.ReturnPool(target2);
-                target1.Lank++;
-
-                var data = factory.GetTowerData(target1.PoolTag);
-                if (data != null)
+                if (nextLank <= 7)
                 {
-                    target1.Setup(data, target1.Lank);
+                    TileObject targetTile = t1.CurrentTile;
+                    main.RemoveUnit(t1);
+                    main.RemoveUnit(t2);
+                    main.BuildTower(targetTile, nextLank);
                 }
             }
-            else
-            {
-                Debug.Log("[연금술사 보스] 필드에 합성 가능한 타워가 없습니다.");
-            }
-
-            // 2. 공격이 끝났으니 1초 뒤에 체력을 회복하는 코루틴 실행
-            StartCoroutine(DelayedHealRoutine());
-        }
-
-        private IEnumerator DelayedHealRoutine()
-        {
-            // 기획 조건: 공격 후 1초 대기
-            yield return new WaitForSeconds(1.0f);
-
-            // 최대 체력의 5% 계산 (_stat.MaxHp.Value 사용)
-            float healAmount = _stat.MaxHp.Value * 0.05f;
-
-            // [핵심 수정] _currentHp 대신 _stat.CurrentHp에 더해줍니다.
-            _stat.CurrentHp += healAmount;
-
-            // 최대 체력 초과 방지 (풀피 이상으로 회복 안 됨)
-            if (_stat.CurrentHp > _stat.MaxHp.Value)
-            {
-                _stat.CurrentHp = _stat.MaxHp.Value;
-            }
-
-            Debug.Log($"[연금술사 보스] 체력 {healAmount} 회복! (현재 체력: {_stat.CurrentHp})");
-
-            // TODO: 만약 보스 체력바 UI가 있다면 여기서 갱신해 주면 완벽합니다.
         }
     }
 }

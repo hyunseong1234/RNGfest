@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Enemy : BaseUnit
 {
-    private int _waypointIndex = 0; //현재 가고있는 플레그 인덱스
+    public int _waypointIndex = 0; //현재 가고있는 플레그 인덱스
     [SerializeField] private int _getGold = 10; //몬스터가 사망시 주는돈
 
     public int GetGold { get => _getGold; set => _getGold = value; }

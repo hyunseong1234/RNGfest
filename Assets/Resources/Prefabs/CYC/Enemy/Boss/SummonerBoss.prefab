@@ -97,9 +97,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5756651686647931651}
   - component: {fileID: 5756651686657215719}
-  - component: {fileID: -6388949019487391825}
+  - component: {fileID: -1381621426593838517}
   m_Layer: 0
-  m_Name: Stone 3
+  m_Name: SummonerBoss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143,7 +143,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-6388949019487391825
+--- !u!114 &-1381621426593838517
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -152,7 +152,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5756651686647709475}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dba28a1c144d60d4d8561e8fa77fb01c, type: 3}
+  m_Script: {fileID: 11500000, guid: f83d4ba5726f06f4497ad9bf3854e0af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _poolTag: 
@@ -173,9 +173,12 @@ MonoBehaviour:
     SpecialValues: []
   currentState: 1
   _animator: {fileID: 0}
+  _waypointIndex: 0
   _getGold: 10
-  _skillInterval: 4
+  _skillTileInterval: 4
   _skillMotionDuration: 1.5
+  _summonMobKey: Branch
+  _summonCount: 3
 --- !u!1 &5756651686647709477
 GameObject:
   m_ObjectHideFlags: 0

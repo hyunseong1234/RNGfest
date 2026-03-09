@@ -6,24 +6,32 @@ namespace Dev.jeon.Model
 
     public abstract class BaseBoss : Enemy
     {
-        [Header("Boss Skill Setting")]
-        [SerializeField] protected float _skillInterval = 4f;       // 스킬 대기 시간
-        [SerializeField] protected float _skillMotionDuration = 1.5f; // 스킬 모션 시간
+        [Header("Boss Skill Setting (Tile Based)")]
+        [SerializeField] protected int _skillTileInterval = 4; // 4타일 이동 시마다 스킬 발동
+        [SerializeField] protected float _skillMotionDuration = 1.5f;
 
-        private float _skillTimer = 0f;
-        protected bool _isUsingSkill  = false;
+        protected int _movedTileCount = 0;   // 이동한 타일 누적 카운트
+        protected int _lastWaypointIndex = 0; // 직전 웨이포인트 인덱스
+        protected bool _isUsingSkill = false;
 
         public override void ObjectUpdate()
         {
             if (_isUsingSkill) return;
 
-            base.ObjectUpdate();
+            base.ObjectUpdate(); // Enemy의 기본 이동 로직
 
-            _skillTimer += Time.deltaTime;
-            if(_skillTimer >= _skillInterval)
+            // [핵심] 타일(웨이포인트)을 넘어갔는지 확인
+            if (_waypointIndex > _lastWaypointIndex)
             {
-                _skillTimer = 0f;
-                StartCoroutine(SkillSequence());
+                _movedTileCount++;
+                _lastWaypointIndex = _waypointIndex;
+
+                // 설정한 타일 수만큼 이동했다면 스킬 발동!
+                if (_movedTileCount >= _skillTileInterval)
+                {
+                    _movedTileCount = 0;
+                    StartCoroutine(SkillSequence());
+                }
             }
         }
 
@@ -31,19 +39,20 @@ namespace Dev.jeon.Model
         {
             _isUsingSkill = true;
 
-            // 1. 스킬 모션 시작
+            // 1. 기 모으기 (멈춤)
             ChangeState(EState.IDLE);
-            Debug.Log($"{this.name}이 스킬을 시전한다.!");
-            // animator.SetTrigger("Skill");
 
             yield return new WaitForSeconds(_skillMotionDuration);
 
-            ApplySkillEffect();
+            // 2. 자식 클래스의 스킬 실행 (이제 대쉬가 없으니 금방 끝납니다)
+            yield return StartCoroutine(ApplySkillEffectRoutine());
 
+            // 3. 다시 이동 재개
             _isUsingSkill = false;
             ChangeState(EState.MOVE);
         }
-        protected abstract void ApplySkillEffect();
+
+        protected abstract IEnumerator ApplySkillEffectRoutine();
     }
 
 }

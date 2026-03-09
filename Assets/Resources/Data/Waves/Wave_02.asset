@@ -16,6 +16,6 @@ MonoBehaviour:
   waveType: 2
   delayBeforeWave: 3
   monsterTypes: []
-  bossPrefab: {fileID: 8421559075920688834, guid: 84ff95cc347db6544bb1f29992f919af, type: 3}
+  bossPrefab: {fileID: -1381621426593838517, guid: 9fb763efe89d08f40845170fc46e3ff2, type: 3}
   bossHp: 10000
   bossGoldReward: 0
