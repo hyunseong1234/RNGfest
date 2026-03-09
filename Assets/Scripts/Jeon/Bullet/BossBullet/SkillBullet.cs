@@ -60,6 +60,7 @@ namespace Dev.jeon.Bullet
 
         public override void ObjectUpdate()
         {
+            base.ObjectUpdate();
         }
 
         protected override void OnDisable()

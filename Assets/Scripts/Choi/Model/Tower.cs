@@ -122,8 +122,33 @@ namespace Dev.cheol.Model
             }
             else
             {
-                // 1성일 때 등급이 깎이면 파괴할지, 그대로 둘지 기획에 따라 결정
-                Debug.Log($"{gameObject.name}은 이미 최하 등급(1성)입니다.");
+                // [수정된 부분] 1성일 때 등급이 깎이면 타워 완전 파괴!
+                Debug.Log($"{gameObject.name} 1성 타워 저주를 이기지 못하고 파괴됨!");
+
+                // 1. 메인 매니저의 타워 리스트에서 이 타워를 제거
+                var mainManager = ServiceLocator.Instance.GetService<MainManager>();
+                if (mainManager != null)
+                {
+                    mainManager.SpawnTowers.Remove(this);
+                    // 만약 타워 전용 Remove 함수(예: RemoveTower(this))가 있다면 그걸 쓰셔도 됩니다.
+                }
+
+                // 2. 타워가 서 있던 타일 비워주기 (중요: 그래야 그 자리에 타워를 다시 지음)
+                if (CurrentTile != null)
+                {
+                    CurrentTile._isUsed = false;
+                }
+
+                // 3. 풀 매니저로 타워 반납 (화면에서 사라짐)
+                var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+                if (pool != null)
+                {
+                    pool.ReturnPool(this);
+                }
+                else
+                {
+                    gameObject.SetActive(false); // 안전장치
+                }
             }
         }
         public override void OnReturnToPool()

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Dev.jeon.Boss
 {
-    public class AlchemistBoss : BaseBoss
+    public class AlchemistBoss : BaseBoss // 연금술사
     {
         protected override void ApplySkillEffect()
         {

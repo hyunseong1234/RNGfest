@@ -51,7 +51,7 @@ namespace Dev.cheol.Manager
             //UpdateList(_spawnUI);
 
             //테스트용 인풋기능
-            //Test(); // 테스트때만 주석풀어용~
+            Test(); // 테스트때만 주석풀어용~
 
 
             //업데이트 매니저 업데이트 호출해주는 구간
@@ -61,6 +61,19 @@ namespace Dev.cheol.Manager
             foreach (var manager in ServiceLocator.Instance.UpdateManagers)
             {
                 manager.ManagerUpdate();
+            }
+        }
+
+        private void Test()
+        {
+            if (Input.GetKeyDown(KeyCode.F1))
+            {
+                var system = ServiceLocator.Instance.GetService<SystemManager>();
+
+                if (system != null)
+                {
+                    system.Gold += 100000;
+                }
             }
         }
 
