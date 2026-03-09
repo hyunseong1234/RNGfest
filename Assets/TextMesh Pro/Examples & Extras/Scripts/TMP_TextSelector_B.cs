@@ -1,9 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 
 #pragma warning disable 0618 
 
@@ -64,14 +60,14 @@ namespace TMPro.Examples
                 Vector3[] vertices = m_TextMeshPro.textInfo.meshInfo[materialIndex].vertices;
                 Vector3 offset = (vertices[vertexIndex + 0] + vertices[vertexIndex + 2]) / 2;
 
-                for (int i = 0; i<4; i++) vertices[vertexIndex + i] -= offset;
+                for (int i = 0; i < 4; i++) vertices[vertexIndex + i] -= offset;
                 m_matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one * 1.5f);
-                for (int i = 0; i<4; i++) vertices[vertexIndex + i] = m_matrix.MultiplyPoint3x4(vertices[vertexIndex + i]);
-                for (int i = 0; i<4; i++) vertices[vertexIndex + i] += offset;
+                for (int i = 0; i < 4; i++) vertices[vertexIndex + i] = m_matrix.MultiplyPoint3x4(vertices[vertexIndex + i]);
+                for (int i = 0; i < 4; i++) vertices[vertexIndex + i] += offset;
 
                 Color32 c = new Color32(255, 255, 192, 255);
                 Color32[] vertexColors = m_TextMeshPro.textInfo.meshInfo[materialIndex].colors32;
-                for (int i = 0; i<4; i++) vertexColors[vertexIndex + i] = c;
+                for (int i = 0; i < 4; i++) vertexColors[vertexIndex + i] = c;
                 m_TextMeshPro.textInfo.meshInfo[materialIndex].SwapVertexData(vertexIndex, vertices.Length - 4);
                 m_TextMeshPro.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
             }
