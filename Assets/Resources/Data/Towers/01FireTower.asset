@@ -18,37 +18,44 @@ MonoBehaviour:
     attack: 8
     speed: 1
     range: 5
-    specialValues: []
+    specialValues:
+    - 1.5
   - rank: 2
     attack: 25
     speed: 1
     range: 5
-    specialValues: []
+    specialValues:
+    - 1.5
   - rank: 3
     attack: 85
     speed: 1
     range: 5
-    specialValues: []
+    specialValues:
+    - 1.5
   - rank: 4
     attack: 340
     speed: 1
     range: 5
-    specialValues: []
+    specialValues:
+    - 1.5
   - rank: 5
     attack: 1
     speed: 700
     range: 1
     specialValues:
     - 5
+    - 1.5
   - rank: 6
     attack: 10
     speed: 0
     range: 1
     specialValues:
     - 5
+    - 1.5
   - rank: 7
     attack: 85
     speed: 0
     range: 1
     specialValues:
     - 5
+    - 1.5

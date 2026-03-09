@@ -13,10 +13,10 @@ namespace Dev.cheol.Comon
         private bool _hasFired = false; // 한 번의 공격 애니메이션에서 발사 여부 체크
         public IEnumerator Enter(BaseUnit unit)
         {
-            unit.Animator.SetInteger("animation", 2);
+            unit.Animator.SetInteger("animation", unit.AttackAniNum);
 
             unit.Animator.Play("ATK0", 0, 0f);
-
+            unit.ActiveAttack();
             // 3. 발사 플래그 초기화
             _hasFired = false;
             yield break;
@@ -24,63 +24,35 @@ namespace Dev.cheol.Comon
 
         public IEnumerator Execute(BaseUnit unit)
         {
-            // 공격 상태 진입 시 발사 여부 초기화
-            _hasFired = false;
-            string ATK0 = "ATK0";
-
-
             while (true)
             {
                 // 1. 타겟 유효성 검사
                 if (unit.Target == null)
                 {
-                    Debug.Log($"{unit.name} : 타겟이 없어 공격 상태를 종료합니다.");
                     unit.ChangeState(EState.IDLE);
                     yield break;
                 }
 
-                // 2. 타겟 방향으로 회전
+                // 2. 타겟 방향 회전 (기존 로직 유지)
                 Vector3 direction = (unit.Target.position - unit.transform.position).normalized;
                 direction.y = 0;
                 if (direction != Vector3.zero)
                 {
                     Quaternion targetRotation = Quaternion.LookRotation(direction);
-                    float rotSpeed = 10f; // 필요시 unit.Status.RotationSpeed 등으로 교체
-                    unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, targetRotation, Time.deltaTime * rotSpeed);
+                    unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, targetRotation, Time.deltaTime * 10f);
                 }
 
-                // 3. 애니메이터 정보 가져오기 (0번 레이어)
+                // 3. 애니메이션 종료 체크 (단순화)
                 AnimatorStateInfo stateInfo = unit.Animator.GetCurrentAnimatorStateInfo(0);
 
-                if (stateInfo.IsName("ATK1"))
+                // 애니메이션이 끝나면 IDLE로 복귀
+                if (stateInfo.normalizedTime >= 1.0f && !unit.Animator.IsInTransition(0))
                 {
-                    Debug.Log("애니메이션 조건 맞음");
+                    unit.ChangeState(EState.IDLE);
+                    yield break;
                 }
 
-                if (stateInfo.IsName(ATK0))
-                {
-                    if (!_hasFired)
-                    {
-                        if (stateInfo.normalizedTime >= 0.5f)
-                        {
-                            unit.ActiveAttack();
-                            _hasFired = true;
-                            Debug.Log($"<color=cyan>{unit.name} 탄 발사 호출!</color>");
-                        }
-                    }
-
-                    if (stateInfo.normalizedTime >= 1.0f && !unit.Animator.IsInTransition(0))
-                    {
-                        Debug.Log($"{unit.name} 공격 애니메이션 완료, IDLE로 전환");
-                        unit.Animator.SetInteger("animation", 0);
-                        unit.ChangeState(EState.IDLE);
-                        yield break;
-                    }
-
-
-                }
-
-                yield return null; // 다음 프레임까지 대기
+                yield return null;
             }
         }
 

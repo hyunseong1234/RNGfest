@@ -70,9 +70,9 @@ namespace Dev.jeon.Bullet
             {
                 float sqrRadius = _splashRadius * _splashRadius;
                 var enemiesInRange = mainManager.SpawnEnemys
-                    .Where(e => e != null && e.gameObject.activeSelf)
-                    .Where(e => (e.transform.position - explosionCenter).sqrMagnitude <= sqrRadius)
-                    .ToList();
+                .Where(e => e != null && e.gameObject.activeSelf)
+                .Where(e => (e.transform.position - explosionCenter).sqrMagnitude <= sqrRadius)
+                .ToList();
 
                 foreach (var enemy in enemiesInRange)
                 {

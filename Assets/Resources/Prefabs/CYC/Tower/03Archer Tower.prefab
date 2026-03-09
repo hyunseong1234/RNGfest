@@ -3812,6 +3812,7 @@ MonoBehaviour:
     SpecialValues: []
   currentState: 1
   _animator: {fileID: 0}
+  _attackAniNum: 23
   _iceEffect: {fileID: 0}
   _currentTile: {fileID: 0}
   _lank: 0

@@ -8,57 +8,52 @@ using UnityEngine;
 
 public class TowerConverter
 {
-    // CSV 파일이 위치한 경로 (수정 가능)
     private const string CSV_PATH = "Assets/Resources/Data/TowerData.csv";
     private const string SAVE_PATH = "Assets/Resources/Data/Towers";
 
-    [MenuItem("Tools/Convert Tower CSV to SO (Direct)")]
+    [MenuItem("Tools/Convert Tower CSV to SO (Safe Mode)")]
     public static void ConvertDirect()
     {
-        // 1. 파일 존재 여부 확인 및 읽기
         if (!File.Exists(CSV_PATH))
         {
             Debug.LogError($"[TowerConverter] CSV 파일을 찾을 수 없습니다: {CSV_PATH}");
             return;
         }
 
-        // 파일 공유 위반 방지(FileShare.ReadWrite) 옵션 적용
-        List<string> lineList = new List<string>();
-        using (var fs = new FileStream(CSV_PATH, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-        using (var reader = new StreamReader(fs))
-        {
-            while (!reader.EndOfStream) lineList.Add(reader.ReadLine());
-        }
-
-        string[] lines = lineList.ToArray();
+        string[] lines = File.ReadAllLines(CSV_PATH);
         Dictionary<string, List<TowerStat>> towerGroups = new Dictionary<string, List<TowerStat>>();
 
-        // 2. 파싱 로직
-        for (int i = 1; i < lines.Length; i++)
+        for (int i = 0; i < lines.Length; i++)
         {
             string line = lines[i].Trim();
             if (string.IsNullOrWhiteSpace(line)) continue;
 
-            string[] row = line.Split(',');
-            if (row.Length < 5) continue;
+            // 쉼표와 탭 모두 대응 가능하도록 분리
+            string[] row = line.Split(new char[] { ',', '\t' });
+            if (row.Length < 2) continue;
 
             string towerName = row[0].Trim();
+
+            // 헤더(Name, Rank 등)가 포함된 행은 자동으로 건너뜀
+            if (!int.TryParse(Clean(row[1]), out _)) continue;
+
             try
             {
                 TowerStat stat = new TowerStat
                 {
-                    rank = int.Parse(Clean(row[1])),
-                    attack = float.Parse(Clean(row[2]), CultureInfo.InvariantCulture),
-                    speed = float.Parse(Clean(row[3]), CultureInfo.InvariantCulture),
-                    range = float.Parse(Clean(row[4]), CultureInfo.InvariantCulture)
+                    // 숫자로 못 바꾸면 그냥 0으로 세팅해서 에러 방지
+                    rank = ParseIntSafe(row.ElementAtOrDefault(1)),
+                    attack = ParseFloatSafe(row.ElementAtOrDefault(2)),
+                    speed = ParseFloatSafe(row.ElementAtOrDefault(3)),
+                    range = ParseFloatSafe(row.ElementAtOrDefault(4)),
+                    specialValues = new List<float>()
                 };
 
+                // 효과 수치들도 안전하게 파싱 (0이면 기입 안 함)
                 for (int j = 5; j < row.Length; j++)
                 {
-                    if (!string.IsNullOrWhiteSpace(row[j]))
-                    {
-                        stat.specialValues.Add(float.Parse(Clean(row[j]), CultureInfo.InvariantCulture));
-                    }
+                    float val = ParseFloatSafe(row[j]);
+                    if (val != 0) stat.specialValues.Add(val);
                 }
 
                 if (!towerGroups.ContainsKey(towerName))
@@ -66,14 +61,12 @@ public class TowerConverter
 
                 towerGroups[towerName].Add(stat);
             }
-            catch
+            catch (System.Exception e)
             {
-                // 에러 발생 시 로그 출력 (41행 등 문제 지점 확인용)
-                Debug.LogError($"[파싱 실패] {i + 1}행 데이터 오류: {line}");
+                Debug.LogWarning($"[{i + 1}행 건너뜀] 데이터 형식이 이상함: {line} ({e.Message})");
             }
         }
 
-        // 3. SO 저장 및 생성
         if (!Directory.Exists(SAVE_PATH)) Directory.CreateDirectory(SAVE_PATH);
 
         foreach (var group in towerGroups)
@@ -94,9 +87,12 @@ public class TowerConverter
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log($"<color=cyan><b>[Tower Converter]</b></color> {CSV_PATH} 데이터 변환 완료!");
+        Debug.Log($"<color=green><b>[변환 완료]</b></color> {towerGroups.Count}개의 타워 SO 생성/갱신됨.");
     }
 
-    private static string Clean(string input) => input.Trim().Replace("\"", "").Replace(",", "");
+    // 안전한 파싱용 헬퍼 함수들
+    private static int ParseIntSafe(string s) => int.TryParse(Clean(s), out int result) ? result : 0;
+    private static float ParseFloatSafe(string s) => float.TryParse(Clean(s), NumberStyles.Any, CultureInfo.InvariantCulture, out float result) ? result : 0f;
+    private static string Clean(string input) => input?.Trim().Replace("\"", "").Replace(",", "") ?? "";
 }
 #endif

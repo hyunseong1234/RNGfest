@@ -8,12 +8,13 @@ namespace Dev.cheol.Model
     public class Tower : BaseUnit
     {
         [SerializeField] private GameObject _iceEffect; // 타워를 감싸는 얼음 모델링
-        
+
         [SerializeField] private TileObject _currentTile;
         [SerializeField] private int _lank;
         [SerializeField] private LankStarUI _starUI;
 
         [SerializeField] private bool _isSealed = false; // 봉인 여부
+
 
         public EState _state;
         public bool IsSealed => _isSealed; //봉인 상태 여부

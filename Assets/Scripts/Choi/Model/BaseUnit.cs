@@ -27,7 +27,7 @@ namespace Dev.cheol.Model
 
         [Header("아니메")]
         [SerializeField] protected Animator _animator = null;
-
+        [SerializeField] protected int _attackAniNum = 2; //각자 들고있는 번호가 다르기때문에 인트 넘버
         //[SerializeField] protected AnimData _animData;
         //[SerializeField] private AnimConfig _animConfig;
         //private Dictionary<AniModel, int> _animTable = new Dictionary<AniModel, int>();
@@ -36,6 +36,7 @@ namespace Dev.cheol.Model
         #region  프로퍼티
 
         public Animator Animator { get => _animator; set => _animator = value; }
+        public int AttackAniNum { get => _attackAniNum; set => _attackAniNum = value; }
 
         #endregion
 
@@ -51,6 +52,9 @@ namespace Dev.cheol.Model
             IndexPair.Add(EState.IDLE, 0);
             IndexPair.Add(EState.MOVE, 1);
             IndexPair.Add(EState.ATTACK, 2);
+
+            //만약에 0 값으로 초기화 됬을때를 대비하여 
+            if (_attackAniNum == 0) _attackAniNum = 2;
 
             //foreach (var data in _animConfig.datas)
             //{

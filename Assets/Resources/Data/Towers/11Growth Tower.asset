@@ -10,50 +10,42 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 11fe45893c91e9d488743e03d1abc04f, type: 3}
-  m_Name: 06Posion Tower
+  m_Name: 11Growth Tower
   m_EditorClassIdentifier: 
-  towerName: 06Posion Tower
+  towerName: 11Growth Tower
   stats:
   - rank: 1
-    attack: 4
+    attack: 0
     speed: 0
     range: 0
     specialValues: []
   - rank: 2
-    attack: 12
-    speed: 1
-    range: 5
-    specialValues:
-    - 50
-  - rank: 3
-    attack: 40
-    speed: 1
-    range: 5
-    specialValues:
-    - 50
-  - rank: 4
-    attack: 160
-    speed: 1
-    range: 5
-    specialValues:
-    - 50
-  - rank: 5
-    attack: 800
-    speed: 1
-    range: 5
-    specialValues:
-    - 50
-  - rank: 6
-    attack: 4
-    speed: 800
-    range: 1
-    specialValues:
-    - 5
-    - 50
-  - rank: 7
-    attack: 40
+    attack: 0
     speed: 0
-    range: 1
-    specialValues:
-    - 5
-    - 50
+    range: 0
+    specialValues: []
+  - rank: 3
+    attack: 0
+    speed: 0
+    range: 0
+    specialValues: []
+  - rank: 4
+    attack: 0
+    speed: 0
+    range: 0
+    specialValues: []
+  - rank: 5
+    attack: 0
+    speed: 0
+    range: 0
+    specialValues: []
+  - rank: 6
+    attack: 0
+    speed: 0
+    range: 0
+    specialValues: []
+  - rank: 7
+    attack: 0
+    speed: 0
+    range: 0
+    specialValues: []
