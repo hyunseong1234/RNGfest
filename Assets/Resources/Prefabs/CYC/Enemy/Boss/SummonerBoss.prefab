@@ -160,7 +160,7 @@ MonoBehaviour:
   _isUI: 0
   _stat:
     Speed:
-      _baseValue: 0
+      _baseValue: 1
     MaxHp:
       _baseValue: 0
     Defense:
@@ -177,8 +177,9 @@ MonoBehaviour:
   _getGold: 10
   _skillTileInterval: 4
   _skillMotionDuration: 1.5
-  _summonMobKey: Branch
+  _minionPrefab: {fileID: -895302382902734158, guid: 1a2c45dc9c2803047a454ac20bfbe802, type: 3}
   _summonCount: 3
+  _spacing: 0.5
 --- !u!1 &5756651686647709477
 GameObject:
   m_ObjectHideFlags: 0

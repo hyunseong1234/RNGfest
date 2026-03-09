@@ -10,57 +10,34 @@ namespace Dev.jeon.Boss
     public class SummonerBoss : BaseBoss
     {
         [Header("Summon Settings")]
-        [SerializeField] private string _summonMobKey = "NormalEnemy";
+        [SerializeField] private SummonedMinion _minionPrefab;
         [SerializeField] private int _summonCount = 3;
         [SerializeField] private float _spacing = 0.5f;
 
         protected override IEnumerator ApplySkillEffectRoutine()
         {
-            var main = ServiceLocator.Instance.GetService<MainManager>();
             var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
             var mapManager = ServiceLocator.Instance.GetService<MapManager>();
-
-            if (main == null || pool == null || mapManager == null) yield break;
+            if (pool == null || mapManager == null) yield break;
 
             Transform[] path = mapManager.FlagPoints;
 
             for (int i = 0; i < _summonCount; i++)
             {
-                var monster = pool.GetFromPool<Enemy>(_summonMobKey);
-                if (monster != null)
+                var minion = pool.GetFromPool<SummonedMinion>(_minionPrefab);
+
+                if (minion != null)
                 {
-                    // [핵심 1] 풀링된 객체를 확실히 활성화
-                    monster.gameObject.SetActive(true);
+                    // [가장 중요] 오브젝트를 먼저 활성화해야 ChangeState의 코루틴이 작동합니다.
+                    minion.gameObject.SetActive(true);
 
-                    // 1. 위치 설정 (타일 경로 역추적)
+                    // 1. 위치 설정
                     float distanceBack = (i + 1) * _spacing;
-                    monster.transform.position = GetPositionBehindAlongPath(path, distanceBack);
+                    minion.transform.position = GetPositionBehindAlongPath(path, distanceBack);
 
-                    // 2. 능력치 설정 (체력 10%)
-                    if (this._stat != null && monster._stat != null)
-                    {
-                        float minionHp = this._stat.MaxHp.Value * 0.1f;
-                        monster._stat.MaxHp.BaseValue = minionHp;
-                        monster._stat.CurrentHp = minionHp;
-
-                        // [체크] 만약 몬스터 속도가 0이면 움직이지 않으니 기본값을 강제합니다.
-                        if (monster._stat.Speed.BaseValue <= 0) monster._stat.Speed.BaseValue = 1.0f;
-                    }
-
-                    // 3. 이동 경로 강제 동기화
-                    monster._waypointIndex = this._waypointIndex;
-                    monster.Target = null;
-                    monster.RefreshPath(); // 여기서 다음 목적지(Target)가 잡힘
-
-                    // [핵심 2] 강제로 상태를 MOVE로 변경
-                    // Enemy.cs의 ObjectUpdate를 기다리지 않고 즉시 걷기 코루틴을 실행시킵니다.
-                    monster.ChangeState(EState.MOVE);
-
-                    // 4. 매니저 리스트 등록 (MainManager가 인식하게 함)
-                    if (!main.SpawnEnemys.Contains(monster))
-                    {
-                        main.SpawnEnemys.Add(monster);
-                    }
+                    // 2. 세팅 호출 (이제 활성화 상태이므로 내부의 ChangeState가 정상 작동함)
+                    float hp = this._stat.MaxHp.Value * 0.1f;
+                    minion.SetupMinion(hp, this._waypointIndex);
                 }
             }
             yield return null;
