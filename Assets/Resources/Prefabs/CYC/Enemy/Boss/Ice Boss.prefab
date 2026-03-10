@@ -180,6 +180,7 @@ MonoBehaviour:
   _skillMotionDuration: 1.5
   _bulletPrefab: {fileID: -7997947162433473867, guid: de184905467d8f642a43fded944fb922, type: 3}
   _bulletSpeed: 3
+  _scopePrefab: {fileID: 8620680803446921347, guid: 4455268dc2addb449a39f8558c48f58e, type: 3}
 --- !u!1 &5756651686647709477
 GameObject:
   m_ObjectHideFlags: 0

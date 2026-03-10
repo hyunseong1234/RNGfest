@@ -2,6 +2,7 @@ using Dev.cheol.Manager;
 using Dev.cheol.Model;
 using Dev.jeon.Model;
 using Dev.jeon.Bullet;
+using Dev.jeon.Effect; // TargetScopeEffect 사용을 위해 추가
 using System.Collections;
 using UnityEngine;
 
@@ -10,11 +11,12 @@ namespace Dev.jeon.Boss
     public class IceBoss : BaseBoss
     {
         [Header("Projectile Settings")]
-        // [수정] 인스펙터에서 직접 드래그할 수 있게 프리팹 슬롯으로 변경 (선택사항이나 권장)
         [SerializeField] private SkillBullet _bulletPrefab;
         [SerializeField] private float _bulletSpeed = 15f;
 
-        // [수정] 부모 클래스의 추상 함수 이름과 리턴 타입에 맞춤
+        [Header("Scope Settings")]
+        [SerializeField] private BaseObject _scopePrefab;
+
         protected override IEnumerator ApplySkillEffectRoutine()
         {
             var main = ServiceLocator.Instance.GetService<MainManager>();
@@ -22,36 +24,51 @@ namespace Dev.jeon.Boss
 
             if (main.SpawnTowers == null || main.SpawnTowers.Count == 0) yield break;
 
-            // 봉인되지 않은 타워 중 랜덤 선택
+            // 1. 타겟 타워 랜덤 선택
             var availableTowers = main.SpawnTowers.FindAll(t => !t.IsSealed);
+            if (availableTowers.Count == 0) yield break;
 
-            if (availableTowers.Count > 0)
+            int rand = Random.Range(0, availableTowers.Count);
+            Tower target = availableTowers[rand];
+
+            // 2.  조준 시작: 스코프 소환
+            BaseObject scopeObj = null;
+            if (_scopePrefab != null)
             {
-                int rand = Random.Range(0, availableTowers.Count);
-                Tower target = availableTowers[rand];
-
-                // 프리팹 혹은 키값을 사용하여 풀에서 탄환 소환
-                var bullet = pool.GetFromPool<SkillBullet>(_bulletPrefab);
-
-                if (bullet != null)
+                scopeObj = pool.GetFromPool<BaseObject>(_scopePrefab);
+                if (scopeObj != null && scopeObj.TryGetComponent(out TargetScopeEffect scopeScript))
                 {
-                    bullet.transform.position = transform.position + Vector3.up * 2f;
-
-                    // ICE 타입으로 초기화 (직선 비행)
-                    bullet.InitSkill(target, _bulletSpeed, SkillBullet.ESkillType.ICE);
-
-                    Debug.Log($"[빙결 보스] {target.name}에게 빙결탄 발사! (타일 기반 발동)");
+                    // 타워 위치에 스코프 배치 (살짝 위로 0.1f)
+                    scopeObj.transform.position = target.transform.position + Vector3.up * 0.1f;
+                    // 1.5초 동안 조준 연출 실행 (부모의 _skillMotionDuration 사용)
+                    scopeScript.StartLockOn(_skillMotionDuration);
                 }
             }
 
-            // 탄환 발사는 즉시 일어나므로 한 프레임 대기 후 종료
-            yield return null;
+            // 3.  조준 시간 동안 대기 (1.5초)
+            yield return new WaitForSeconds(_skillMotionDuration);
+
+            // 4.  발사! (조준이 끝난 시점에 타워가 아직 있으면 발사)
+            if (target != null && target.gameObject.activeSelf)
+            {
+                var bullet = pool.GetFromPool<SkillBullet>(_bulletPrefab);
+                if (bullet != null)
+                {
+                    bullet.transform.position = transform.position + Vector3.up * 2f;
+                    bullet.InitSkill(target, _bulletSpeed, SkillBullet.ESkillType.ICE);
+                }
+            }
+
+            // 5. 스코프 반납
+            if (scopeObj != null)
+            {
+                pool.ReturnPool(scopeObj);
+            }
         }
 
         public override void OnReturnToPool()
         {
             base.OnReturnToPool();
-            // 타일 카운터 초기화 (부모 클래스 변수)
             _movedTileCount = 0;
             _lastWaypointIndex = 0;
         }
