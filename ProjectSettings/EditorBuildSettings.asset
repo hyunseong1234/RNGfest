@@ -8,7 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/KWY/Game lobby.unity
     guid: e58f98c9bd87a864f9cc547dbf534374
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/KWY/Game.unity
     guid: 8a40e4e7563f9ee4583d525272ad9a85
   m_configObjects: {}
