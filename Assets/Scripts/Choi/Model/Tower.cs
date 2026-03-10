@@ -7,7 +7,7 @@ namespace Dev.cheol.Model
 
     public class Tower : BaseUnit
     {
-        [SerializeField] private GameObject _iceEffect; // 타워를 감싸는 얼음 모델링
+        [SerializeField] private BaseObject _currentEffect; // 타워를 감싸는 얼음 모델링
 
         [SerializeField] private TileObject _currentTile;
         [SerializeField] private int _lank;
@@ -66,40 +66,40 @@ namespace Dev.cheol.Model
             }
 
         }
-        public void Seal()
+        public void Seal(GameObject effectPrefab) 
         {
             if (_isSealed) return;
             _isSealed = true;
 
-            // 시각적 피드백 (예: 얼음 이펙트 활성화)
-            ChangeState(EState.IDLE);
+            var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
 
-            // 시각적 피드백
-            if (_animator != null)
+            var effect = pool.GetFromPool<BaseObject>(effectPrefab.GetComponent<BaseObject>());
+
+            if (effect != null)
             {
-                _animator.speed = 0; // 애니메이션까지 완전히 멈추고 싶을 때
+                effect.transform.SetParent(this.transform, false);
+                effect.transform.localPosition = Vector3.zero;
+
+                _currentEffect = effect; // 생성된 객체를 클래스 변수에 저장
             }
-            // 얼음 이펙트
-            if (_iceEffect != null)
-            {
-                _iceEffect.SetActive(true);
-            }
-            Debug.Log($"{gameObject.name} 봉인됨!");
+
+            ChangeState(EState.IDLE);
+            if (_animator != null) _animator.speed = 0;
         }
 
         public void UnSeal()
         {
             _isSealed = false;
-            // 시각적 피드백 해제
-            if (_animator != null)
+
+            if (_currentEffect != null)
             {
-                _animator.speed = 1; // 애니메이션 다시 재생
+                var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+
+                pool.ReturnPool(_currentEffect);
+                _currentEffect = null;
             }
-            if (_iceEffect != null)
-            {
-                _iceEffect.SetActive(false);
-            }
-            Debug.Log($"{gameObject.name} 봉인 해제!");
+
+            if (_animator != null) _animator.speed = 1;
         }
 
         public void Downgrade()
@@ -143,7 +143,21 @@ namespace Dev.cheol.Model
             base.OnReturnToPool();
             _isSealed = false; // 풀에 들어갈 때 봉인 해제
 
-            if (_iceEffect != null) _iceEffect.SetActive(false);
+            if (_currentEffect != null)
+            {
+                var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+                if (pool != null)
+                {
+                    pool.ReturnPool(_currentEffect);
+                }
+                _currentEffect = null; // 참조 해제
+            }
+
+            // 3. 애니메이션 속도 복구 (혹시 멈춘 채로 들어갔을 경우 대비)
+            if (_animator != null)
+            {
+                _animator.speed = 1;
+            }
         }
 
     }

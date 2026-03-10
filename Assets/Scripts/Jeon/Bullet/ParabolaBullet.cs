@@ -2,6 +2,7 @@ using Dev.cheol.Manager;
 using Dev.cheol.Model;
 using System.Collections;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Dev.jeon.Bullet
 {
@@ -25,56 +26,65 @@ namespace Dev.jeon.Bullet
         private IEnumerator MoveToTarget()
         {
             Vector3 startPos = transform.position;
-            // 발사 시점의 타겟 위치 저장 (타겟이 사라져도 그 지점까지는 가기 위함)
-            Vector3 lastTargetPos = _target.position;
+            Vector3 lastTargetPos = _target != null ? _target.position : transform.position;
 
             float distance = Vector3.Distance(startPos, lastTargetPos);
             float totalTime = distance / _speed;
             float elapsedTime = 0f;
 
-            // [수정] 타겟이 사라져도 끝까지 날아가도록 totalTime 기준으로만 체크
             while (elapsedTime < totalTime)
             {
                 elapsedTime += Time.deltaTime;
-                float t = elapsedTime / totalTime;
+                float t = elapsedTime / totalTime; // 0 에서 1까지 증가
 
-                // 타겟이 살아있다면 실시간 위치 갱신, 죽었다면 마지막 위치 유지
                 if (_target != null && _target.gameObject.activeSelf)
                     lastTargetPos = _target.position;
 
+                // 1. 현재 위치 계산 (기존과 동일)
                 Vector3 currentPos = Vector3.Lerp(startPos, lastTargetPos, t);
                 float heightOffset = Mathf.Sin(t * Mathf.PI) * _arcHeight;
                 currentPos.y += heightOffset;
-
-                Vector3 moveDirection = currentPos - transform.position;
-                if (moveDirection != Vector3.zero)
-                    transform.rotation = Quaternion.LookRotation(moveDirection);
-
                 transform.position = currentPos;
+
+                // 2. [핵심] 완벽한 포물선 방향(접선) 계산
+                // 목표를 향해 가는 기본 방향 벡터
+                Vector3 forwardVector = lastTargetPos - startPos;
+
+                // 코사인(Cos) 함수 미분을 이용해 정점 전에는 위를 보고, 정점 후에는 아래를 보게 함
+                forwardVector.y += Mathf.Cos(t * Mathf.PI) * _arcHeight * Mathf.PI;
+
+                // 3. 머리 회전 적용
+                if (forwardVector != Vector3.zero)
+                {
+                    transform.rotation = Quaternion.LookRotation(forwardVector);
+                }
+
                 yield return null;
             }
 
-            // [수정] 도착했을 때의 판단은 HitTarget 하나로 통일합니다.
             HitTarget();
         }
 
         protected virtual void HitTarget()
         {
-            // 타겟이 유효할 때만 데미지
+            // 1. 공통 히트 이펙트 재생 (BaseBullet에 구현한 함수)
+            SpawnHitEffect(transform.position);
+
+
             if (_target != null && _target.gameObject.activeSelf)
             {
-                var enemy = _target.GetComponent<Enemy>();
-                if (enemy != null) enemy.OnDamaged(_damage, _fontColor);
+                if (_target.TryGetComponent(out Enemy enemy))
+                {
+                    enemy.OnDamaged(_damage, _fontColor);
+                }
             }
-
             ReturnToPool();
         }
 
-        // [핵심] private을 protected virtual로 바꿔야 SkillBullet이 에러 없이 오버라이드합니다.
-        protected virtual void ReturnToPool()
+        // SkillBullet이 접근할 수 있도록 다시 살려둡니다.
+        protected override void ReturnToPool()
         {
-            var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
-            if (pool != null) pool.ReturnPool(this);
+            base.ReturnToPool();
         }
 
         protected virtual void OnDisable()
@@ -87,8 +97,6 @@ namespace Dev.jeon.Bullet
             _target = null;
         }
 
-        public override void ObjectUpdate()
-        {
-        }
+        public override void ObjectUpdate() { }
     }
 }
