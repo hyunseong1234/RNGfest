@@ -66,21 +66,46 @@ namespace Dev.cheol.Model
             }
 
         }
-        public void Seal(GameObject effectPrefab) 
+        public void Seal(BaseObject effectPrefab)
         {
-            if (_isSealed) return;
+            // 1. 함수가 아예 호출조차 안 되는지 확인하는 로그
+            Debug.Log($"<color=cyan>1. [Tower] {gameObject.name}의 Seal 함수가 호출됨!</color>");
+
+            if (_isSealed)
+            {
+                Debug.Log("<color=red>-> 이미 봉인된 상태라 취소됨!</color>");
+                return;
+            }
             _isSealed = true;
 
-            var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
-
-            var effect = pool.GetFromPool<BaseObject>(effectPrefab.GetComponent<BaseObject>());
-
-            if (effect != null)
+            if (effectPrefab != null)
             {
-                effect.transform.SetParent(this.transform, false);
-                effect.transform.localPosition = Vector3.zero;
+                Debug.Log($"<color=cyan>2. 전달받은 프리팹 이름: {effectPrefab.name}</color>");
+                var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
 
-                _currentEffect = effect; // 생성된 객체를 클래스 변수에 저장
+                var effect = pool.GetFromPool<BaseObject>(effectPrefab);
+
+                if (effect != null)
+                {
+                    Debug.Log("<color=green>3. 풀링 매니저가 얼음을 정상적으로 줬습니다!</color>");
+                    effect.transform.SetParent(this.transform, false);
+                    effect.transform.localPosition = Vector3.zero;
+
+                    // [추가 안전장치] 풀에서 나왔는데 크기가 0이거나 꺼져있을 확률 100% 차단
+                    effect.transform.localScale = Vector3.one;
+                    effect.gameObject.SetActive(true);
+
+                    _currentEffect = effect;
+                }
+                else
+                {
+                    // 여기가 뜨면 풀링 매니저 설정 문제입니다!
+                    Debug.LogError("<color=red>3. [에러] 풀링 매니저가 얼음을 주지 않고 null을 반환했습니다! (풀에 등록 안 됨)</color>");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"<color=yellow>{gameObject.name}: 인스펙터에 프리팹이 안 들어있습니다!</color>");
             }
 
             ChangeState(EState.IDLE);

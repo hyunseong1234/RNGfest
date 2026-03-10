@@ -10,7 +10,7 @@ namespace Dev.jeon.Bullet
 
         private Tower _targetTower;
         private TileObject _targetTile;
-        [SerializeField] private GameObject _EffectPrefab;
+        [SerializeField] private BaseObject _EffectPrefab;
         public void InitSkill(Tower target, float speed, ESkillType type)
         {
             _skillType = type;
@@ -39,7 +39,7 @@ namespace Dev.jeon.Bullet
                         }
                         else if (_skillType == ESkillType.SHAMAN)
                         {
-                            tower.Downgrade();
+                            tower.Seal(_EffectPrefab);
                         }
                     }
                     else
