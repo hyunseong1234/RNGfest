@@ -11,10 +11,6 @@ namespace Dev.jeon.Bullet
         [Header("화염 스플래시 설정")]
         [SerializeField] private float _splashRadius = 1.5f;
 
-        [Header("시각 효과")]
-        [SerializeField] private BaseObject _explosionEffectPrefab;
-        // _effectDuration은 이제 이펙트 스크립트가 관리하므로 여기서 지워도 됩니다.
-
         private Coroutine _moveCoroutine;
 
         public override void Init(Transform target, float damage, float speed = 20f)
@@ -63,16 +59,15 @@ namespace Dev.jeon.Bullet
         private void Explode(Vector3 explosionCenter)
         {
             var mainManager = ServiceLocator.Instance.GetService<MainManager>();
-            var poolManager = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
 
             // 1. 데미지 처리
             if (mainManager != null)
             {
                 float sqrRadius = _splashRadius * _splashRadius;
                 var enemiesInRange = mainManager.SpawnEnemys
-                .Where(e => e != null && e.gameObject.activeSelf)
-                .Where(e => (e.transform.position - explosionCenter).sqrMagnitude <= sqrRadius)
-                .ToList();
+                    .Where(e => e != null && e.gameObject.activeSelf)
+                    .Where(e => (e.transform.position - explosionCenter).sqrMagnitude <= sqrRadius)
+                    .ToList();
 
                 foreach (var enemy in enemiesInRange)
                 {
@@ -80,20 +75,13 @@ namespace Dev.jeon.Bullet
                 }
             }
 
-            // 2. 이펙트 생성 (생성만 하고 신경 끕니다)
-            if (poolManager != null && _explosionEffectPrefab != null)
-            {
-                var explosionEffect = poolManager.GetFromPool<BaseObject>(_explosionEffectPrefab);
-                if (explosionEffect != null)
-                {
-                    explosionEffect.transform.position = explosionCenter + new Vector3(0, 0.5f, 0);
-                }
-            }
+            // 2. [수정] 부모의 공통 함수 호출! 
+            // 이제 _explosionEffectPrefab 대신 부모의 _hitEffectPrefab을 사용합니다.
+            SpawnHitEffect(explosionCenter);
 
-            // 3. 총알은 즉시 퇴근!
+            // 3. 총알 퇴근
             ReturnToPool();
         }
-
 
         private void ReturnToPool()
         {

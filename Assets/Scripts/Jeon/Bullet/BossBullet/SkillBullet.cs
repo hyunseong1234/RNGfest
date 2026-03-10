@@ -10,7 +10,7 @@ namespace Dev.jeon.Bullet
 
         private Tower _targetTower;
         private TileObject _targetTile;
-
+        [SerializeField] private GameObject _EffectPrefab;
         public void InitSkill(Tower target, float speed, ESkillType type)
         {
             _skillType = type;
@@ -24,17 +24,34 @@ namespace Dev.jeon.Bullet
         // 부모의 로직을 완전히 덮어씌워서 타일 기반 판정을 수행
         protected override void HitTarget()
         {
+            SpawnHitEffect(transform.position);
             // 타겟 타워가 아직 그 타일 위에 그대로 있다면 효과 적용
-            if (_targetTower != null && _targetTower.gameObject.activeSelf && _targetTower.CurrentTile == _targetTile)
+            if (_target != null && _target.gameObject.activeSelf)
             {
-                if (_skillType == ESkillType.ICE) _targetTower.Seal();
-                else _targetTower.Downgrade();
+                if (_target.TryGetComponent(out Tower tower))
+                {
+                    // 3. 타일 기반 판정: 타워가 아직 그 타일 위에 그대로 있다면 효과 적용
+                    if (tower.CurrentTile == _targetTile)
+                    {
+                        if (_skillType == ESkillType.ICE)
+                        {
+                            tower.Seal(_EffectPrefab);
+                        }
+                        else if (_skillType == ESkillType.SHAMAN)
+                        {
+                            tower.Downgrade();
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("<color=yellow>[Skill] 타워가 타일을 벗어나 빗나감!</color>");
+                    }
+                }
+                else
+                {
+                    Debug.Log("<color=cyan>[Skill] 타겟이 타워가 아님 (바닥 충돌 처리)</color>");
+                }
             }
-            else
-            {
-                Debug.Log("<color=cyan>[Skill] 타워가 사라져서 바닥 충돌!</color>");
-            }
-
             // 부모의 ReturnToPool 호출 (에러 없이 정상 작동)
             ReturnToPool();
         }
