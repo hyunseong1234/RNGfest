@@ -1,94 +1,119 @@
 using Newtonsoft.Json;
 using PlayFab;
 using PlayFab.ClientModels;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// 서버에 보낼 데이터 구조 (기획 내용 반영)
-[System.Serializable]
-public class UserGameData
-{
-    public int gold = 100;
-    public int high_score = 0;
-    public List<int> towerLevels = new List<int> { 1, 1, 1, 1, 1 }; // 초기 타워 레벨들
-}
-
 public class PlayFabDataManager : MonoBehaviour
 {
+    [System.Serializable]
+    public class UserGameData
+    {
+        public int gold = 500;
+        public int high_score = 0;
+        public List<int> towerLevels = new List<int> { 1, 1, 1, 1, 1 };
+    }
+
     public static PlayFabDataManager Instance;
 
-    [Header("Settings")]
+    [Header("서버 설정")]
     public string titleId = "18F60C";
-    public UserGameData userData; // 현재 게임 중인 데이터
+
+    [Header("유저 데이터")]
+    public string myPlayFabID;
+    public UserGameData userData;
+
+    // 로그인 성공 시 실행될 콜백 이벤트
+    public Action OnLoginSuccessEvent;
 
     void Awake()
     {
-        Instance = this;
-        // 서버 주소 고정
+        if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); }
+        else { Destroy(gameObject); }
+
         PlayFabSettings.staticSettings.TitleId = titleId;
     }
 
-    void Start()
+    // 1. 기존 계정 확인 (자동 로그인 시도)
+    public void CheckExistingAccount()
     {
-        Login();
+        Debug.Log("기존 계정 확인 중...");
+        var request = new LoginWithCustomIDRequest
+        {
+            CustomId = SystemInfo.deviceUniqueIdentifier,
+            CreateAccount = false
+        };
+
+        PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, error =>
+        {
+            if (error.Error == PlayFabErrorCode.AccountNotFound)
+                Debug.Log("신규 유저입니다. 로그인이 필요합니다.");
+            else
+                Debug.LogError("서버 오류: " + error.GenerateErrorReport());
+        });
     }
 
-    // [1] 로그인: 기기 고유 번호로 자동 계정 생성
-    public void Login()
+    // 2. 신규 게스트 가입 버튼 클릭 시 호출
+    public void SignUpGuest()
     {
         var request = new LoginWithCustomIDRequest
         {
             CustomId = SystemInfo.deviceUniqueIdentifier,
             CreateAccount = true
         };
-
-        PlayFabClientAPI.LoginWithCustomID(request,
-            result =>
-            {
-                Debug.Log("서버 로그인 성공!");
-                LoadData(); // 로그인 성공하면 바로 데이터 불러오기
-            },
-            error => Debug.LogError("로그인 실패: " + error.GenerateErrorReport()));
+        PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, OnLoginFailure);
     }
 
-    // [2] 데이터 적재 (Save): 클라우드 서버로 전송
+    private void OnLoginSuccess(LoginResult result)
+    {
+        myPlayFabID = result.PlayFabId;
+
+        if (result.NewlyCreated)
+        {
+            Debug.Log($"[신규 유저] UID({myPlayFabID}) 생성.");
+            InitializeNewUser();
+        }
+        else
+        {
+            Debug.Log($"[기존 유저] UID({myPlayFabID}) 로그인.");
+            LoadData();
+        }
+
+        // 로그인이 완전히 끝났음을 UI 매니저 등에 알림
+        OnLoginSuccessEvent?.Invoke();
+    }
+
+    private void OnLoginFailure(PlayFabError error) => Debug.LogError("접속 실패: " + error.GenerateErrorReport());
+
+    private void InitializeNewUser()
+    {
+        userData = new UserGameData();
+        SaveData();
+    }
+
     public void SaveData()
     {
         if (userData == null) return;
-
-        // 객체를 JSON 문자열로 변환 (Json.NET 사용)
         string json = JsonConvert.SerializeObject(userData);
-
-        var request = new UpdateUserDataRequest
-        {
-            Data = new Dictionary<string, string> { { "PlayerStats", json } }
-        };
-
-        PlayFabClientAPI.UpdateUserData(request,
-            result => Debug.Log("클라우드 저장 완료!"),
-            error => Debug.LogError("저장 실패: " + error.GenerateErrorReport()));
+        var request = new UpdateUserDataRequest { Data = new Dictionary<string, string> { { "PlayerStats", json } } };
+        PlayFabClientAPI.UpdateUserData(request, result => Debug.Log("저장 성공"), OnLoginFailure);
     }
 
-    // [3] 데이터 불러오기 (Load): 서버에서 가져오기
     public void LoadData()
     {
         var request = new GetUserDataRequest();
-
         PlayFabClientAPI.GetUserData(request, result =>
         {
             if (result.Data != null && result.Data.ContainsKey("PlayerStats"))
             {
-                // 서버 JSON을 다시 객체로 복구
-                string json = result.Data["PlayerStats"].Value;
-                userData = JsonConvert.DeserializeObject<UserGameData>(json);
-                Debug.Log("기존 데이터 불러오기 성공!");
+                userData = JsonConvert.DeserializeObject<UserGameData>(result.Data["PlayerStats"].Value);
+                Debug.Log("데이터 로드 완료");
             }
             else
             {
-                Debug.Log("신규 유저입니다. 초기 데이터를 설정합니다.");
-                userData = new UserGameData(); // 새 데이터 생성
-                SaveData(); // 서버에 첫 기록 생성
+                InitializeNewUser();
             }
-        }, error => Debug.LogError("불러오기 실패: " + error.GenerateErrorReport()));
+        }, OnLoginFailure);
     }
 }

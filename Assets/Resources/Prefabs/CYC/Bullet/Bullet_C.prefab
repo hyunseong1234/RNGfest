@@ -47,7 +47,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _poolTag: 
   _target: {fileID: 0}
+  _isUI: 0
+  _hitEffectPrefab: {fileID: 0}
   _damage: 10
+  _fontColor: 0
 --- !u!1001 &7346396405982699293
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -56,6 +59,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5906375856216890158}
     m_Modifications:
+    - target: {fileID: 2896673204480563031, guid: a1329b19127c08044b6e11d249046652, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3001660582162831945, guid: a1329b19127c08044b6e11d249046652, type: 3}
       propertyPath: m_Name
       value: SpinPortalBlue (1)
@@ -103,8 +110,39 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7761221804986556073, guid: a1329b19127c08044b6e11d249046652, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7127233188227430180}
   m_SourcePrefab: {fileID: 100100000, guid: a1329b19127c08044b6e11d249046652, type: 3}
+--- !u!1 &1028723453616931252 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7761221804986556073, guid: a1329b19127c08044b6e11d249046652, type: 3}
+  m_PrefabInstance: {fileID: 7346396405982699293}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7127233188227430180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1028723453616931252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!4 &1048740703459837153 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7745703754644167676, guid: a1329b19127c08044b6e11d249046652, type: 3}
