@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using PlayFab;
 using PlayFab.ClientModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,19 +14,20 @@ public class PlayFabDataManager : MonoBehaviour
         public int gold = 500;
         public int high_score = 0;
         public List<int> towerLevels = new List<int> { 1, 1, 1, 1, 1 };
+        public bool isDeleted = false;
+        public string lastLoginId = "";
     }
 
     public static PlayFabDataManager Instance;
-
-    [Header("서버 설정")]
     public string titleId = "18F60C";
-
-    [Header("유저 데이터")]
     public string myPlayFabID;
     public UserGameData userData;
 
-    // 로그인 성공 시 실행될 콜백 이벤트
-    public Action OnLoginSuccessEvent;
+    public Action OnLoginSuccessEvent;  // 로그인 최종 완료 시 (UI 끄기용)
+    public Action OnNeedSignUpEvent;    // 계정 없을 때 (가입 패널 띄우기용)
+
+    private string _currentCustomId;
+    private string _sessionKey;
 
     void Awake()
     {
@@ -33,33 +35,51 @@ public class PlayFabDataManager : MonoBehaviour
         else { Destroy(gameObject); }
 
         PlayFabSettings.staticSettings.TitleId = titleId;
+        _currentCustomId = PlayerPrefs.GetString("CurrentCustomID", SystemInfo.deviceUniqueIdentifier);
+        _sessionKey = SystemInfo.deviceUniqueIdentifier + "_" + DateTime.Now.Ticks;
     }
 
-    // 1. 기존 계정 확인 (자동 로그인 시도)
+    private void OnApplicationQuit()
+    {
+        if (PlayFabClientAPI.IsClientLoggedIn() && userData != null && !userData.isDeleted)
+        {
+            userData.lastLoginId = "";
+            SaveDataImmediate();
+        }
+    }
+
+    // [자동 로그인 시도]
     public void CheckExistingAccount()
     {
-        Debug.Log("기존 계정 확인 중...");
+        Debug.Log($"[로그인 확인] ID: {_currentCustomId}");
         var request = new LoginWithCustomIDRequest
         {
-            CustomId = SystemInfo.deviceUniqueIdentifier,
-            CreateAccount = false
+            CustomId = _currentCustomId,
+            CreateAccount = false // 중요: 계정 없으면 에러를 뱉게 함
         };
-
         PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, error =>
         {
             if (error.Error == PlayFabErrorCode.AccountNotFound)
-                Debug.Log("신규 유저입니다. 로그인이 필요합니다.");
-            else
-                Debug.LogError("서버 오류: " + error.GenerateErrorReport());
+            {
+                Debug.LogWarning("계정 없음: 가입 패널을 요청합니다.");
+                OnNeedSignUpEvent?.Invoke(); // UI 매니저에게 패널 띄우라고 신호
+            }
+            else { Debug.LogError(error.GenerateErrorReport()); }
         });
     }
 
-    // 2. 신규 게스트 가입 버튼 클릭 시 호출
-    public void SignUpGuest()
+    // [신규 가입 - 게스트]
+    public void SignUpNewAccount()
     {
+        // 신규 가입 시에는 ID를 새로 생성해서 충돌 방지
+        string nextId = SystemInfo.deviceUniqueIdentifier + "_" + DateTime.Now.Ticks;
+        PlayerPrefs.SetString("CurrentCustomID", nextId);
+        PlayerPrefs.Save();
+        _currentCustomId = nextId;
+
         var request = new LoginWithCustomIDRequest
         {
-            CustomId = SystemInfo.deviceUniqueIdentifier,
+            CustomId = _currentCustomId,
             CreateAccount = true
         };
         PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, OnLoginFailure);
@@ -68,36 +88,7 @@ public class PlayFabDataManager : MonoBehaviour
     private void OnLoginSuccess(LoginResult result)
     {
         myPlayFabID = result.PlayFabId;
-
-        if (result.NewlyCreated)
-        {
-            Debug.Log($"[신규 유저] UID({myPlayFabID}) 생성.");
-            InitializeNewUser();
-        }
-        else
-        {
-            Debug.Log($"[기존 유저] UID({myPlayFabID}) 로그인.");
-            LoadData();
-        }
-
-        // 로그인이 완전히 끝났음을 UI 매니저 등에 알림
-        OnLoginSuccessEvent?.Invoke();
-    }
-
-    private void OnLoginFailure(PlayFabError error) => Debug.LogError("접속 실패: " + error.GenerateErrorReport());
-
-    private void InitializeNewUser()
-    {
-        userData = new UserGameData();
-        SaveData();
-    }
-
-    public void SaveData()
-    {
-        if (userData == null) return;
-        string json = JsonConvert.SerializeObject(userData);
-        var request = new UpdateUserDataRequest { Data = new Dictionary<string, string> { { "PlayerStats", json } } };
-        PlayFabClientAPI.UpdateUserData(request, result => Debug.Log("저장 성공"), OnLoginFailure);
+        LoadData();
     }
 
     public void LoadData()
@@ -108,12 +99,60 @@ public class PlayFabDataManager : MonoBehaviour
             if (result.Data != null && result.Data.ContainsKey("PlayerStats"))
             {
                 userData = JsonConvert.DeserializeObject<UserGameData>(result.Data["PlayerStats"].Value);
-                Debug.Log("데이터 로드 완료");
+                if (userData.isDeleted) { SignUpNewAccount(); return; }
+
+                // 중복 로그인 체크
+                if (!string.IsNullOrEmpty(userData.lastLoginId) && userData.lastLoginId != _sessionKey)
+                {
+                    Debug.LogWarning("중복 로그인 감지!");
+                }
+                userData.lastLoginId = _sessionKey;
+                SaveData();
             }
-            else
-            {
-                InitializeNewUser();
-            }
+            else { InitializeNewUser(); }
+
+            OnLoginSuccessEvent?.Invoke();
         }, OnLoginFailure);
+    }
+
+    public void RequestDeleteAccount()
+    {
+        userData.isDeleted = true;
+        userData.lastLoginId = "";
+        SaveDataImmediate();
+
+        // ID 미리 갱신해서 다음 접속 시 신규 유저 취급받게 함
+        PlayerPrefs.SetString("CurrentCustomID", SystemInfo.deviceUniqueIdentifier + "_" + DateTime.Now.Ticks);
+        PlayerPrefs.Save();
+
+        var scriptReq = new ExecuteCloudScriptRequest { FunctionName = "DeletePlayerAccount" };
+        PlayFabClientAPI.ExecuteCloudScript(scriptReq, r => StartCoroutine(QuitApplicationAfterDelay(1.5f)), null);
+    }
+
+    public void SaveData()
+    {
+        if (userData == null) return;
+        string json = JsonConvert.SerializeObject(userData);
+        var request = new UpdateUserDataRequest { Data = new Dictionary<string, string> { { "PlayerStats", json } } };
+        PlayFabClientAPI.UpdateUserData(request, null, null);
+    }
+
+    private void SaveDataImmediate()
+    {
+        string json = JsonConvert.SerializeObject(userData);
+        var request = new UpdateUserDataRequest { Data = new Dictionary<string, string> { { "PlayerStats", json } } };
+        PlayFabClientAPI.UpdateUserData(request, null, null);
+    }
+
+    private void InitializeNewUser() { userData = new UserGameData(); userData.lastLoginId = _sessionKey; SaveData(); }
+    private void OnLoginFailure(PlayFabError error) => Debug.LogError(error.GenerateErrorReport());
+    private IEnumerator QuitApplicationAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+    Application.Quit(); 
+#endif
     }
 }

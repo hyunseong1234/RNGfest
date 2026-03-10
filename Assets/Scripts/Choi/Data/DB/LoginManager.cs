@@ -1,41 +1,70 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LoginManager : MonoBehaviour
 {
     [SerializeField] private TMP_Text _uidText;
-    [SerializeField] private GameObject _loginPanel;
 
+    // 이 패널은 처음에 꺼져있다가, 계정이 없을 때만 켜집니다.
+    [SerializeField] private GameObject _signUpPanel;
+    [SerializeField] private GameObject _startPanel;
 
     private void Start()
     {
-        // 서버 매니저의 로그인 성공 이벤트에 내 함수를 등록
-        PlayFabDataManager.Instance.OnLoginSuccessEvent += HandleLoginSuccess;
+        // 1. 초기화: 가입 패널은 꺼둔 채로 시작
+        if (_signUpPanel != null) _signUpPanel.SetActive(false);
 
-        // 시작하자마자 기존 계정이 있는지 찔러봄
+        // 2. 이벤트 연결
+        PlayFabDataManager.Instance.OnLoginSuccessEvent += HandleLoginSuccess;
+        PlayFabDataManager.Instance.OnNeedSignUpEvent += HandleNeedSignUp;
+
+        // 3. 기존 유저인지 자동 로그인 시도
         PlayFabDataManager.Instance.CheckExistingAccount();
     }
 
-    // [버튼 연결용] 게스트 로그인 버튼 누를 때
-    public void _OnClickGuestLogin()
+    // 기존 유저가 없어서 가입이 필요할 때 호출됨
+    private void HandleNeedSignUp()
     {
-        PlayFabDataManager.Instance.SignUpGuest();
+        Debug.Log("신규 유저용 가입 패널 활성화");
+        if (_signUpPanel != null) _signUpPanel.SetActive(true);
     }
 
-    // 실제로 로그인이 성공했을 때 화면 처리
+    // 로그인이 최종 성공했을 때 호출됨 (자동 로그인 혹은 가입 완료 후)
     private void HandleLoginSuccess()
     {
-        if (_loginPanel != null) _loginPanel.SetActive(false);
-        if (_uidText != null) _uidText.text = "UID: " + PlayFabDataManager.Instance.myPlayFabID;
+        Debug.Log("최종 로그인 성공: 패널을 닫고 UI를 갱신합니다.");
+        if (_signUpPanel != null) _signUpPanel.SetActive(false);
 
-        Debug.Log("로그인 성공으로 인해 UI를 닫습니다.");
-        // 여기서 로비 씬 전환 등의 로직 추가 가능
+        if (_uidText != null)
+            _uidText.text = "UID: " + PlayFabDataManager.Instance.myPlayFabID;
+        if (_startPanel != null)
+            _startPanel.SetActive(true);
+    }
+
+    // [버튼] 게스트 가입 버튼에 연결
+    public void _OnClickGuestSignUp()
+    {
+        PlayFabDataManager.Instance.SignUpNewAccount();
+    }
+
+    // [버튼] 탈퇴 버튼에 연결
+    public void _OnClickDelete()
+    {
+        PlayFabDataManager.Instance.RequestDeleteAccount();
+    }
+
+    public void _OnClickNextScene()
+    {
+
     }
 
     private void OnDestroy()
     {
-        // 메모리 누수 방지를 위해 이벤트 해제
         if (PlayFabDataManager.Instance != null)
+        {
             PlayFabDataManager.Instance.OnLoginSuccessEvent -= HandleLoginSuccess;
+            PlayFabDataManager.Instance.OnNeedSignUpEvent -= HandleNeedSignUp;
+        }
     }
 }
