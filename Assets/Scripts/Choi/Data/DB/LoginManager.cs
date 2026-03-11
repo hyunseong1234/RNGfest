@@ -1,21 +1,23 @@
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LoginManager : MonoBehaviour
 {
     [SerializeField] private TMP_Text _uidText;
 
-    // 이 패널은 처음에 꺼져있다가, 계정이 없을 때만 켜집니다.
     [SerializeField] private GameObject _signUpPanel;
+
     [SerializeField] private GameObject _startPanel;
 
     private void Start()
     {
-        // 1. 초기화: 가입 패널은 꺼둔 채로 시작
+
         if (_signUpPanel != null) _signUpPanel.SetActive(false);
 
-        // 2. 이벤트 연결
+
         PlayFabDataManager.Instance.OnLoginSuccessEvent += HandleLoginSuccess;
         PlayFabDataManager.Instance.OnNeedSignUpEvent += HandleNeedSignUp;
 
@@ -42,13 +44,17 @@ public class LoginManager : MonoBehaviour
             _startPanel.SetActive(true);
     }
 
-    // [버튼] 게스트 가입 버튼에 연결
+    /// <summary>
+    /// 게스트 가입 버튼에 연결
+    /// </summary>
     public void _OnClickGuestSignUp()
     {
         PlayFabDataManager.Instance.SignUpNewAccount();
     }
 
-    // [버튼] 탈퇴 버튼에 연결
+    /// <summary>
+    /// 탈퇴 버튼에 연결
+    /// </summary>
     public void _OnClickDelete()
     {
         PlayFabDataManager.Instance.RequestDeleteAccount();
@@ -56,7 +62,7 @@ public class LoginManager : MonoBehaviour
 
     public void _OnClickNextScene()
     {
-
+        SceneManager.LoadScene(1); //
     }
 
     private void OnDestroy()
