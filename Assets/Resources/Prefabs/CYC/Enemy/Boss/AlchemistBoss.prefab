@@ -173,9 +173,16 @@ MonoBehaviour:
     SpecialValues: []
   currentState: 1
   _animator: {fileID: 0}
+  _attackAniNum: 2
+  _waypointIndex: 0
   _getGold: 10
-  _skillInterval: 4
+  _skillTileInterval: 4
   _skillMotionDuration: 1.5
+  _shieldPercent: 0.05
+  _skillDelay: 1
+  _mergeEffectPrefab: {fileID: -2779815991736958363, guid: bcbcefc94d2ff1e48aa7de20e145a813, type: 3}
+  _shieldEffectPrefab: {fileID: -6934088425556604548, guid: 241081be8eafe8b47b8e4b1c31cf8552, type: 3}
+  _shatterEffectPrefab: {fileID: 0}
 --- !u!1 &5756651686647709477
 GameObject:
   m_ObjectHideFlags: 0

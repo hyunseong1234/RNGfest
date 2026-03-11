@@ -10,8 +10,13 @@ namespace Dev.jeon.Boss
     public class AlchemistBoss : BaseBoss
     {
         [Header("Alchemist Settings")]
-        [SerializeField] private float _healPercent = 0.05f;
-        [SerializeField] private float _healDelay = 1.0f;
+        [SerializeField] private float _shieldPercent = 0.05f;
+        [SerializeField] private float _skillDelay = 1.0f;
+
+        [Header("Visual Effects (Direct Prefab)")]
+        [SerializeField] private BaseObject _mergeEffectPrefab;   // 합성 즉발 연출 프리팹
+        [SerializeField] private BaseObject _shieldEffectPrefab;  // 루프형 보호막 프리팹
+        [SerializeField] private BaseObject _shatterEffectPrefab; // 보호막 파괴 연출 프리팹
 
         protected override IEnumerator ApplySkillEffectRoutine()
         {
@@ -20,53 +25,41 @@ namespace Dev.jeon.Boss
 
             if (main == null || pool == null) yield break;
 
-            // 1. 강제 합성 로직 (기존과 동일)
-            HandleForceMerge(main);
+            // 1. 강제 합성 로직 (즉발 연출)
+            HandleForceMerge(main, pool);
 
-            // 2. 기획 조건: 1초 대기
-            yield return new WaitForSeconds(_healDelay);
+            // 2. 1초 대기
+            yield return new WaitForSeconds(_skillDelay);
 
-            // 3. 체력 회복 및 폰트 출력
+            // 3. 보호막 생성 로직
             if (_stat != null)
             {
-                float healAmount = _stat.MaxHp.Value * _healPercent;
-                _stat.CurrentHp += healAmount;
-                if (_stat.CurrentHp > _stat.MaxHp.Value) _stat.CurrentHp = _stat.MaxHp.Value;
+                float shieldAmount = _stat.MaxHp.Value * _shieldPercent;
 
-                // [핵심] 회복 폰트 띄우기
-                ShowHealFont(pool, main, healAmount);
+                // [수정] 프리팹 객체 자체를 넘겨줍니다.
+                AddShield(shieldAmount, _shieldEffectPrefab, _shatterEffectPrefab);
 
-                Debug.Log($"[연금술사 보스] {healAmount} 회복 완료!");
+                ShowHealFont(pool, main, shieldAmount);
+                Debug.Log($"[연금술사] {shieldAmount} 보호막 생성!");
             }
         }
 
-        private void ShowHealFont(ObjectPoolingManger pool, MainManager main, float amount)
-        {
-            // Enemy.cs에 있는 데미지 폰트 로직을 그대로 활용합니다.
-            var healFont = pool.GetFromPool<DamageFont>("DamageFont");
-            if (healFont != null)
-            {
-                // 데미지 폰트 사이즈 크기 증가 3배로 증가
-                healFont.transform.localScale = Vector3.one * 3.0f;
-                healFont.SetDamage(amount, transform, FontColor.Yellow);
-
-                // UI 리스트에 추가하여 화면에 표시
-                main.SpawnUI.Add(healFont);
-            }
-        }
-
-        private void HandleForceMerge(MainManager main)
+        private void HandleForceMerge(MainManager main, ObjectPoolingManger pool)
         {
             var activeTowers = main.SpawnTowers.Where(t => t != null && t.gameObject.activeSelf).ToList();
             var mergeableGroups = activeTowers.GroupBy(t => t.Lank).Where(g => g.Count() >= 2).ToList();
 
             if (mergeableGroups.Count > 0)
             {
-                var targetGroup = mergeableGroups[Random.Range(0, mergeableGroups.Count)].ToList();
+                var targetGroup = mergeableGroups[UnityEngine.Random.Range(0, mergeableGroups.Count)].ToList();
                 Tower t1 = targetGroup[0];
                 Tower t2 = targetGroup[1];
-                int nextLank = t1.Lank + 1;
 
+                // [연출] 프리팹 직접 전달
+                SpawnEffect(pool, t1.transform.position);
+                SpawnEffect(pool, t2.transform.position);
+
+                int nextLank = t1.Lank + 1;
                 if (nextLank <= 7)
                 {
                     TileObject targetTile = t1.CurrentTile;
@@ -74,6 +67,29 @@ namespace Dev.jeon.Boss
                     main.RemoveUnit(t2);
                     main.BuildTower(targetTile, nextLank);
                 }
+            }
+        }
+
+        private void SpawnEffect(ObjectPoolingManger pool, Vector3 pos)
+        {
+            if (_mergeEffectPrefab == null) return;
+
+            var effect = pool.GetFromPool<BaseObject>(_mergeEffectPrefab);
+            if (effect != null)
+            {
+                effect.gameObject.SetActive(true);
+                effect.transform.position = pos + Vector3.up * 0.5f;
+            }
+        }
+
+        private void ShowHealFont(ObjectPoolingManger pool, MainManager main, float amount)
+        {
+            var shieldFont = pool.GetFromPool<DamageFont>("DamageFont");
+            if (shieldFont != null)
+            {
+                shieldFont.transform.localScale = Vector3.one * 3.0f;
+                shieldFont.SetDamage(amount, transform, FontColor.Cyan);
+                main.SpawnUI.Add(shieldFont);
             }
         }
     }

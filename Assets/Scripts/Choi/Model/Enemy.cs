@@ -7,6 +7,9 @@ public class Enemy : BaseUnit
     public int _waypointIndex = 0; //현재 가고있는 플레그 인덱스
     [SerializeField] private int _getGold = 10; //몬스터가 사망시 주는돈
 
+    protected float _currentShield = 0;
+    protected BaseObject _shieldVisualInstance; // 생성된 보호막 인스턴스
+    protected BaseObject _shatterPrefab;        // 깨질 때 쓸 프리팹
     public int GetGold { get => _getGold; set => _getGold = value; }
 
     protected override void Awake()
@@ -40,36 +43,92 @@ public class Enemy : BaseUnit
         }
     }
 
-    public override void OnReturnToPool()
+    
+
+
+    public void AddShield(float amount, BaseObject shieldPrefab, BaseObject shatterPrefab)
     {
-        base.OnReturnToPool();
-        _waypointIndex = 0;
-        _stat.CurrentHp = _stat.MaxHp.Value;
+        _currentShield += amount;
+        _shatterPrefab = shatterPrefab; // 깨지는 연출 기억
+
+        if (_shieldVisualInstance == null && shieldPrefab != null)
+        {
+            var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+            // 프리팹으로 풀링
+            _shieldVisualInstance = pool.GetFromPool<BaseObject>(shieldPrefab);
+            if (_shieldVisualInstance != null)
+            {
+                _shieldVisualInstance.gameObject.SetActive(true);
+                _shieldVisualInstance.transform.SetParent(this.transform);
+                _shieldVisualInstance.transform.localPosition = Vector3.up * 1.0f;
+            }
+        }
     }
-
-
-
 
     public void OnDamaged(float damage, FontColor colortype)
     {
         var main = ServiceLocator.Instance.GetService<MainManager>();
-        _stat.CurrentHp -= damage; // StatusInfo에 hp가 있다고 가정
+        var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
 
-        //데미지 폰트 출력
-        var damageObj = ServiceLocator.Instance.GetService<ObjectPoolingManger>().GetFromPool<DamageFont>("DamageFont");
-        if (damageObj != null)
+        // 보호막 선처리
+        if (_currentShield > 0)
         {
-            damageObj.SetDamage(damage, transform, colortype);
+            if (_currentShield >= damage)
+            {
+                _currentShield -= damage;
+                damage = 0;
+            }
+            else
+            {
+                damage -= _currentShield;
+                _currentShield = 0;
+            }
 
-            main.SpawnUI.Add(damageObj);
+            // 보호막 파괴 시점
+            if (_currentShield <= 0) BreakShield(pool);
+        }
+
+        //  체력 처리
+        if (damage > 0)
+        {
+            _stat.CurrentHp -= damage;
+
+            var damageObj = pool.GetFromPool<DamageFont>("DamageFont");
+            if (damageObj != null)
+            {
+                damageObj.SetDamage(damage, transform, colortype);
+                main.SpawnUI.Add(damageObj);
+            }
         }
 
         if (_stat.CurrentHp <= 0)
         {
             var system = ServiceLocator.Instance.GetService<SystemManager>();
-            //디지는 판정은 여기서 하기 때문에 돈주는거랑 더미 연출도 여기다가 넣을 예정
             main.RemoveUnit(this);
             system.Gold += _getGold;
+        }
+    }
+
+    private void BreakShield(ObjectPoolingManger pool)
+    {
+       // Debug.Log($"<color=red><b>[보호막 파괴]</b> {gameObject.name}의 보호막이 완전히 파괴되었습니다!</color>");
+        // 1. 입고 있던 보호막 반납
+        if (_shieldVisualInstance != null)
+        {
+            pool.ReturnPool(_shieldVisualInstance);
+            _shieldVisualInstance = null;
+        }
+
+        // 2. 쪼개지는 파티클 즉시 생성 (프리팹으로 풀링)
+        if (_shatterPrefab != null)
+        {
+            var shatter = pool.GetFromPool<BaseObject>(_shatterPrefab);
+            if (shatter != null)
+            {
+                shatter.gameObject.SetActive(true);
+                shatter.transform.position = transform.position + Vector3.up * 1.0f;
+
+            }
         }
     }
 
@@ -109,7 +168,20 @@ public class Enemy : BaseUnit
             ChangeState(EState.IDLE);
         }
     }
+    public override void OnReturnToPool()
+    {
+        base.OnReturnToPool();
+        _waypointIndex = 0;
+        _stat.CurrentHp = _stat.MaxHp.Value;
 
+        // 반납 시 보호막 제거
+        if (_shieldVisualInstance != null)
+        {
+            ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(_shieldVisualInstance);
+            _shieldVisualInstance = null;
+        }
+        _stat.CurrentHp = _stat.MaxHp.Value;
+    }
     public override void ActiveAttack()
     {
         throw new System.NotImplementedException();

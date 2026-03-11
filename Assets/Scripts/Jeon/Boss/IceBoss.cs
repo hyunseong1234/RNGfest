@@ -1,9 +1,10 @@
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
-using Dev.jeon.Model;
 using Dev.jeon.Bullet;
-using Dev.jeon.Effect; // TargetScopeEffect 사용을 위해 추가
+using Dev.jeon.Effect;
+using Dev.jeon.Model;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dev.jeon.Boss
@@ -17,49 +18,75 @@ namespace Dev.jeon.Boss
         [Header("Scope Settings")]
         [SerializeField] private BaseObject _scopePrefab;
 
+        //  [최적화] 메모리 할당 방지를 위한 캐싱 변수들
+        private List<Tower> _tempValidTowers = new List<Tower>();
+        private WaitForSeconds _skillWait;
+        private float _lastWaitDuration = -1f;
+
         protected override IEnumerator ApplySkillEffectRoutine()
         {
             var main = ServiceLocator.Instance.GetService<MainManager>();
             var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+            var towers = main.SpawnTowers;
 
-            if (main.SpawnTowers == null || main.SpawnTowers.Count == 0) yield break;
+            if (towers == null || towers.Count == 0) yield break;
 
-            // 1. 타겟 타워 랜덤 선택
-            var availableTowers = main.SpawnTowers.FindAll(t => !t.IsSealed);
-            if (availableTowers.Count == 0) yield break;
+            // 1. [할당 제거] 유효한 타워 리스트 채우기 (for 루프 사용)
+            _tempValidTowers.Clear();
+            for (int i = 0; i < towers.Count; i++)
+            {
+                if (!towers[i].IsSealed)
+                {
+                    _tempValidTowers.Add(towers[i]);
+                }
+            }
 
-            int rand = Random.Range(0, availableTowers.Count);
-            Tower target = availableTowers[rand];
+            if (_tempValidTowers.Count == 0) yield break;
 
-            // 2.  조준 시작: 스코프 소환
+            // 2. 타겟 랜덤 선택
+            Tower target = _tempValidTowers[UnityEngine.Random.Range(0, _tempValidTowers.Count)];
+
+            // 3. 조준 연출 시작
             BaseObject scopeObj = null;
             if (_scopePrefab != null)
             {
                 scopeObj = pool.GetFromPool<BaseObject>(_scopePrefab);
-                if (scopeObj != null && scopeObj.TryGetComponent(out TargetScopeEffect scopeScript))
+                if (scopeObj != null)
                 {
-                    // 타워 위치에 스코프 배치 (살짝 위로 0.1f)
+                    scopeObj.gameObject.SetActive(true);
                     scopeObj.transform.position = target.transform.position + Vector3.up * 0.1f;
-                    // 1.5초 동안 조준 연출 실행 (부모의 _skillMotionDuration 사용)
-                    scopeScript.StartLockOn(_skillMotionDuration);
+
+                    // 스코프 스크립트 실행
+                    if (scopeObj.TryGetComponent(out TargetScopeEffect scopeScript))
+                    {
+                        scopeScript.StartLockOn(_skillMotionDuration);
+                    }
                 }
             }
 
-            // 3.  조준 시간 동안 대기 (1.5초)
-            yield return new WaitForSeconds(_skillMotionDuration);
+            // 4. [최적화] WaitForSeconds 캐싱 로직
+            // Duration이 바뀌었을 때만 새로 생성하고, 평소에는 캐싱된 것을 재사용
+            if (_lastWaitDuration != _skillMotionDuration)
+            {
+                _skillWait = new WaitForSeconds(_skillMotionDuration);
+                _lastWaitDuration = _skillMotionDuration;
+            }
 
-            // 4.  발사! (조준이 끝난 시점에 타워가 아직 있으면 발사)
+            yield return _skillWait;
+
+            // 5. 발사!
             if (target != null && target.gameObject.activeSelf)
             {
                 var bullet = pool.GetFromPool<BossBullet>(_bulletPrefab);
                 if (bullet != null)
                 {
+                    bullet.gameObject.SetActive(true);
                     bullet.transform.position = transform.position + Vector3.up * 2f;
                     bullet.InitBossSkill(target, _bulletSpeed);
                 }
             }
 
-            // 5. 스코프 반납
+            // 6. 스코프 반납
             if (scopeObj != null)
             {
                 pool.ReturnPool(scopeObj);
@@ -69,6 +96,7 @@ namespace Dev.jeon.Boss
         public override void OnReturnToPool()
         {
             base.OnReturnToPool();
+            _tempValidTowers.Clear(); // 리스트 정리
             _movedTileCount = 0;
             _lastWaypointIndex = 0;
         }

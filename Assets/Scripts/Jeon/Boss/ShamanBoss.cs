@@ -1,11 +1,10 @@
-using Dev.cheol.Manager;
+ï»¿using Dev.cheol.Manager;
 using Dev.cheol.Model;
 using Dev.jeon.Bullet;
+using Dev.jeon.Effect;
 using Dev.jeon.Model;
-using Dev.jeon.Effect; // TargetScopeEffect »ç¿ëÀ» À§ÇØ Ãß°¡
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Dev.jeon.Boss
@@ -19,55 +18,72 @@ namespace Dev.jeon.Boss
         [Header("Scope Settings")]
         [SerializeField] private BaseObject _scopePrefab;
 
+        private List<Tower> _tempAvailableTowers = new List<Tower>();
+        private List<Tower> _targetTowers = new List<Tower>();
+        private List<BaseObject> _activeScopes = new List<BaseObject>();
+
         protected override IEnumerator ApplySkillEffectRoutine()
         {
             var main = ServiceLocator.Instance.GetService<MainManager>();
             var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
             var towers = main.SpawnTowers;
 
-            // 1. Å¸°ÙÆÃ ´ë»ó ¼±Á¤
             if (towers == null || towers.Count == 0) yield break;
 
-            // ºÀÀÎµÇÁö ¾ÊÀº Å¸¿ö Áß ·£´ıÇÏ°Ô ¼¯±â
-            var availableTowers = towers.FindAll(t => !t.IsSealed).OrderBy(x => Random.value).ToList();
-            if (availableTowers.Count == 0) yield break;
+            // 1. [í• ë‹¹ ì œê±°] ìœ íš¨í•œ íƒ€ì›Œ ìˆ˜ì§‘
+            _tempAvailableTowers.Clear();
+            for (int i = 0; i < towers.Count; i++)
+            {
+                if (!towers[i].IsSealed) _tempAvailableTowers.Add(towers[i]);
+            }
 
-            int targetCount = Mathf.Min(2, availableTowers.Count);
-            List<Tower> targetTowers = new List<Tower>();
-            List<BaseObject> activeScopes = new List<BaseObject>();
+            if (_tempAvailableTowers.Count == 0) yield break;
 
-            // 2. Á¶ÁØ ½ÃÀÛ: ½ºÄÚÇÁ ¼ÒÈ¯ ¹× ¹èÄ¡
+            // 2. [í• ë‹¹ ì œê±°] íƒ€ê²ŸíŒ… ëŒ€ìƒ ëœë¤ ì„ ì • (ìµœëŒ€ 2ê°œ)
+            _targetTowers.Clear();
+            _activeScopes.Clear();
+            int targetCount = Mathf.Min(2, _tempAvailableTowers.Count);
+
             for (int i = 0; i < targetCount; i++)
             {
-                Tower target = availableTowers[i];
-                targetTowers.Add(target);
+                // ëœë¤í•˜ê²Œ í•˜ë‚˜ ë½‘ê³  ë¦¬ìŠ¤íŠ¸ì—ì„œ ë§ˆì§€ë§‰ ìš”ì†Œì™€ êµì²´í•´ì„œ ì¤‘ë³µ ë°©ì§€ (Fisher-Yates ë°©ì‹ ì‘ìš©)
+                int randomIndex = UnityEngine.Random.Range(i, _tempAvailableTowers.Count);
+                Tower selected = _tempAvailableTowers[randomIndex];
 
+                // ìŠ¤ì™‘í•´ì„œ ë‹¤ìŒ ë£¨í”„ ë•Œ ì¤‘ë³µ ì•ˆ ë˜ê²Œ í•¨
+                _tempAvailableTowers[randomIndex] = _tempAvailableTowers[i];
+                _tempAvailableTowers[i] = selected;
+
+                _targetTowers.Add(selected);
+
+                // 3. ì¡°ì¤€ ì—°ì¶œ ì‹œì‘
                 if (_scopePrefab != null)
                 {
                     var scopeObj = pool.GetFromPool<BaseObject>(_scopePrefab);
                     if (scopeObj != null)
                     {
                         scopeObj.gameObject.SetActive(true);
-                        scopeObj.transform.position = target.transform.position + Vector3.up * 0.1f;
+                        scopeObj.transform.position = selected.transform.position + Vector3.up * 0.1f;
 
                         if (scopeObj.TryGetComponent(out TargetScopeEffect scopeScript))
                         {
                             scopeScript.StartLockOn(_skillMotionDuration);
                         }
-                        activeScopes.Add(scopeObj);
+                        _activeScopes.Add(scopeObj);
                     }
                 }
             }
 
-            // 3. Á¶ÁØ ½Ã°£ µ¿¾È ´ë±â (1.5ÃÊ)
+            // 4. ì¡°ì¤€ ëŒ€ê¸°
             yield return new WaitForSeconds(_skillMotionDuration);
 
-            // 4. ¹ß»ç! (Á¶ÁØÀÌ ³¡³­ ½ÃÁ¡¿¡µµ Å¸¿ö°¡ »ì¾ÆÀÖÀ¸¸é ¹ß»ç)
-            foreach (var target in targetTowers)
+            // 5. ë°œì‚¬!
+            for (int i = 0; i < _targetTowers.Count; i++)
             {
+                var target = _targetTowers[i];
                 if (target != null && target.gameObject.activeSelf)
                 {
-                    var bullet = pool.GetFromPool<BossBullet>(_bulletPrefab.name);
+                    var bullet = pool.GetFromPool<BossBullet>(_bulletPrefab);
                     if (bullet != null)
                     {
                         bullet.gameObject.SetActive(true);
@@ -77,20 +93,20 @@ namespace Dev.jeon.Boss
                 }
             }
 
-            // 5. ½ºÄÚÇÁµé ¹İ³³
-            foreach (var scope in activeScopes)
+            // 6. ìŠ¤ì½”í”„ ë°˜ë‚© (forë¬¸ìœ¼ë¡œ ìˆœíšŒ)
+            for (int i = 0; i < _activeScopes.Count; i++)
             {
-                if (scope != null) pool.ReturnPool(scope);
+                if (_activeScopes[i] != null) pool.ReturnPool(_activeScopes[i]);
             }
-
-            Debug.Log($"[ÁÖ¼ú»ç] {targetCount}°³ÀÇ Å¸¿ö¿¡ Á¶ÁØ ÈÄ ÀúÁÖ ¹ß»ç ¿Ï·á!");
         }
 
         public override void OnReturnToPool()
         {
             base.OnReturnToPool();
-            _movedTileCount = 0;
-            _lastWaypointIndex = 0;
+            // ë¦¬ìŠ¤íŠ¸ë“¤ ì •ë¦¬
+            _tempAvailableTowers.Clear();
+            _targetTowers.Clear();
+            _activeScopes.Clear();
         }
     }
 }
