@@ -144,29 +144,7 @@ namespace Dev.cheol.Model
                 StartCoroutine(DestroyRoutine(delay));
             }
         }
-        private IEnumerator DestroyRoutine(float delay)
-        {
-            // 1. 기능 정지 (타워가 더 이상 공격 못 하게 봉인)
-            _isSealed = true;
-            if (_animator != null) _animator.speed = 0;
-            if (StarUI != null) StarUI.gameObject.SetActive(false); // 별 UI 끄기
-
-            // 2. 타일 비워주기 (그래야 플레이어가 즉시 다음 타워를 건설함)
-            if (CurrentTile != null)
-            {
-                CurrentTile._isUsed = false;
-            }
-
-            // 3. 총알에서 넘겨준 시간(delay)만큼 대기 (연출 감상 타임)
-            yield return new WaitForSeconds(delay);
-
-            // 4. 최종적으로 매니저에서 삭제하고 풀(Pool)로 반납
-            var mainManager = ServiceLocator.Instance.GetService<MainManager>();
-            if (mainManager != null)
-            {
-                mainManager.RemoveUnit(this);
-            }
-        }
+       
         // 2. DowngradEffect 함수도 시간을 받아서 Downgrade에 전달
         public void DowngradEffect(BaseObject downgradePrefab, BaseObject destroyPrefab, float delay)
         {
@@ -201,6 +179,30 @@ namespace Dev.cheol.Model
                         effect.transform.position = this.transform.position;
                     }
                 }
+            }
+        }
+
+        private IEnumerator DestroyRoutine(float delay)
+        {
+            // 1. 기능 정지 (타워가 더 이상 공격 못 하게 봉인)
+            _isSealed = true;
+            if (_animator != null) _animator.speed = 0;
+            if (StarUI != null) StarUI.gameObject.SetActive(false); // 별 UI 끄기
+
+            // 2. 타일 비워주기 (그래야 플레이어가 즉시 다음 타워를 건설함)
+            if (CurrentTile != null)
+            {
+                CurrentTile._isUsed = false;
+            }
+
+            // 3. 총알에서 넘겨준 시간(delay)만큼 대기 (연출 감상 타임)
+            yield return new WaitForSeconds(delay);
+
+            // 4. 최종적으로 매니저에서 삭제하고 풀(Pool)로 반납
+            var mainManager = ServiceLocator.Instance.GetService<MainManager>();
+            if (mainManager != null)
+            {
+                mainManager.RemoveUnit(this);
             }
         }
         public override void OnReturnToPool()
