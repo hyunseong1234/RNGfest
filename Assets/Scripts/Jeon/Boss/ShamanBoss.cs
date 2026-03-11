@@ -2,7 +2,9 @@ using Dev.cheol.Manager;
 using Dev.cheol.Model;
 using Dev.jeon.Bullet;
 using Dev.jeon.Model;
+using Dev.jeon.Effect; // TargetScopeEffect 사용을 위해 추가
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -11,45 +13,77 @@ namespace Dev.jeon.Boss
     public class ShamanBoss : BaseBoss
     {
         [Header("Curse Settings")]
-        [SerializeField] private SkillBullet _bulletPrefab;
-        [SerializeField] private float _bulletSpeed = 1.5f;
+        [SerializeField] private BossBullet _bulletPrefab;
+        [SerializeField] private float _bulletSpeed = 15f;
+
+        [Header("Scope Settings")]
+        [SerializeField] private BaseObject _scopePrefab;
 
         protected override IEnumerator ApplySkillEffectRoutine()
-        {
-            CastCurse();
-            yield return null;
-        }
-
-        private void CastCurse()
         {
             var main = ServiceLocator.Instance.GetService<MainManager>();
             var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
             var towers = main.SpawnTowers;
 
-            // 1. 필드에 타워가 없으면 즉시 종료
-            if (towers == null || towers.Count == 0) return;
+            // 1. 타겟팅 대상 선정
+            if (towers == null || towers.Count == 0) yield break;
 
-            // 2. 랜덤하게 리스트 섞기
-            var randomTowers = towers.OrderBy(x => Random.value).ToList();
+            // 봉인되지 않은 타워 중 랜덤하게 섞기
+            var availableTowers = towers.FindAll(t => !t.IsSealed).OrderBy(x => Random.value).ToList();
+            if (availableTowers.Count == 0) yield break;
 
-            // [수정 포인트] 전체 타워 개수와 2개 중 작은 값을 선택 (타워가 1개면 1개만, 2개 이상이면 2개 선택)
-            int targetCount = Mathf.Min(2, randomTowers.Count);
+            int targetCount = Mathf.Min(2, availableTowers.Count);
+            List<Tower> targetTowers = new List<Tower>();
+            List<BaseObject> activeScopes = new List<BaseObject>();
 
+            // 2. 조준 시작: 스코프 소환 및 배치
             for (int i = 0; i < targetCount; i++)
             {
-                Tower target = randomTowers[i];
-                var bullet = pool.GetFromPool<SkillBullet>(_bulletPrefab);
+                Tower target = availableTowers[i];
+                targetTowers.Add(target);
 
-                if (bullet != null)
+                if (_scopePrefab != null)
                 {
-                    bullet.transform.position = transform.position + Vector3.up * 2f;
+                    var scopeObj = pool.GetFromPool<BaseObject>(_scopePrefab);
+                    if (scopeObj != null)
+                    {
+                        scopeObj.gameObject.SetActive(true);
+                        scopeObj.transform.position = target.transform.position + Vector3.up * 0.1f;
 
-                    // 타일 타겟팅 로직이 포함된 InitSkill 호출
-                    bullet.InitSkill(target, _bulletSpeed, SkillBullet.ESkillType.SHAMAN);
+                        if (scopeObj.TryGetComponent(out TargetScopeEffect scopeScript))
+                        {
+                            scopeScript.StartLockOn(_skillMotionDuration);
+                        }
+                        activeScopes.Add(scopeObj);
+                    }
                 }
             }
 
-            Debug.Log($"[주술사] {targetCount}개의 타워에 저주 발사! (타일 기반)");
+            // 3. 조준 시간 동안 대기 (1.5초)
+            yield return new WaitForSeconds(_skillMotionDuration);
+
+            // 4. 발사! (조준이 끝난 시점에도 타워가 살아있으면 발사)
+            foreach (var target in targetTowers)
+            {
+                if (target != null && target.gameObject.activeSelf)
+                {
+                    var bullet = pool.GetFromPool<BossBullet>(_bulletPrefab.name);
+                    if (bullet != null)
+                    {
+                        bullet.gameObject.SetActive(true);
+                        bullet.transform.position = transform.position + Vector3.up * 2f;
+                        bullet.InitBossSkill(target, _bulletSpeed);
+                    }
+                }
+            }
+
+            // 5. 스코프들 반납
+            foreach (var scope in activeScopes)
+            {
+                if (scope != null) pool.ReturnPool(scope);
+            }
+
+            Debug.Log($"[주술사] {targetCount}개의 타워에 조준 후 저주 발사 완료!");
         }
 
         public override void OnReturnToPool()

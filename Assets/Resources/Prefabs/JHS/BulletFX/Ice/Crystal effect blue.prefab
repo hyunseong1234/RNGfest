@@ -9750,7 +9750,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 582359e02c5db20429408f8a64c7e6e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _poolTag: 
+  _poolTag: Crystal effect blue
   _target: {fileID: 0}
   _isUI: 0
 --- !u!1 &6148872651101487413

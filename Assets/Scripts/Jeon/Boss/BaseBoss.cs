@@ -44,7 +44,7 @@ namespace Dev.jeon.Model
 
             yield return new WaitForSeconds(_skillMotionDuration);
 
-            // 2. 자식 클래스의 스킬 실행 (이제 대쉬가 없으니 금방 끝납니다)
+            // 2. 자식 클래스의 스킬 실행 
             yield return StartCoroutine(ApplySkillEffectRoutine());
 
             // 3. 다시 이동 재개

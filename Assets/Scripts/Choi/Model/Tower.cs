@@ -1,5 +1,6 @@
 using Dev.cheol.Manager;
 using Dev.cheol.UI;
+using System.Collections;
 using UnityEngine;
 
 namespace Dev.cheol.Model
@@ -141,25 +142,68 @@ namespace Dev.cheol.Model
                 // 2. [핵심] 별 UI 갱신!!
                 if (StarUI != null)
                 {
-                    StarUI.Init(this); // 다시 Init을 호출하면 깎인 Lank에 맞춰 별이 바뀜
+                    StarUI.Init(this);
                 }
             }
             else
             {
-                // 1성일 때 다운그레이드 시 파괴 로직 (이전 답변 참고)
-                Debug.Log($"{gameObject.name}이 1성에서 강등되어 파괴됩니다!");
+                StartCoroutine(DestroyRoutine(0.5f));
+            }
+        }
+        private IEnumerator DestroyRoutine(float delay)
+        {
+            // 1. 기능 즉시 정지
+            _isSealed = true;
+            if (_animator != null) _animator.speed = 0;
+            if (StarUI != null) StarUI.gameObject.SetActive(false); // 별 숨기기
 
-                // 1. 타일 점유 해제 (유저님이 만든 _isUsed 활용)
-                if (CurrentTile != null)
+            // 2. 타일 비워주기 (그래야 플레이어가 바로 다른 타워 지음)
+            if (CurrentTile != null) CurrentTile._isUsed = false;
+
+            // 3. 이펙트 터지는 시간 대기
+            yield return new WaitForSeconds(delay);
+
+            // 4. 최종적으로 게임에서 제거 및 풀 반납
+            var mainManager = ServiceLocator.Instance.GetService<MainManager>();
+            if (mainManager != null) mainManager.RemoveUnit(this);
+        }
+        public void DowngradEffect(BaseObject downgradePrefab, BaseObject destroyPrefab)
+        {
+            // 중요: 현재 랭크를 미리 저장해둡니다. (Downgrade() 호출 후에는 값이 바뀌기 때문)
+            int beforeLank = Lank;
+
+            // 1. 실제 랭크 감소 로직 실행
+            Downgrade();
+
+            // 2. 상황에 맞는 연출 실행
+            var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+
+            if (beforeLank > 1)
+            {
+                // [일반 강등 연출] 2성 -> 1성 등
+                if (downgradePrefab != null)
                 {
-                    CurrentTile._isUsed = false;
+                    var effect = pool.GetFromPool<BaseObject>(downgradePrefab.name);
+                    if (effect != null)
+                    {
+                        effect.gameObject.SetActive(true);
+                        effect.transform.position = this.transform.position + Vector3.up * 0.5f;
+                        Debug.Log($"<color=magenta>[Tower] {gameObject.name} 강등 연출!</color>");
+                    }
                 }
-
-                // 2. 메인 매니저를 통해 리스트에서 지우고 풀로 반납
-                var mainManager = ServiceLocator.Instance.GetService<MainManager>();
-                if (mainManager != null)
+            }
+            else
+            {
+                // [파괴 연출] 1성 -> 파괴
+                if (destroyPrefab != null)
                 {
-                    mainManager.RemoveUnit(this);
+                    var effect = pool.GetFromPool<BaseObject>(destroyPrefab.name);
+                    if (effect != null)
+                    {
+                        effect.gameObject.SetActive(true);
+                        // 파괴될 때는 타워 발밑이나 중앙에서 크게 터지는 느낌
+                        effect.transform.position = this.transform.position;
+                    }
                 }
             }
         }

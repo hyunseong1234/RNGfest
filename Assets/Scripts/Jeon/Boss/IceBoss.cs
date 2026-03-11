@@ -11,7 +11,7 @@ namespace Dev.jeon.Boss
     public class IceBoss : BaseBoss
     {
         [Header("Projectile Settings")]
-        [SerializeField] private SkillBullet _bulletPrefab;
+        [SerializeField] private BossBullet _bulletPrefab;
         [SerializeField] private float _bulletSpeed = 15f;
 
         [Header("Scope Settings")]
@@ -51,11 +51,11 @@ namespace Dev.jeon.Boss
             // 4.  발사! (조준이 끝난 시점에 타워가 아직 있으면 발사)
             if (target != null && target.gameObject.activeSelf)
             {
-                var bullet = pool.GetFromPool<SkillBullet>(_bulletPrefab);
+                var bullet = pool.GetFromPool<BossBullet>(_bulletPrefab);
                 if (bullet != null)
                 {
                     bullet.transform.position = transform.position + Vector3.up * 2f;
-                    bullet.InitSkill(target, _bulletSpeed, SkillBullet.ESkillType.ICE);
+                    bullet.InitBossSkill(target, _bulletSpeed);
                 }
             }
 

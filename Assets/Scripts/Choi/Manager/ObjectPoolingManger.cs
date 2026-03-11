@@ -125,7 +125,7 @@ namespace Dev.cheol.Manager
 
         public override void HandleEvent(string data) { }
 
-        internal void ReturnPool(SkillBullet skillBullet)
+        internal void ReturnPool(BossBullet skillBullet)
         {
             throw new NotImplementedException();
         }

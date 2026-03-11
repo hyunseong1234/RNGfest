@@ -155,7 +155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e78dd1eb733b46c40b859c46c144c1f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _poolTag: 
+  _poolTag: Ice Boss
   _target: {fileID: 0}
   _isUI: 0
   _stat:
@@ -178,7 +178,7 @@ MonoBehaviour:
   _getGold: 10
   _skillTileInterval: 4
   _skillMotionDuration: 1.5
-  _bulletPrefab: {fileID: -7997947162433473867, guid: de184905467d8f642a43fded944fb922, type: 3}
+  _bulletPrefab: {fileID: 1272907618916568948, guid: de184905467d8f642a43fded944fb922, type: 3}
   _bulletSpeed: 3
   _scopePrefab: {fileID: 8620680803446921347, guid: 4455268dc2addb449a39f8558c48f58e, type: 3}
 --- !u!1 &5756651686647709477

@@ -155,7 +155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2a0587af92b8564898261b48564a0ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _poolTag: 
+  _poolTag: Shaman Boss
   _target: {fileID: 0}
   _isUI: 0
   _stat:
@@ -173,12 +173,14 @@ MonoBehaviour:
     SpecialValues: []
   currentState: 1
   _animator: {fileID: 0}
+  _attackAniNum: 2
+  _waypointIndex: 0
   _getGold: 10
-  _skillInterval: 4
+  _skillTileInterval: 4
   _skillMotionDuration: 1.5
-  _bulletPrefab: {fileID: -7997947162433473867, guid: f34b0ef7ab2e3084db7e705907faa4eb, type: 3}
+  _bulletPrefab: {fileID: -5761271172960853165, guid: f34b0ef7ab2e3084db7e705907faa4eb, type: 3}
   _bulletSpeed: 1.5
-  _dashDistance: 1
+  _scopePrefab: {fileID: 8620680803446921347, guid: 4455268dc2addb449a39f8558c48f58e, type: 3}
 --- !u!1 &5756651686647709477
 GameObject:
   m_ObjectHideFlags: 0

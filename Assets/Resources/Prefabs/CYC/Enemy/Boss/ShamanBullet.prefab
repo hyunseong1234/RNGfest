@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5906375856216890158}
-  - component: {fileID: -7997947162433473867}
+  - component: {fileID: -5761271172960853165}
   m_Layer: 0
   m_Name: ShamanBullet
   m_TagString: Untagged
@@ -35,7 +35,7 @@ Transform:
   - {fileID: 4054689056499018441}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-7997947162433473867
+--- !u!114 &-5761271172960853165
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,16 +44,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 8953323700442454563}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86aca4bb96146454cab6e1bdb6f78e1b, type: 3}
+  m_Script: {fileID: 11500000, guid: e20a16e400a7cdd409463e446e40fe54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _poolTag: 
+  _poolTag: ShamanBullet
   _target: {fileID: 0}
   _isUI: 0
+  _hitEffectPrefab: {fileID: -713480815027136218, guid: 7bf47c0a59487034b8a8183a6a087398, type: 3}
   _damage: 10
   _fontColor: 0
   _arcHeight: 5
-  _skillType: 1
+  _effectPrefab: {fileID: 0}
+  _destroyEffectPrefab: {fileID: 0}
 --- !u!1001 &499918682944538327
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -65,6 +67,10 @@ PrefabInstance:
     - target: {fileID: 3148410418819525789, guid: acde350fe5598cf468f20143ca7f9a7a, type: 3}
       propertyPath: m_Name
       value: LightningOrbSharpBlue
+      objectReference: {fileID: 0}
+    - target: {fileID: 3148410418819525789, guid: acde350fe5598cf468f20143ca7f9a7a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4518578628311919646, guid: acde350fe5598cf468f20143ca7f9a7a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -129,6 +135,14 @@ PrefabInstance:
       value: LightningOrbSharpPink
       objectReference: {fileID: 0}
     - target: {fileID: 754704258039658649, guid: 372c5c5f98d2053498aa880cc38101fe, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512967768639627101, guid: 372c5c5f98d2053498aa880cc38101fe, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2964867075899181228, guid: 372c5c5f98d2053498aa880cc38101fe, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -196,6 +210,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4162922529700869005, guid: edce51965aa05404b9a7333f8e26aeec, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5663823208527212613, guid: edce51965aa05404b9a7333f8e26aeec, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5900083028491501524, guid: edce51965aa05404b9a7333f8e26aeec, type: 3}
@@ -237,6 +255,10 @@ PrefabInstance:
     - target: {fileID: 5900083028491501524, guid: edce51965aa05404b9a7333f8e26aeec, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8728600239173445653, guid: edce51965aa05404b9a7333f8e26aeec, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

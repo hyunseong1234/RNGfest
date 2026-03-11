@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5906375856216890158}
-  - component: {fileID: -7997947162433473867}
+  - component: {fileID: 1272907618916568948}
   m_Layer: 0
   m_Name: IceSkillBullet
   m_TagString: Untagged
@@ -33,7 +33,7 @@ Transform:
   - {fileID: 1597147609063743925}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-7997947162433473867
+--- !u!114 &1272907618916568948
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,18 +42,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 8953323700442454563}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86aca4bb96146454cab6e1bdb6f78e1b, type: 3}
+  m_Script: {fileID: 11500000, guid: 46bc1bbe0e15fa64cb8fbd5cb55e9a93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _poolTag: 
+  _poolTag: IceSkillBullet
   _target: {fileID: 0}
   _isUI: 0
   _hitEffectPrefab: {fileID: 6144038192694583708, guid: 491bd2f8e55e1db45a195465b18740bd, type: 3}
   _damage: 10
   _fontColor: 0
   _arcHeight: 5
-  _skillType: 0
-  _EffectPrefab: {fileID: -4322033275501261748, guid: 2c8ea7840028b3747af7437f8c36f773, type: 3}
+  _effectPrefab: {fileID: -4322033275501261748, guid: 2c8ea7840028b3747af7437f8c36f773, type: 3}
 --- !u!1001 &8437335513428187142
 PrefabInstance:
   m_ObjectHideFlags: 0
