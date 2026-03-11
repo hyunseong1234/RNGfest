@@ -6,11 +6,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+#region PlayFabDataManager 
 public class PlayFabDataManager : MonoBehaviour
 {
-
-
-
     public static PlayFabDataManager Instance;
     public string titleId = "18F60C";
     public string myPlayFabID;
@@ -41,7 +40,9 @@ public class PlayFabDataManager : MonoBehaviour
         }
     }
 
-    // [자동 로그인 시도]
+    /// <summary>
+    /// 자동 로그인 함수
+    /// </summary>
     public void CheckExistingAccount()
     {
         Debug.Log($"[로그인 확인] ID: {_currentCustomId}");
@@ -61,7 +62,9 @@ public class PlayFabDataManager : MonoBehaviour
         });
     }
 
-    // [신규 가입 - 게스트]
+    /// <summary>
+    /// 회원가입
+    /// </summary>
     public void SignUpNewAccount()
     {
         // 신규 가입 시에는 ID를 새로 생성해서 충돌 방지
@@ -91,7 +94,7 @@ public class PlayFabDataManager : MonoBehaviour
         var request = new GetUserDataRequest();
         PlayFabClientAPI.GetUserData(request, result =>
         {
-            // 1. 서버에 데이터가 있는지 확인
+            //서버에 데이터가 있는지 확인
             if (result.Data != null && result.Data.ContainsKey("PlayerStats"))
             {
                 // 데이터가 있으면 불러오기만 함 (추가 작업 X)
@@ -105,7 +108,7 @@ public class PlayFabDataManager : MonoBehaviour
             }
             else
             {
-                // 2. 데이터가 없으면 신규 유저로 간주하고 초기 설정 부여
+                // 데이터가 없으면 신규 유저로 간주하고 초기 설정 부여
                 InitializeNewUser();
             }
 
@@ -121,7 +124,7 @@ public class PlayFabDataManager : MonoBehaviour
         // 처음 가입할 때만 딱 한 번 실행됨
         userData = new UserGameData();
         userData.SetDefaultValues(_sessionKey);
-
+        userData._userNickName = NameGenerator.Generate();
         SaveData(); // 서버에 초기 데이터 저장
     }
 
@@ -217,21 +220,30 @@ public class PlayFabDataManager : MonoBehaviour
     }
 }
 
-
+#endregion 
 
 [Serializable]
 public class UserGameData
 {
     public int _gold = 0;
     public int _jewel = 0;
+    public string _userNickName;
     public List<TowerGameData> _towers;
     public bool _isDeleted = false;
     public string _lastLoginId = "";
 
+    public List<TowerPreset> _towerSlots = new List<TowerPreset>();
+    public int _currentSlot; //현재 슬롯 정보
+
+    /// <summary>
+    /// 데이터셋 
+    /// </summary>
+    /// <param name="sessionKey"></param>
     public void SetDefaultValues(string sessionKey)
     {
         _gold = 0;
         _jewel = 0;
+        _currentSlot = 0;
 
         _towers = new List<TowerGameData>
         {
@@ -239,19 +251,30 @@ public class UserGameData
             new TowerGameData(TowerType.Archer,1,0),
             new TowerGameData(TowerType.Speed,1,0),
             new TowerGameData(TowerType.Electric,1,0),
-            new TowerGameData(TowerType.Posion,1,0),
+            new TowerGameData(TowerType.Poison,1,0),
 
         };
+
+        _towerSlots = new List<TowerPreset>();
+        for (int i = 0; i < 4; i++)
+        {
+            TowerPreset newSlot = new TowerPreset();
+
+            _towerSlots.Add(newSlot);
+        }
 
         _isDeleted = false;
 
         _lastLoginId = sessionKey;
         Debug.Log("신규 유저 데이터 생성 완료");
     }
-
-
 }
 
+[System.Serializable]
+public class TowerPreset
+{
+    public List<TowerType> slotTowers = new List<TowerType>();
+}
 /// <summary>
 /// 타워 종류 추가될때마다 여기다 이넘 추가해야됩니다.
 /// </summary>
@@ -263,7 +286,7 @@ public enum TowerType
     Archer = 3,
     Speed = 4,
     Electric = 5,
-    Posion = 6,
+    Poison = 6,
     Stationary = 7,
     Marking = 8,
     Melee = 9,
@@ -287,8 +310,6 @@ public class TowerGameData
         _lv = lv;
         _currentExp = currentExp;
     }
-
-
 }
 
 
