@@ -1741,9 +1741,9 @@ RectTransform:
   - {fileID: 1807749909}
   - {fileID: 632261496}
   - {fileID: 1583350519}
+  - {fileID: 1456845863}
   - {fileID: 2132153387}
   - {fileID: 1658065719}
-  - {fileID: 1456845863}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1813,11 +1813,11 @@ MonoBehaviour:
   titleId: 18F60C
   myPlayFabID: 
   userData:
-    gold: 500
-    high_score: 0
-    towerLevels: 0100000001000000010000000100000001000000
-    isDeleted: 0
-    lastLoginId: 
+    _gold: 0
+    _jewel: 0
+    _towers: []
+    _isDeleted: 0
+    _lastLoginId: 
 --- !u!1 &1404397146
 GameObject:
   m_ObjectHideFlags: 0

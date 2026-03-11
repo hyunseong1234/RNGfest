@@ -151,7 +151,7 @@ public class PlayFabDataManager : MonoBehaviour
     public void OnGachaResult(TowerType rewardType)
     {
         // 1. 이미 가지고 있는 타워인가?
-        if (HasTower(this.userData, rewardType))
+        if (HasTower(rewardType))
         {
             // [중복 처리] 경험치를 주거나, 강화석으로 변환
             Debug.Log($"{rewardType} 중복 당첨! 조각이나 경험치로 변환합니다.");
