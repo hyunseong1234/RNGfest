@@ -53,9 +53,10 @@ MonoBehaviour:
   _hitEffectPrefab: {fileID: -713480815027136218, guid: 7bf47c0a59487034b8a8183a6a087398, type: 3}
   _damage: 10
   _fontColor: 0
-  _arcHeight: 5
+  _arcHeight: 3
   _effectPrefab: {fileID: 0}
-  _destroyEffectPrefab: {fileID: 0}
+  _destroyDelay: 1
+  _destroyEffectPrefab: {fileID: -8404238994813596819, guid: d8453e2bb4eb1a7479904b8140cc5119, type: 3}
 --- !u!1001 &499918682944538327
 PrefabInstance:
   m_ObjectHideFlags: 0

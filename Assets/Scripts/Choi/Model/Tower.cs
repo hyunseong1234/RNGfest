@@ -9,7 +9,7 @@ namespace Dev.cheol.Model
     public class Tower : BaseUnit
     {
         [SerializeField] private BaseObject _currentEffect; // 타워를 감싸는 얼음 모델링
-
+        [SerializeField] private float _destroyTime = 1.0f; // 0성 되면 파괴 되는 시간
         [SerializeField] private TileObject _currentTile;
         [SerializeField] private int _lank;
         [SerializeField] private LankStarUI _starUI;
@@ -128,80 +128,76 @@ namespace Dev.cheol.Model
             if (_animator != null) _animator.speed = 1;
         }
 
-        public void Downgrade()
+        public void Downgrade(float delay)
         {
             if (Lank > 1)
             {
-                Lank--; // 등급 하락
-
-                // 1. 스탯 갱신 (데이터 재설정)
+                Lank--;
                 var factory = ServiceLocator.Instance.GetService<FactoryManager>();
                 var data = factory.GetTowerData(PoolTag);
                 if (data != null) Setup(data, Lank);
-
-                // 2. [핵심] 별 UI 갱신!!
-                if (StarUI != null)
-                {
-                    StarUI.Init(this);
-                }
+                if (StarUI != null) StarUI.Init(this);
             }
             else
             {
-                StartCoroutine(DestroyRoutine(0.5f));
+                // 총알이 보내준 delay 시간을 사용합니다.
+                StartCoroutine(DestroyRoutine(delay));
             }
         }
         private IEnumerator DestroyRoutine(float delay)
         {
-            // 1. 기능 즉시 정지
+            // 1. 기능 정지 (타워가 더 이상 공격 못 하게 봉인)
             _isSealed = true;
             if (_animator != null) _animator.speed = 0;
-            if (StarUI != null) StarUI.gameObject.SetActive(false); // 별 숨기기
+            if (StarUI != null) StarUI.gameObject.SetActive(false); // 별 UI 끄기
 
-            // 2. 타일 비워주기 (그래야 플레이어가 바로 다른 타워 지음)
-            if (CurrentTile != null) CurrentTile._isUsed = false;
+            // 2. 타일 비워주기 (그래야 플레이어가 즉시 다음 타워를 건설함)
+            if (CurrentTile != null)
+            {
+                CurrentTile._isUsed = false;
+            }
 
-            // 3. 이펙트 터지는 시간 대기
+            // 3. 총알에서 넘겨준 시간(delay)만큼 대기 (연출 감상 타임)
             yield return new WaitForSeconds(delay);
 
-            // 4. 최종적으로 게임에서 제거 및 풀 반납
+            // 4. 최종적으로 매니저에서 삭제하고 풀(Pool)로 반납
             var mainManager = ServiceLocator.Instance.GetService<MainManager>();
-            if (mainManager != null) mainManager.RemoveUnit(this);
+            if (mainManager != null)
+            {
+                mainManager.RemoveUnit(this);
+            }
         }
-        public void DowngradEffect(BaseObject downgradePrefab, BaseObject destroyPrefab)
+        // 2. DowngradEffect 함수도 시간을 받아서 Downgrade에 전달
+        public void DowngradEffect(BaseObject downgradePrefab, BaseObject destroyPrefab, float delay)
         {
-            // 중요: 현재 랭크를 미리 저장해둡니다. (Downgrade() 호출 후에는 값이 바뀌기 때문)
             int beforeLank = Lank;
 
-            // 1. 실제 랭크 감소 로직 실행
-            Downgrade();
+            // 로직 실행 시 총알이 준 시간을 전달
+            Downgrade(delay);
 
-            // 2. 상황에 맞는 연출 실행
             var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
 
+            // 3. 1성인지 아닌지에 따라 "딱 하나"의 이펙트만 생성
             if (beforeLank > 1)
             {
-                // [일반 강등 연출] 2성 -> 1성 등
                 if (downgradePrefab != null)
                 {
-                    var effect = pool.GetFromPool<BaseObject>(downgradePrefab.name);
+                    var effect = pool.GetFromPool<BaseObject>(downgradePrefab);
                     if (effect != null)
                     {
                         effect.gameObject.SetActive(true);
                         effect.transform.position = this.transform.position + Vector3.up * 0.5f;
-                        Debug.Log($"<color=magenta>[Tower] {gameObject.name} 강등 연출!</color>");
                     }
                 }
             }
             else
             {
-                // [파괴 연출] 1성 -> 파괴
                 if (destroyPrefab != null)
                 {
-                    var effect = pool.GetFromPool<BaseObject>(destroyPrefab.name);
+                    var effect = pool.GetFromPool<BaseObject>(destroyPrefab);
                     if (effect != null)
                     {
                         effect.gameObject.SetActive(true);
-                        // 파괴될 때는 타워 발밑이나 중앙에서 크게 터지는 느낌
                         effect.transform.position = this.transform.position;
                     }
                 }
