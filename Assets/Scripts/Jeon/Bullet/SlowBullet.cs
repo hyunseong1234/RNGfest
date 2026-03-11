@@ -79,7 +79,7 @@ public class SlowBullet : BaseBullet
         ReturnToPool();
     }
 
-    private void ReturnToPool()
+    protected override void ReturnToPool()
     {
         ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(this);
     }

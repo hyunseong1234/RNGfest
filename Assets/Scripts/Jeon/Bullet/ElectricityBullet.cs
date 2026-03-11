@@ -44,7 +44,7 @@ namespace Dev.jeon.Bullet
 
                 if (Vector3.Distance(transform.position, _target.transform.position) < 0.05f)
                 {
-                    // 🟢 기존의 HitTarget() 대신, 데미지+시각효과를 동시에 처리하는 코루틴 실행
+                    // 기존의 HitTarget() 대신, 데미지+시각효과를 동시에 처리하는 코루틴 실행
                     StartCoroutine(HitAndDrawLightning());
                     yield break;
                 }
@@ -54,7 +54,7 @@ namespace Dev.jeon.Bullet
             ReturnToPool();
         }
 
-        // 🟢 여기가 핵심! 데미지를 주고 선을 그립니다.
+        //  데미지를 주고 선을 그립니다.
         private IEnumerator HitAndDrawLightning()
         {
             var primaryEnemy = _target.GetComponent<Enemy>();
@@ -130,7 +130,7 @@ namespace Dev.jeon.Bullet
                 .FirstOrDefault();
         }
 
-        private void ReturnToPool()
+        protected override void ReturnToPool()
         {
             ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(this);
         }

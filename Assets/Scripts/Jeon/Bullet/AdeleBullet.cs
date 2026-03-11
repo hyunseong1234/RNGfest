@@ -183,7 +183,7 @@ namespace Dev.jeon.Bullet
             }
         }
 
-        private void ReturnToPool()
+        protected override void ReturnToPool()
         {
             var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
             if (pool != null) pool.ReturnPool(this);

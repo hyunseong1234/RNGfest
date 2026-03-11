@@ -94,7 +94,7 @@ namespace Dev.jeon.Bullet
             }
         }
 
-        private void ReturnToPool()
+        protected override void ReturnToPool()
         {
             ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(this);
         }
