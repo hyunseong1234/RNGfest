@@ -12,6 +12,7 @@ namespace Dev.jeon.Boss
         [Header("Alchemist Settings")]
         [SerializeField] private float _shieldPercent = 0.05f;
         [SerializeField] private float _skillDelay = 1.0f;
+        [SerializeField] private float _mergeEffectDuration = 2.0f;
 
         [Header("Visual Effects (Direct Prefab)")]
         [SerializeField] private BaseObject _mergeEffectPrefab;   // 합성 즉발 연출 프리팹
@@ -79,6 +80,17 @@ namespace Dev.jeon.Boss
             {
                 effect.gameObject.SetActive(true);
                 effect.transform.position = pos + Vector3.up * 0.5f;
+                StartCoroutine(ReturnEffectToPool(pool, effect, _mergeEffectDuration));
+            }
+        }
+        private IEnumerator ReturnEffectToPool(ObjectPoolingManger pool, BaseObject effect, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+
+            if (effect != null && effect.gameObject.activeSelf)
+            {
+                // GetComponent 없이 받은 객체 그대로 반납
+                pool.ReturnPool(effect);
             }
         }
 

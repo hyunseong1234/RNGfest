@@ -23,16 +23,16 @@ namespace Dev.jeon.Bullet
         {
             SpawnHitEffect(transform.position);
 
-            // 타겟 타워가 아직 살아있고, 처음 조준했던 타일 위에 있다면 효과 실행
+            if (_hitEffectPrefab != null && _targetTower != null && _targetTower.gameObject.activeSelf)
+            {
+                _targetTower.ApplyHitEffect(_hitEffectPrefab);
+            }
+
             if (_targetTower != null && _targetTower.gameObject.activeSelf)
             {
                 if (_targetTower.CurrentTile == _targetTile)
                 {
-                    ApplySkillEffect(_targetTower);
-                }
-                else
-                {
-                    Debug.Log($"<color=yellow>[BossSkill] 타워가 타일을 벗어나 빗나감!</color>");
+                    ApplySkillEffect(_targetTower); // 여기서 얼음(Crystals crossfade 2)을 씌움
                 }
             }
 

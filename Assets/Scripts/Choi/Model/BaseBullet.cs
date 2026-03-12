@@ -19,14 +19,6 @@ namespace Dev.cheol.Model
         {
             if (_hitEffectPrefab == null) return;
 
-            var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
-            var effect = pool.GetFromPool<BaseObject>(_hitEffectPrefab);
-
-            if (effect != null)
-            {
-                // 약간의 높이 보정(0.5f)을 포함하여 위치 설정
-                effect.transform.position = position + new Vector3(0, 0.5f, 0);
-            }
         }
         protected virtual void ReturnToPool()
         {

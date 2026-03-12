@@ -23,6 +23,8 @@ namespace Dev.cheol.Model
         public int Lank { get => _lank; set => _lank = value; }
         public LankStarUI StarUI { get => _starUI; set => _starUI = value; }
         public EState CurrentState => _state;
+
+        private BaseObject _hitEffect;
         public override void ActiveAttack()
         {
             throw new System.NotImplementedException();
@@ -66,6 +68,34 @@ namespace Dev.cheol.Model
                 }
             }
 
+        }
+
+        public void ApplyHitEffect(BaseObject hitPrefab)
+        {
+            if (hitPrefab == null) return;
+
+            var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+            var effect = pool.GetFromPool<BaseObject>(hitPrefab);
+
+            if (effect != null)
+            {
+                // 타워의 자식으로 만들어서 따라다니게 함
+                effect.transform.SetParent(this.transform, false);
+                effect.transform.localPosition = new Vector3(0, 0.5f, 0); // 위치 보정
+
+                effect.gameObject.SetActive(true);
+
+                // 이전 히트 이펙트가 있다면 풀로 반납 (혹시 여러 번 맞을 경우 대비)
+                if (_hitEffect != null)
+                {
+                    _hitEffect.gameObject.SetActive(false);
+                    _hitEffect.transform.SetParent(null);
+                    pool.ReturnPool(_hitEffect);
+                }
+
+                // 내가 보관함!
+                _hitEffect = effect;
+            }
         }
         public void Seal(BaseObject effectPrefab)
         {
@@ -116,18 +146,25 @@ namespace Dev.cheol.Model
         public void UnSeal()
         {
             _isSealed = false;
+            var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
 
             if (_currentEffect != null)
             {
-                var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
-
+                _currentEffect.gameObject.SetActive(false);
+                _currentEffect.transform.SetParent(null);
                 pool.ReturnPool(_currentEffect);
                 _currentEffect = null;
             }
-
+            if (_hitEffect != null)
+            {
+                _hitEffect.transform.SetParent(null);
+                _hitEffect.gameObject.SetActive(false);
+                pool.ReturnPool(_hitEffect);
+                _hitEffect = null;
+            }
             if (_animator != null) _animator.speed = 1;
         }
-
+        
         public void Downgrade(float delay)
         {
             if (Lank > 1)
@@ -165,6 +202,7 @@ namespace Dev.cheol.Model
                     {
                         effect.gameObject.SetActive(true);
                         effect.transform.position = this.transform.position + Vector3.up * 0.5f;
+                        pool.StartCoroutine(ReturnEffectToPool(pool, effect, 1.5f));
                     }
                 }
             }
@@ -177,11 +215,28 @@ namespace Dev.cheol.Model
                     {
                         effect.gameObject.SetActive(true);
                         effect.transform.position = this.transform.position;
+                        pool.StartCoroutine(ReturnEffectToPool(pool, effect, 1.5f));
                     }
                 }
             }
         }
+        //이펙트 수거 전용 코루틴
+        private IEnumerator ReturnEffectToPool(ObjectPoolingManger pool, BaseObject effect, float delay)
+        {
+            yield return new WaitForSeconds(delay);
 
+            if (effect != null && effect.gameObject.activeSelf)
+            {
+                // 1. 다음번에 튀어나올 때 위치가 꼬이지 않게 부모 해제
+                effect.transform.SetParent(null);
+
+                // 2. 확실하게 화면에서 끄기 (이게 있어야 풀 매니저가 '비어있음'으로 인식함)
+                effect.gameObject.SetActive(false);
+
+                // 3. 풀로 반납
+                pool.ReturnPool(effect);
+            }
+        }
         private IEnumerator DestroyRoutine(float delay)
         {
             // 1. 기능 정지 (타워가 더 이상 공격 못 하게 봉인)
@@ -207,24 +262,10 @@ namespace Dev.cheol.Model
         }
         public override void OnReturnToPool()
         {
+            UnSeal();
+
             base.OnReturnToPool();
-            _isSealed = false; // 풀에 들어갈 때 봉인 해제
-
-            if (_currentEffect != null)
-            {
-                var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
-                if (pool != null)
-                {
-                    pool.ReturnPool(_currentEffect);
-                }
-                _currentEffect = null; // 참조 해제
-            }
-
-            // 3. 애니메이션 속도 복구 (혹시 멈춘 채로 들어갔을 경우 대비)
-            if (_animator != null)
-            {
-                _animator.speed = 1;
-            }
+           
         }
 
     }

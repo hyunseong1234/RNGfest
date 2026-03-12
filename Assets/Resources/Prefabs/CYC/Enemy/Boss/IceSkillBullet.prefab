@@ -45,10 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46bc1bbe0e15fa64cb8fbd5cb55e9a93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _poolTag: IceSkillBullet
+  _poolTag: 
   _target: {fileID: 0}
   _isUI: 0
-  _hitEffectPrefab: {fileID: 6144038192694583708, guid: 491bd2f8e55e1db45a195465b18740bd, type: 3}
+  _hitEffectPrefab: {fileID: -8604186694145980962, guid: aac011665ab6f17429828af15af2365a, type: 3}
   _damage: 10
   _fontColor: 0
   _arcHeight: 5
