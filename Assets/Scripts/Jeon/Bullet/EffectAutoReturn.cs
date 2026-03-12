@@ -1,26 +1,21 @@
+using Dev.cheol.Manager;
+using Dev.cheol.Model;
 using UnityEngine;
-using Dev.cheol.Manager; // ServiceLocator와 Manager가 있는 곳
-using Dev.cheol.Model;   // BaseObject가 있는 곳
 
 public class EffectAutoReturn : BaseObject
 {
-    [SerializeField] private float _duration = 0.5f; // 이펙트가 보여질 시간
+    [Header("이펙트가 유지될 시간")]
+    [SerializeField] private float _duration = 1.0f;
 
     private void OnEnable()
     {
-        // 1. 이름표 정제 (매니저가 알아볼 수 있게)
-        if (string.IsNullOrEmpty(PoolTag))
-        {
-            PoolTag = name.Replace("(Clone)", "");
-        }
-
-        // 2. _duration 초 뒤에 ReturnToPool 함수를 실행해라!
-        Invoke(nameof(ReturnSelf), _duration);
+        // 켜지자마자 _duration 초 후에 ReturnToPool 실행
+        Invoke(nameof(ReturnToPool), _duration);
     }
 
-    private void ReturnSelf()
+    private void ReturnToPool()
     {
-        // 3. 나 자신을 풀로 반납 (총알과는 별개로 움직임)
+        // 서비스 로케이터를 통해 풀에 나 자신을 반납
         var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
         if (pool != null)
         {
@@ -30,9 +25,9 @@ public class EffectAutoReturn : BaseObject
 
     private void OnDisable()
     {
-        // 혹시 모르니 꺼질 때 예약된 알람을 취소합니다.
+        // 혹시 모르니 꺼질 때 예약된 Invoke 취소
         CancelInvoke();
     }
 
-    public override void ObjectUpdate() { }
+    public override void ObjectUpdate() { } // BaseObject 추상 함수 구현
 }

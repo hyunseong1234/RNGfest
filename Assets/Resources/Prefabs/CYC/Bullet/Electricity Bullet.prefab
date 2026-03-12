@@ -51,11 +51,11 @@ MonoBehaviour:
   _poolTag: 
   _target: {fileID: 0}
   _isUI: 0
-  _fontColor: 1
-  _speed: 20
+  _hitEffectPrefab: {fileID: 9155152767076830120, guid: dcc57c150891f1c4988c2b27d0d50ec6, type: 3}
   _damage: 10
+  _fontColor: 1
   _bounceRadius: 5
-  _lineRenderer: {fileID: -6586564200743867887}
+  _lineRenderer: {fileID: 0}
   _lightningDuration: 0.2
   _startWidth: 0.5
   _endWidth: 0.1

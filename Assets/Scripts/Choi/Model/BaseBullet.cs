@@ -17,8 +17,21 @@ namespace Dev.cheol.Model
 
         protected void SpawnHitEffect(Vector3 position)
         {
-            if (_hitEffectPrefab == null) return;
+            if(_hitEffectPrefab == null) return;
 
+            // 서비스 로케이터로 풀링 매니저를 가져옵니다.
+            var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+            if (pool == null) return;
+
+            // 풀에서 이펙트를 꺼냅니다.
+            BaseObject effect = pool.GetFromPool<BaseObject>(_hitEffectPrefab);
+
+            if (effect != null)
+            {
+                effect.transform.position = position;
+                effect.gameObject.SetActive(true);
+                // Tip: 이펙트 프리팹 자체에 일정 시간 뒤 스스로 ReturnPool 되는 스크립트가 있어야 합니다.
+            }
         }
         protected virtual void ReturnToPool()
         {

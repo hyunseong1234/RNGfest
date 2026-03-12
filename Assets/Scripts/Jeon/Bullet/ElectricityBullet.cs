@@ -96,6 +96,7 @@ namespace Dev.jeon.Bullet
                 // 데미지 적용
                 int finalDamage = Mathf.RoundToInt(_damage * _damageMultipliers[i]);
                 currentTarget.OnDamaged(finalDamage, _fontColor);
+                SpawnHitEffect(currentTarget.transform.position);
                 hitEnemies.Add(currentTarget);
 
                 // 궤적 추가
