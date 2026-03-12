@@ -10,6 +10,7 @@ namespace Dev.jeon.Model
     {
         [SerializeField] private float _radius = 1.5f;     // 장판 영향 범위
         [SerializeField] private float _slowAmount = 0.5f; // 감속량
+        [SerializeField] private BaseObject _slowEffectPrefab; // 슬로우 버프 연출용 프리팹
         private float _duration;
 
         public void InitZone(float duration)
@@ -40,11 +41,13 @@ namespace Dev.jeon.Model
                         if (existingSlow == null)
                         {
                             var slowBuff = new SlowBuff(_slowAmount);
-                            slowBuff.Init(enemy, 0.5f); // 밟고 있는 동안은 짧은 버프를 계속 갱신
+                            // 수정된 Init 방식: 주인, 지속시간, 연출프리팹 3개를 전달
+                            slowBuff.Init(enemy, 0.5f, _slowEffectPrefab);
                             enemy.AddBuff(slowBuff);
                         }
                         else
                         {
+                            // 이미 버프가 있다면 시간만 0.5초로 다시 갱신
                             existingSlow.Refresh(0.5f);
                         }
                     }
@@ -53,7 +56,7 @@ namespace Dev.jeon.Model
                 timer += 0.1f;
             }
 
-            // 시간이 다 되면 풀로 반납
+            // 장판 수명이 다하면 풀로 반납
             ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(this);
         }
 

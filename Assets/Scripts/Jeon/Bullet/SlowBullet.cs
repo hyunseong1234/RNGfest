@@ -1,6 +1,6 @@
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
-using Dev.cheol.Stats; // SlowBuff와 Buff 시스템이 있는 곳
+using Dev.cheol.Stats;
 using Dev.jeon.Model;
 using System.Collections;
 using UnityEngine;
@@ -8,8 +8,8 @@ using UnityEngine;
 public class SlowBullet : BaseBullet
 {
     [Header("Slow Settings")]
-    [SerializeField] private float _slowAmount = 0.5f;  // 감속 비율 (50%)
-    [SerializeField] private float _slowDuration = 2.0f; // 감속 지속 시간
+    [SerializeField] private float _slowAmount = 0.5f;
+    [SerializeField] private float _slowDuration = 2.0f;
 
     private Coroutine _moveCoroutine;
 
@@ -26,7 +26,6 @@ public class SlowBullet : BaseBullet
     private IEnumerator MoveToTarget()
     {
         Vector3 lastTargetPos = _target.position;
-
         while (true)
         {
             if (_target != null && _target.gameObject.activeSelf)
@@ -34,19 +33,13 @@ public class SlowBullet : BaseBullet
                 lastTargetPos = _target.position;
             }
 
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                lastTargetPos,
-                _speed * Time.deltaTime
-            );
+            transform.position = Vector3.MoveTowards(transform.position, lastTargetPos, _speed * Time.deltaTime);
 
-            // 도착 체크
             if (Vector3.Distance(transform.position, lastTargetPos) < 0.05f)
             {
                 HitTarget();
                 yield break;
             }
-
             yield return null;
         }
     }
@@ -58,24 +51,22 @@ public class SlowBullet : BaseBullet
             if (_target.TryGetComponent(out Enemy enemy))
             {
                 enemy.OnDamaged(_damage, _fontColor);
+                SpawnHitEffect(transform.position);
 
                 var existingSlow = enemy.GetBuff<SlowBuff>();
-
                 if (existingSlow == null)
                 {
-                    // 버프가 없으면 새로 생성해서 추가
                     var slowBuff = new SlowBuff(_slowAmount);
-                    slowBuff.Init(enemy, _slowDuration);
+                    // 인자 3개를 모두 전달하도록 수정
+                    slowBuff.Init(enemy, _slowDuration, _hitEffectPrefab);
                     enemy.AddBuff(slowBuff);
                 }
                 else
                 {
-                    // 이미 있다면 시간만 갱신
                     existingSlow.Refresh(_slowDuration);
                 }
             }
         }
-
         ReturnToPool();
     }
 
@@ -86,11 +77,7 @@ public class SlowBullet : BaseBullet
 
     private void OnDisable()
     {
-        if (_moveCoroutine != null)
-        {
-            StopCoroutine(_moveCoroutine);
-            _moveCoroutine = null;
-        }
+        if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
         _target = null;
     }
 

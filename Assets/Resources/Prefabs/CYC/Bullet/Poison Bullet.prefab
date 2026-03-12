@@ -49,8 +49,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _poolTag: 
   _target: {fileID: 0}
-  _hitDamage: 10
+  _isUI: 0
+  _hitEffectPrefab: {fileID: 6215996759397009878, guid: a6b6fe37f3757b741893d0075e81612e, type: 3}
+  _damage: 10
+  _fontColor: 0
   _poisonDamage: 5
+  _poisonDuration: 5
+  _poisonBuffVFXPrefab: {fileID: 7758806987880727752, guid: ee33aab49cfc16e4aa0537cc6272e430, type: 3}
 --- !u!1001 &89714870194019272
 PrefabInstance:
   m_ObjectHideFlags: 0
