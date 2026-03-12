@@ -173,6 +173,7 @@ MonoBehaviour:
     SpecialValues: []
   currentState: 1
   _animator: {fileID: 0}
+  _attackAniNum: 2
   _waypointIndex: 0
   _getGold: 10
   _skillTileInterval: 4
@@ -180,6 +181,8 @@ MonoBehaviour:
   _minionPrefab: {fileID: -895302382902734158, guid: 1a2c45dc9c2803047a454ac20bfbe802, type: 3}
   _summonCount: 3
   _spacing: 0.5
+  _portalPrefab: {fileID: 3369151197022026474, guid: ceb9b3450eaf16d4bb79c643538c3673, type: 3}
+  _impactEffectPrefab: {fileID: -9212538156424395788, guid: f1e284c7021ce424fb37e03f52da0389, type: 3}
 --- !u!1 &5756651686647709477
 GameObject:
   m_ObjectHideFlags: 0

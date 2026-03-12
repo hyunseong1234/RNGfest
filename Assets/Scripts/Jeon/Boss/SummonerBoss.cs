@@ -1,4 +1,4 @@
-using Dev.cheol.Manager;
+ï»¿using Dev.cheol.Manager;
 using Dev.cheol.Model;
 using Dev.jeon.Model;
 using System.Collections;
@@ -14,6 +14,10 @@ namespace Dev.jeon.Boss
         [SerializeField] private int _summonCount = 3;
         [SerializeField] private float _spacing = 0.5f;
 
+        [Header("Effect Settings")]
+        [SerializeField] private BaseObject _portalPrefab;      // Portal blue í”„ë¦¬íŒ¹
+        [SerializeField] private BaseObject _impactEffectPrefab; // ë°”ë‹¥ ì°©ì§€/ë¨¼ì§€ í”„ë¦¬íŒ¹
+
         protected override IEnumerator ApplySkillEffectRoutine()
         {
             var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
@@ -22,25 +26,95 @@ namespace Dev.jeon.Boss
 
             Transform[] path = mapManager.FlagPoints;
 
+            // 1. ì†Œí™˜ì§„ ìœ„ì¹˜ ê³„ì‚° (ë³´ìŠ¤ ìœ„ì¹˜ 2íƒ€ì¼ ë’¤ ì§€ì ì˜ ë†’ì´ +5)
+            float portalDistanceBehind = 2.0f;
+            Vector3 groundTargetBase = GetPositionBehindAlongPath(path, portalDistanceBehind);
+            Vector3 portalSpawnPos = groundTargetBase + Vector3.up * 3.5f;
+
+            // 2. ì†Œí™˜ì§„(Portal blue) ìƒì„±
+            BaseObject portal = pool.GetFromPool<BaseObject>(_portalPrefab);
+            if (portal != null)
+            {
+                portal.transform.position = portalSpawnPos;
+                portal.transform.rotation = Quaternion.Euler(-45f, 180f, 0);
+                portal.gameObject.SetActive(true);
+            }
+
+            yield return new WaitForSeconds(0.5f);
+
+            // 3. ë¯¸ë‹ˆì–¸ ìˆœì°¨ ì†Œí™˜ (ê³¡ì„  ë‚™í•˜ ì—°ì¶œ í¬í•¨)
             for (int i = 0; i < _summonCount; i++)
             {
                 var minion = pool.GetFromPool<SummonedMinion>(_minionPrefab);
 
                 if (minion != null)
                 {
-                    // [°¡Àå Áß¿ä] ¿ÀºêÁ§Æ®¸¦ ¸ÕÀú È°¼ºÈ­ÇØ¾ß ChangeStateÀÇ ÄÚ·çÆ¾ÀÌ ÀÛµ¿ÇÕ´Ï´Ù.
-                    minion.gameObject.SetActive(true);
+                    float landDistance = portalDistanceBehind + (i * _spacing);
+                    Vector3 landPos = GetPositionBehindAlongPath(path, landDistance);
 
-                    // 1. À§Ä¡ ¼³Á¤
-                    float distanceBack = (i + 1) * _spacing;
-                    minion.transform.position = GetPositionBehindAlongPath(path, distanceBack);
+                    StartCoroutine(LandingRoutine(minion, portalSpawnPos, landPos, pool));
+                }
 
-                    // 2. ¼¼ÆÃ È£Ãâ (ÀÌÁ¦ È°¼ºÈ­ »óÅÂÀÌ¹Ç·Î ³»ºÎÀÇ ChangeState°¡ Á¤»ó ÀÛµ¿ÇÔ)
-                    float hp = this._stat.MaxHp.Value * 0.1f;
-                    minion.SetupMinion(hp, this._waypointIndex);
+                yield return new WaitForSeconds(0.3f);
+            }
+
+            yield return new WaitForSeconds(1.5f);
+            if (portal != null)
+            {
+                portal.gameObject.SetActive(false);
+                pool.ReturnPool(portal);
+            }
+        }
+
+        private IEnumerator LandingRoutine(SummonedMinion minion, Vector3 startPos, Vector3 landPos, ObjectPoolingManger pool)
+        {
+            float duration = 0.6f;
+            float elapsed = 0f;
+
+            Vector3 midPoint = (startPos + landPos) * 0.5f + Vector3.up * 1f;
+
+            minion.transform.position = startPos;
+            minion.gameObject.SetActive(true);
+
+            // Step 1: ê³¡ì„  ë‚™í•˜ (ë² ì§€ì–´ ê³¡ì„ )
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                float acceleratedT = t * t;
+
+                Vector3 m1 = Vector3.Lerp(startPos, midPoint, acceleratedT);
+                Vector3 m2 = Vector3.Lerp(midPoint, landPos, acceleratedT);
+                minion.transform.position = Vector3.Lerp(m1, m2, acceleratedT);
+
+                if (m2 - m1 != Vector3.zero)
+                    minion.transform.rotation = Quaternion.LookRotation(m2 - m1);
+
+                yield return null;
+            }
+
+            // Step 2: ì°©ì§€
+            minion.transform.position = landPos;
+            minion.transform.rotation = Quaternion.Euler(0, 180, 0);
+
+            // Step 3: ì°©ì§€ ì´í™íŠ¸ ìƒì„±
+            if (_impactEffectPrefab != null)
+            {
+                var impact = pool.GetFromPool<BaseObject>(_impactEffectPrefab);
+                if (impact != null)
+                {
+                    impact.transform.position = landPos;
+                    impact.gameObject.SetActive(true);
+                    pool.StartCoroutine(ReturnEffectToPool(pool, impact, 1.5f));
                 }
             }
-            yield return null;
+
+            // Step 4: ì°©ì§€ í›„ 0.3ì´ˆ ëŒ€ê¸°
+            yield return new WaitForSeconds(0.3f);
+
+            // Step 5: ë¯¸ë‹ˆì–¸ ì„¸íŒ…
+            float hp = this._stat.MaxHp.Value * 0.1f;
+            minion.SetupMinion(hp, this._waypointIndex);
         }
 
         private Vector3 GetPositionBehindAlongPath(Transform[] path, float distance)
@@ -63,6 +137,16 @@ namespace Dev.jeon.Boss
                 prevIdx--;
             }
             return currentPoint;
+        }
+
+        private IEnumerator ReturnEffectToPool(ObjectPoolingManger pool, BaseObject effect, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (effect != null)
+            {
+                effect.gameObject.SetActive(false);
+                pool.ReturnPool(effect);
+            }
         }
 
         public override void OnReturnToPool()
