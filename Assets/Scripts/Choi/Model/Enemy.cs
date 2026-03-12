@@ -1,5 +1,6 @@
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
+using Dev.jeon.Manager;
 using UnityEngine;
 
 public class Enemy : BaseUnit
@@ -11,7 +12,7 @@ public class Enemy : BaseUnit
     protected BaseObject _shieldVisualInstance; // 생성된 보호막 인스턴스
     protected BaseObject _shatterPrefab;        // 깨질 때 쓸 프리팹
     public int GetGold { get => _getGold; set => _getGold = value; }
-
+    public int BaseDamage { get; set; }
     protected override void Awake()
     {
         base.Awake();
@@ -38,6 +39,8 @@ public class Enemy : BaseUnit
         {
             Target = null;
             Debug.Log($"{this.name} 종점 도착");
+
+            ServiceLocator.Instance.GetService<WaveManager>().TakeDamage(BaseDamage);
 
             ServiceLocator.Instance.GetService<MainManager>().RemoveUnit(this);
         }
@@ -182,6 +185,18 @@ public class Enemy : BaseUnit
         }
         _stat.CurrentHp = _stat.MaxHp.Value;
     }
+    private void OnReachEndPath()
+    {
+        // 1. WaveManager에 데미지 전달
+        ServiceLocator.Instance.GetService<WaveManager>().TakeDamage(BaseDamage);
+
+        // 2. 몬스터 관리 리스트에서 제거 (WaitUntil 통과를 위해 필수)
+        ServiceLocator.Instance.GetService<MainManager>().SpawnEnemys.Remove(this);
+
+        // 3. 풀로 반환
+        gameObject.SetActive(false); // 또는 Pool 반환 함수 호출
+    }
+
     public override void ActiveAttack()
     {
         throw new System.NotImplementedException();

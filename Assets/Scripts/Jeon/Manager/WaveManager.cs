@@ -9,11 +9,17 @@ namespace Dev.jeon.Manager
 {
     public class WaveManager : BaseManager
     {
+
         [SerializeField] private List<WaveData> _waves;
         [SerializeField] private float _spawnDelay = 0.5f;
 
         [SerializeField] private WaveUIController _waveUI;
         [SerializeField] private WavePopupUI _wavePopup;
+        [SerializeField] private HpUIController _hpUI;
+
+        // 기지 관련
+        [SerializeField] private int _maxHp = 3;
+        private int _currentHp;
 
         private int _currentWaveIndex = 0;
         private bool _isGameOver = false;
@@ -27,6 +33,10 @@ namespace Dev.jeon.Manager
             _pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
             _map = ServiceLocator.Instance.GetService<MapManager>();
             _main = ServiceLocator.Instance.GetService<MainManager>();
+
+            _currentHp = _maxHp; // 게임 시작 시 HP 초기화
+
+            if (_hpUI != null) _hpUI.UpdateHpUI(_currentHp);
 
             LoadWaveResources();
             Debug.Log("게임 시작! 첫 웨이브를 자동으로 호출합니다.");
@@ -74,16 +84,9 @@ namespace Dev.jeon.Manager
 
         private IEnumerator WaveRoutine(WaveData data)
         {
-            // 웨이브 실행 UI
-
-            // 1. 상시 UI 업데이트 (단순 숫자)
             if (_waveUI != null) _waveUI.ShowWave(_currentWaveIndex);
-
-            // 2. 2초 팝업 연출 실행 (보스면 DANGER, 아니면 WAVE X)
             if (_wavePopup != null) _wavePopup.PlayPopup(_currentWaveIndex, data.waveType);
 
-
-            // 몬스터 웨이브 대기 시간
             if (data.delayBeforeWave > 0)
             {
                 Debug.Log($"{data.waveName} 시작 전 {data.delayBeforeWave}초 대기 중...");
@@ -94,10 +97,10 @@ namespace Dev.jeon.Manager
 
             if (data.waveType == WaveType.Boss)
             {
-                // 보스 스폰 (보스 전용 스탯 전달)
                 if (data.bossPrefab != null)
                 {
-                    SpawnEntity(data.bossPrefab, data.bossHp, data.bossGoldReward);
+                    // [수정됨] info가 아닌 data에서 보스 정보를 가져오고, 데미지는 2로 설정
+                    SpawnEntity(data.bossPrefab, data.bossHp, data.bossGoldReward, 2);
                 }
             }
             else
@@ -110,7 +113,8 @@ namespace Dev.jeon.Manager
 
                         if (info.monsterPrefab != null)
                         {
-                            SpawnEntity(info.monsterPrefab, info.hpOverride, info.goldReward);
+                            // [수정됨] 마지막 인자에 info.hpOverride 대신 데미지 1을 전달
+                            SpawnEntity(info.monsterPrefab, info.hpOverride, info.goldReward, 1);
                         }
 
                         yield return new WaitForSeconds(_spawnDelay);
@@ -127,7 +131,7 @@ namespace Dev.jeon.Manager
             }
         }
 
-        private void SpawnEntity(Enemy prefab, float hpOverride, int goldReward)
+        private void SpawnEntity(Enemy prefab, float hpOverride, int goldReward, int baseDamage)
         {
             Enemy entity = _pool.GetFromPool<Enemy>(prefab.gameObject.name);
             if (entity != null)
@@ -172,10 +176,27 @@ namespace Dev.jeon.Manager
                 }
                 entity._stat.Speed.BaseValue = speed;
 
+                entity.BaseDamage = baseDamage;
+
                 // 위치 설정 및 관리 리스트 추가
                 _main.SpawnEnemys.Add(entity);
                 entity.transform.position = _map.FlagPoints[0].position;
                 entity.RefreshPath();
+            }
+        }
+        public void TakeDamage(int damage)
+        {
+            if (_isGameOver) return;
+
+            _currentHp -= damage;
+            Debug.Log($"기지 피격! 데미지: {damage} / 남은 HP: {_currentHp}");
+
+            if (_hpUI != null) _hpUI.UpdateHpUI(_currentHp);
+
+            if (_currentHp <= 0)
+            {
+                _currentHp = 0;
+                GameOver();
             }
         }
 
@@ -185,6 +206,18 @@ namespace Dev.jeon.Manager
             _isGameOver = true;
             StopAllCoroutines();
             Debug.Log("게임 오버! 몬스터 스폰을 중지합니다.");
+
+            Time.timeScale = 0f;
+
+            var spawnList = _main.SpawnEnemys;
+            for (int i = spawnList.Count - 1; i >= 0; i--)
+            {
+                if (spawnList[i] != null)
+                {
+                    _main.RemoveUnit(spawnList[i]);
+                }
+            }
+
         }
 
         public override void HandleEvent(string data)
