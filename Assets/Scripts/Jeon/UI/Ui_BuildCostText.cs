@@ -1,13 +1,13 @@
-using UnityEngine;
-using TMPro;
 using Dev.cheol.Manager;
 using System;
+using TMPro;
+using UnityEngine;
 
 namespace Dev.jeon.UI
 {
     public class Ui_BuildCostText : UIObject
     {
-        [SerializeField]private TextMeshProUGUI costText;
+        [SerializeField] private TextMeshProUGUI costText;
         private void Start()
         {
             var system = ServiceLocator.Instance.GetService<SystemManager>();
@@ -28,7 +28,7 @@ namespace Dev.jeon.UI
             if (system == null || costText == null) return;
 
             int needGold = 10 + (system.BuildCount * 10);
-            costText.text = $"Tower {needGold}G";
+            costText.text = $"Need {needGold}G";
         }
 
         // 주의: 스크립트가 파괴될 때는 알람 구독을 취소해야 메모리 누수가 없습니다.

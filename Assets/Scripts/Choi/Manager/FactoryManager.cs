@@ -27,7 +27,7 @@ namespace Dev.cheol.Manager
         {
             StartSetting();
 
-            // 공통 리소스 로드 (적, 투사체, UI는 기존대로)
+            // 공통 리소스 로드 적, 투사체, UI
             _prefabs_Enmey = Resources.LoadAll<BaseObject>("Prefabs/CYC/Enemy");
             _prefabs_Bullet = Resources.LoadAll<BaseObject>("Prefabs/CYC/Bullet");
             _prfavs_Ui = Resources.LoadAll<BaseObject>("Prefabs/CYC/UI/BaseUI");
