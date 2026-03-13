@@ -9,8 +9,10 @@ namespace Dev.cheol.MainUI
     {
         [SerializeField] private List<RadioBoxItem> radioItems;
         [SerializeField] private int defaultIndex = 0;
+        public System.Action<int> OnChangedIndex; // 인덱스 변경 알림용 이벤트
 
         public int SelectedIndex { get; private set; }
+        public int DefaultIndex { get => defaultIndex; set => defaultIndex = value; }
 
         private void Start()
         {
@@ -20,7 +22,7 @@ namespace Dev.cheol.MainUI
                 int index = i;
                 radioItems[i].Init(index, OnItemSelected);
             }
-
+            defaultIndex = PlayFabDataManager.Instance.userData._currentSlot;
             // 기본 선택값 설정
             OnItemSelected(defaultIndex);
         }
@@ -35,6 +37,8 @@ namespace Dev.cheol.MainUI
                 item.SetState(item.Index == index);
             }
 
+            // 외부(매니저)에 인덱스가 바뀌었다고 알려줌
+            OnChangedIndex?.Invoke(index);
             Debug.Log($"[RadioBox] 현재 선택된 인덱스: {index}");
         }
     }

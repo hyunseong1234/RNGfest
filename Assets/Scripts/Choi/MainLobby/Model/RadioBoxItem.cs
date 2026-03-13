@@ -23,7 +23,7 @@ namespace Dev.cheol.MainUI
             _targetButton.onClick.AddListener(() => _onSelect?.Invoke(Index));
 
             if (_text == null) _text = GetComponent<TMP_Text>();
-            _text.SetText("{0}", index);
+            _text.SetText("{0}", index + 1);
         }
 
         public void SetState(bool isActive)

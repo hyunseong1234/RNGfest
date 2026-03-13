@@ -1,20 +1,54 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(DraggableIcon))]
+[RequireComponent(typeof(CanvasGroup))]
 public class SelectFramImage : MonoBehaviour
 {
+    [Header("UI Elements")]
+    [SerializeField] private TMP_Text _lvText;
+    [SerializeField] private TMP_Text _countText;
+    [SerializeField] private Image _towerImage;
+    [SerializeField] private Image _filledImage;
+    [SerializeField] private Image _arrowIcon;
 
-    [SerializeField] private TMP_Text _countText = null;
-    [SerializeField] private TMP_Text _lvText = null;
-    [SerializeField] private Image _filledImage = null;
-    [SerializeField] private Image _towerImage = null;
-    [SerializeField] private Image _arrowIcon = null;
+    [Header("State Elements")]
+    [SerializeField] private CanvasGroup _canvasGroup;
 
-    [SerializeField] private int _currentCount = 0;
-    [SerializeField] private int _maxCount = 0;
-    [SerializeField] private int _lv = 0;
+    private TowerType _towerType = TowerType.None;
 
+    private void Awake()
+    {
+        if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
+    }
+
+    public void InitSlot(TowerGameData data)
+    {
+        _towerType = data._id;
+
+        int lv = data._lv;
+        int exp = data._currentExp;
+        int maxExp = 10 + (lv * 5);
+
+        if (_lvText) _lvText.text = $"Lv.{lv}";
+        if (_countText) _countText.text = $"{exp}/{maxExp}";
+        if (_filledImage) _filledImage.fillAmount = (float)exp / maxExp;
+        if (_arrowIcon) _arrowIcon.gameObject.SetActive(exp >= maxExp);
+
+        if (_towerImage)
+            _towerImage.sprite = TowerSlotManager.Instance.GetTowerSprite(_towerType);
+    }
+
+    /// <summary>
+    /// 현재 덱(프리셋)에 포함 여부에 따라 슬롯 자체를 끄거나 켬
+    /// </summary>
+    public void SetEquipState(bool isEquipped)
+    {
+        // 장착 중(isEquipped == true)이면 오브젝트를 끄고, 아니면 켭니다.
+        this.gameObject.SetActive(!isEquipped);
+
+    }
+
+    public TowerType GetTowerType() => _towerType;
 }

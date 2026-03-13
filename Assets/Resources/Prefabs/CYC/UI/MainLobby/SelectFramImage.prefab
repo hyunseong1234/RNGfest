@@ -356,6 +356,7 @@ GameObject:
   - component: {fileID: 4946904568785803908}
   - component: {fileID: 6188142404224637338}
   - component: {fileID: 8862641673609015823}
+  - component: {fileID: 8382791618237614398}
   m_Layer: 0
   m_Name: SelectFramImage
   m_TagString: Untagged
@@ -438,14 +439,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e1d5fa85c06ce74e803dfe53f97d984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _countText: {fileID: 0}
-  _lvText: {fileID: 0}
-  _filledImage: {fileID: 0}
+  _lvText: {fileID: 3281251039581068759}
+  _countText: {fileID: 8416781138656649787}
   _towerImage: {fileID: 1978403930684464596}
+  _filledImage: {fileID: 7833569642955596169}
   _arrowIcon: {fileID: 3028499043515015071}
-  _currentCount: 0
-  _maxCount: 0
-  _lv: 0
+  _canvasGroup: {fileID: 8382791618237614398}
 --- !u!114 &8862641673609015823
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,8 +457,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bffa67d5bd60f044805499d7889f063, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dragOverlayParent: {fileID: 0}
   scaleMultiplier: 1.2
+--- !u!225 &8382791618237614398
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5224015071973125931}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7039704810098306812
 GameObject:
   m_ObjectHideFlags: 0
