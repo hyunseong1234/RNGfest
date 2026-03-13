@@ -27,21 +27,44 @@ namespace Dev.cheol.Manager
         {
             StartSetting();
 
+            // 공통 리소스 로드 (적, 투사체, UI는 기존대로)
             _prefabs_Enmey = Resources.LoadAll<BaseObject>("Prefabs/CYC/Enemy");
-            _prefabs_Twoer = Resources.LoadAll<BaseObject>("Prefabs/CYC/Tower");
             _prefabs_Bullet = Resources.LoadAll<BaseObject>("Prefabs/CYC/Bullet");
             _prfavs_Ui = Resources.LoadAll<BaseObject>("Prefabs/CYC/UI/BaseUI");
 
+            // 2. 타워 로드 (PlayFab 데이터 체크)
+            var userData = PlayFabDataManager.Instance?.userData;
+
+            if (userData != null && userData._towerSlots != null && userData._towerSlots.Count > userData._currentSlot)
+            {
+                Tower[] allTowerPrefabs = Resources.LoadAll<Tower>("Prefabs/CYC/Tower");
+
+                var currentDeck = userData._towerSlots[userData._currentSlot].slotTowers;
+
+                _prefabs_Twoer = allTowerPrefabs
+                    .Where(prefab => currentDeck.Any(type => prefab.name.Contains(type.ToString())))
+                    .ToArray();
+
+                Debug.Log($"[Factory] 서버 슬롯({userData._currentSlot}) 필터링 완료: {_prefabs_Twoer.Length}개 타워 준비됨.");
+
+                foreach (var p in _prefabs_Twoer) Debug.Log($"로드된 타워: {p.name}");
+            }
+            else
+            {
+                _prefabs_Twoer = Resources.LoadAll<Tower>("Prefabs/CYC/Tower");
+                Debug.Log("[Factory] 서버 데이터 없음. 전체 타워 로드.");
+            }
+
+            // 3. 전체 프리팹 리스트 병합 및 캐싱
             _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).Concat(_prfavs_Ui).ToArray();
+
+            // TowerData SO 캐싱 (기존 로직 유지)
             var allDatas = Resources.LoadAll<TowerData>("Data/Towers");
             foreach (var data in allDatas)
             {
                 if (!_towerDataCache.ContainsKey(data.towerName))
-                {
                     _towerDataCache.Add(data.towerName, data);
-                }
             }
-            Debug.Log($"[Factory] {_towerDataCache.Count}개의 타워 SO 캐싱 완료.");
         }
 
         public TowerData GetTowerData(string towerName)

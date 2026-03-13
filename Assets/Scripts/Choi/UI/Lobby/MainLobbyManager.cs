@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainLobbyManager : MonoBehaviour
 {
@@ -17,9 +18,12 @@ public class MainLobbyManager : MonoBehaviour
             string juwel = playfab.userData._jewel.ToString();
             _porfilePanel.SetProfile(nickName, gold, juwel);
         }
-
     }
 
+    public void _OnClickLoadScene()
+    {
+        SceneManager.LoadScene(2); //
+    }
 
 }
 
