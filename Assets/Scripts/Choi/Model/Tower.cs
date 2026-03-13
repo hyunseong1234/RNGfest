@@ -1,4 +1,5 @@
 using Dev.cheol.Manager;
+using Dev.cheol.Stats;
 using Dev.cheol.UI;
 using System.Collections;
 using UnityEngine;
@@ -16,6 +17,9 @@ namespace Dev.cheol.Model
 
         [SerializeField] private bool _isSealed = false; // 봉인 여부
 
+        // 모디파이어를 변수로 들고 있어야 나중에 '교체'가 가능함
+        private StatModifier _dmgMod;
+        private StatModifier _atkSpeedMod;
 
         public EState _state;
         public bool IsSealed => _isSealed; //봉인 상태 여부
@@ -25,6 +29,41 @@ namespace Dev.cheol.Model
         public EState CurrentState => _state;
 
         private BaseObject _hitEffect;
+
+        private void Start()
+        {
+            var sys = ServiceLocator.Instance.GetService<SystemManager>();
+
+            // 1. 업그레이드 신호 구독
+            sys.OnUpgradeChanged += ApplyUpgrade;
+
+            // 2. 소환 시점에 이미 올라가 있는 업그레이드 적용
+            for (int i = 0; i < sys.Upgrades.Length; i++)
+            {
+                ApplyUpgrade(i, sys.Upgrades[i]);
+            }
+        }
+
+        private void ApplyUpgrade(int index, int level)
+        {
+            if (level <= 0) return;
+
+            switch (index)
+            {
+                case 0: // 공격력 업그레이드 (고정치 Flat 증가 예시)
+                    if (_dmgMod != null) _stat.Damage.RemoveModifier(_dmgMod);
+                    _dmgMod = new StatModifier(level * 5.0f, StatModType.Flat, this);
+                    _stat.Damage.AddModifier(_dmgMod);
+                    break;
+
+                case 1: // 공격속도 업그레이드 (퍼cent 증가 예시)
+                    if (_atkSpeedMod != null) _stat.Speed.RemoveModifier(_atkSpeedMod);
+                    // 레벨당 5%씩 빨라짐
+                    _atkSpeedMod = new StatModifier(level * 0.05f, StatModType.Percent, this);
+                    _stat.Speed.AddModifier(_atkSpeedMod);
+                    break;
+            }
+        }
         public override void ActiveAttack()
         {
             throw new System.NotImplementedException();
@@ -164,7 +203,7 @@ namespace Dev.cheol.Model
             }
             if (_animator != null) _animator.speed = 1;
         }
-        
+
         public void Downgrade(float delay)
         {
             if (Lank > 1)
@@ -181,7 +220,7 @@ namespace Dev.cheol.Model
                 StartCoroutine(DestroyRoutine(delay));
             }
         }
-       
+
         // 2. DowngradEffect 함수도 시간을 받아서 Downgrade에 전달
         public void DowngradEffect(BaseObject downgradePrefab, BaseObject destroyPrefab, float delay)
         {
@@ -265,7 +304,15 @@ namespace Dev.cheol.Model
             UnSeal();
 
             base.OnReturnToPool();
-           
+
+        }
+        private void OnDisable()
+        {
+            var sys = ServiceLocator.Instance.GetService<SystemManager>();
+            if (sys != null)
+            {
+                sys.OnUpgradeChanged -= ApplyUpgrade;
+            }
         }
 
     }
