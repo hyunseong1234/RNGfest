@@ -29,7 +29,7 @@ namespace Dev.jeon.Bullet
         private float _currentOvershootLimit;
         private float _currentTurnDelay;
 
-        // BaseBullet의 추상 메서드 구현
+        // 1. 초기화 (부모의 Init을 활용하여 발사음 자동 재생)
         public override void Init(Transform targetOrOwner, float damage, float speed = 40f)
         {
             _owner = targetOrOwner;
@@ -37,53 +37,50 @@ namespace Dev.jeon.Bullet
             _attackSpeed = speed;
             _currentState = SwordState.Chasing;
 
+            // 부모의 Init을 호출하여 발사음(_fireSound) 재생
+            // 단, 부모의 StartMove(선형 이동)는 아델검에게 맞지 않으므로 아래에서 직접 제어
+            base.Init(targetOrOwner, damage, speed);
+        }
+
+        // 2. 이동 방식 정의 (부모의 선형 이동 대신 아델 전용 루틴 실행)
+        protected override void StartMove()
+        {
             if (_behaviorCoroutine != null) StopCoroutine(_behaviorCoroutine);
             _behaviorCoroutine = StartCoroutine(SwordRoutine());
         }
 
-        // BaseBullet의 추상 메서드 구현 (검은 코루틴으로 돌리므로 비워둠)
-        public override void ObjectUpdate() { }
+        // 3. 필수 구현 (컴파일 에러 해결 구간)
+        // 아델검은 충돌 순간이 루틴 내부에 있으므로 여기서는 공통 데미지 로직만 작성하거나 비워둠
+        protected override void ApplyHitLogic(Vector3 hitPoint)
+        {
+            if (_currentTarget != null)
+            {
+                _currentTarget.OnDamaged(_damage, _fontColor);
+                // 타격 사운드와 이펙트는 루틴 내에서 직접 호출하므로 여기선 생략 가능
+            }
+        }
 
         private IEnumerator SwordRoutine()
         {
             var main = ServiceLocator.Instance.GetService<MainManager>();
             float searchTimer = 0f;
-
-            // [최적화] 루프 시작 전 주인의 타워 스크립트를 미리 찾아둡니다 (캐싱)
             Tower ownerTower = _owner != null ? _owner.GetComponent<Tower>() : null;
 
             while (true)
             {
-                // --- 실시간 상태 체크 ---
-                bool shouldReturn = false;
+                // 실시간 상태 체크 (주인 파괴, 적 전멸 등)
+                bool shouldReturn = (_owner == null) ||
+                                    (ownerTower != null && ownerTower.CurrentState == EState.IDLE) ||
+                                    (main.SpawnEnemys.Count == 0);
 
-                // 1. 주인이 파괴되었는가?
-                if (_owner == null)
-                {
-                    shouldReturn = true;
-                }
-                // 2. 주인이 쉬고(IDLE) 있는가? (적이 사거리 밖으로 나갔을 때 등)
-                else if (ownerTower != null && ownerTower.CurrentState == EState.IDLE)
-                {
-                    shouldReturn = true;
-                }
-                // 3. 맵에 적이 아예 없는가?
-                else if (main.SpawnEnemys.Count == 0)
-                {
-                    shouldReturn = true;
-                }
-
-                // 체크 결과 돌아가야 한다면 상태 변경
                 if (_currentState != SwordState.Returning && shouldReturn)
                 {
                     _currentState = SwordState.Returning;
                 }
-                // -------------------------
 
                 switch (_currentState)
                 {
                     case SwordState.Chasing:
-                        // ... 기존 추적 로직 ...
                         if (_currentTarget == null || !_currentTarget.gameObject.activeSelf)
                         {
                             searchTimer += Time.deltaTime;
@@ -92,7 +89,6 @@ namespace Dev.jeon.Bullet
                                 _currentTarget = FindNearestTarget(main.SpawnEnemys);
                                 searchTimer = 0f;
                             }
-
                             if (_currentTarget == null) break;
                         }
 
@@ -100,12 +96,18 @@ namespace Dev.jeon.Bullet
                         transform.position = Vector3.MoveTowards(transform.position, targetPos, _attackSpeed * Time.deltaTime);
                         LookAtDirection(targetPos);
 
-                        // sqrMagnitude 사용: $$d^2 = (x_2-x_1)^2 + (y_2-y_1)^2 + (z_2-z_1)^2$$
+                        // 적중 체크
                         if ((transform.position - targetPos).sqrMagnitude < 0.04f)
                         {
                             if (Time.time >= _nextAttackTime)
                             {
-                                _currentTarget.OnDamaged(_damage, _fontColor);
+                                // 데미지 입히기
+                                ApplyHitLogic(transform.position);
+
+                                // 부모의 공통 함수를 사용하여 타격음과 이펙트 재생
+                                PlaySound(_hitSound);
+                                SpawnHitEffect(transform.position);
+
                                 _nextAttackTime = Time.time + _attackInterval;
                             }
 
@@ -116,9 +118,7 @@ namespace Dev.jeon.Bullet
                         break;
 
                     case SwordState.Overshooting:
-                        // ... 기존 관통 로직 ...
                         transform.Translate(Vector3.forward * _attackSpeed * Time.deltaTime, Space.Self);
-
                         if (_currentTarget != null)
                         {
                             float sqrDist = (transform.position - _currentTarget.transform.position).sqrMagnitude;
@@ -132,7 +132,6 @@ namespace Dev.jeon.Bullet
                         break;
 
                     case SwordState.Returning:
-                        // 복귀 로직
                         if (_owner != null)
                         {
                             transform.position = Vector3.MoveTowards(transform.position, _owner.position, _attackSpeed * Time.deltaTime);
@@ -154,11 +153,11 @@ namespace Dev.jeon.Bullet
                 yield return null;
             }
         }
+
         private Enemy FindNearestTarget(List<Enemy> enemies)
         {
             Enemy nearest = null;
             float minSqrDist = float.MaxValue;
-
             foreach (var enemy in enemies)
             {
                 if (enemy != null && enemy.gameObject.activeSelf)
@@ -177,21 +176,19 @@ namespace Dev.jeon.Bullet
         private void LookAtDirection(Vector3 targetPos)
         {
             Vector3 dir = targetPos - transform.position;
-            if (dir != Vector3.zero)
-            {
-                transform.rotation = Quaternion.LookRotation(dir);
-            }
+            if (dir != Vector3.zero) transform.rotation = Quaternion.LookRotation(dir);
         }
 
+        // 부모의 ReturnToPool을 호출하여 코루틴 중지 및 안전한 반납 처리
         protected override void ReturnToPool()
         {
-            var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
-            if (pool != null) pool.ReturnPool(this);
+            if (_behaviorCoroutine != null) StopCoroutine(_behaviorCoroutine);
+            base.ReturnToPool();
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
-            if (_behaviorCoroutine != null) StopCoroutine(_behaviorCoroutine);
+            base.OnDisable();
             _currentTarget = null;
             _owner = null;
         }

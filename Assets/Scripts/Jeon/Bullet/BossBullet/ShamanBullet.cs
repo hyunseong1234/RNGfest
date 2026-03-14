@@ -6,28 +6,21 @@ namespace Dev.jeon.Bullet
     public class ShamanBullet : BossBullet
     {
         [Header("Shaman Custom Settings")]
-        [SerializeField] private float _destroyDelay = 1.0f; // 여기서 시간을 조절하세요!
-        [SerializeField] private BaseObject _destroyEffectPrefab; // 1성 파괴용
+        [SerializeField] private float _destroyDelay = 1.0f; // 강등/파괴 대기 시간
+        [SerializeField] private BaseObject _destroyEffectPrefab; // 1성 타워 파괴 연출
 
-        protected override void HitTarget()
-        {
-            // 1. 부모(BossBullet)의 SpawnHitEffect를 실행하지 않기 위해 
-            // base.HitTarget()을 호출하지 않고 직접 로직을 짭니다.
-
-            if (_targetTower != null && _targetTower.gameObject.activeSelf)
-            {
-                if (_targetTower.CurrentTile == _targetTile)
-                {
-                    ApplySkillEffect(_targetTower);
-                }
-            }
-            ReturnToPool();
-        }
-
+        // 샤먼만의 특수 효과: 타워 강등 실행
         protected override void ApplySkillEffect(Tower targetTower)
         {
-            // 2. 여기서 타워에게 이펙트들과 기다릴 시간을 한꺼번에 던져줍니다.
+            // 타워 스크립트의 DowngradEffect 함수 호출
             targetTower.DowngradEffect(_effectPrefab, _destroyEffectPrefab, _destroyDelay);
+        }
+
+        // 부모의 기본 피격 이펙트(펑 터지는 등)를 무시하기 위해 오버라이드
+        protected override void SpawnHitEffect(Vector3 pos)
+        {
+            // 저주 탄환은 부모의 공통 이펙트를 생성하지 않고 비워둡니다.
+            // 만약 공통 이펙트가 필요하다면 base.SpawnHitEffect(pos); 를 호출하세요.
         }
     }
 }

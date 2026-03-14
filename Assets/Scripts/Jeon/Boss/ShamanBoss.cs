@@ -18,6 +18,10 @@ namespace Dev.jeon.Boss
         [Header("Scope Settings")]
         [SerializeField] private BaseObject _scopePrefab;
 
+        [Header("Sound Settings")]
+        [SerializeField] private AudioClip _scopeSound; // 조준 시 사운드
+        [SerializeField] private AudioClip _castSound;  // 실제 발사 시 사운드
+
         private List<Tower> _tempAvailableTowers = new List<Tower>();
         private List<Tower> _targetTowers = new List<Tower>();
         private List<BaseObject> _activeScopes = new List<BaseObject>();
@@ -26,11 +30,12 @@ namespace Dev.jeon.Boss
         {
             var main = ServiceLocator.Instance.GetService<MainManager>();
             var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
+            var sound = ServiceLocator.Instance.GetService<SoundManager>();
             var towers = main.SpawnTowers;
 
             if (towers == null || towers.Count == 0) yield break;
 
-            // 1. [할당 제거] 유효한 타워 수집
+            // 1. [할당 제거] 유효한 타워 수집 (봉인되지 않은 타워만)
             _tempAvailableTowers.Clear();
             for (int i = 0; i < towers.Count; i++)
             {
@@ -46,17 +51,16 @@ namespace Dev.jeon.Boss
 
             for (int i = 0; i < targetCount; i++)
             {
-                // 랜덤하게 하나 뽑고 리스트에서 마지막 요소와 교체해서 중복 방지 (Fisher-Yates 방식 응용)
+                // Fisher-Yates 방식을 응용하여 중복 없이 타겟 선정
                 int randomIndex = UnityEngine.Random.Range(i, _tempAvailableTowers.Count);
                 Tower selected = _tempAvailableTowers[randomIndex];
 
-                // 스왑해서 다음 루프 때 중복 안 되게 함
                 _tempAvailableTowers[randomIndex] = _tempAvailableTowers[i];
                 _tempAvailableTowers[i] = selected;
 
                 _targetTowers.Add(selected);
 
-                // 3. 조준 연출 시작
+                // 3. 조준 연출 및 사운드 시작
                 if (_scopePrefab != null)
                 {
                     var scopeObj = pool.GetFromPool<BaseObject>(_scopePrefab);
@@ -64,6 +68,9 @@ namespace Dev.jeon.Boss
                     {
                         scopeObj.gameObject.SetActive(true);
                         scopeObj.transform.position = selected.transform.position + Vector3.up * 0.1f;
+
+                        // 조준 사운드 재생
+                        if (_scopeSound != null) sound.PlaySFX(_scopeSound);
 
                         if (scopeObj.TryGetComponent(out TargetScopeEffect scopeScript))
                         {
@@ -74,10 +81,15 @@ namespace Dev.jeon.Boss
                 }
             }
 
-            // 4. 조준 대기
+            // 4. 조준 대기 (기 모으는 시간)
             yield return new WaitForSeconds(_skillMotionDuration);
 
-            // 5. 발사!
+            // 5. 발사 사운드 및 탄환 생성
+            if (_targetTowers.Count > 0 && _castSound != null)
+            {
+                sound.PlaySFX(_castSound); // 기 모으기가 끝나고 쏘는 순간 사운드
+            }
+
             for (int i = 0; i < _targetTowers.Count; i++)
             {
                 var target = _targetTowers[i];
@@ -88,12 +100,14 @@ namespace Dev.jeon.Boss
                     {
                         bullet.gameObject.SetActive(true);
                         bullet.transform.position = transform.position + Vector3.up * 2f;
+
+                        // 발사음은 BossBullet 내부의 base.Init()에서도 재생됩니다.
                         bullet.InitBossSkill(target, _bulletSpeed);
                     }
                 }
             }
 
-            // 6. 스코프 반납 (for문으로 순회)
+            // 6. 스코프 반납
             for (int i = 0; i < _activeScopes.Count; i++)
             {
                 if (_activeScopes[i] != null) pool.ReturnPool(_activeScopes[i]);
@@ -103,7 +117,7 @@ namespace Dev.jeon.Boss
         public override void OnReturnToPool()
         {
             base.OnReturnToPool();
-            // 리스트들 정리
+            // 리스트들 정리하여 메모리 누수 방지
             _tempAvailableTowers.Clear();
             _targetTowers.Clear();
             _activeScopes.Clear();
