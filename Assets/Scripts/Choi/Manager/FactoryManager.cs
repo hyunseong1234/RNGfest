@@ -15,6 +15,7 @@ namespace Dev.cheol.Manager
         [SerializeField] private BaseObject[] _prefabs_Enmey = null;
         [SerializeField] private BaseObject[] _prefabs_Bullet = null;
         [SerializeField] private BaseObject[] _prfavs_Ui = null;
+        [SerializeField] private BaseObject[] _prefabs_Sound = null;
 
         [SerializeField] private BaseObject[] _prefabs = null;
         private Dictionary<string, TowerData> _towerDataCache = new Dictionary<string, TowerData>();
@@ -31,7 +32,7 @@ namespace Dev.cheol.Manager
             _prefabs_Enmey = Resources.LoadAll<BaseObject>("Prefabs/CYC/Enemy");
             _prefabs_Bullet = Resources.LoadAll<BaseObject>("Prefabs/CYC/Bullet");
             _prfavs_Ui = Resources.LoadAll<BaseObject>("Prefabs/CYC/UI/BaseUI");
-
+            _prefabs_Sound = Resources.LoadAll<BaseObject>("Prefabs/JHS/Sound");
             // 2. 타워 로드 (PlayFab 데이터 체크)
             var userData = PlayFabDataManager.Instance?.userData;
 
@@ -56,7 +57,7 @@ namespace Dev.cheol.Manager
             }
 
             // 3. 전체 프리팹 리스트 병합 및 캐싱
-            _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).Concat(_prfavs_Ui).ToArray();
+            _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).Concat(_prfavs_Ui).Concat(_prefabs_Sound).ToArray();
 
             // TowerData SO 캐싱 (기존 로직 유지)
             var allDatas = Resources.LoadAll<TowerData>("Data/Towers");
@@ -78,6 +79,7 @@ namespace Dev.cheol.Manager
             SettingObject(8, _prefabs_Enmey);
             SettingObject(20, _prefabs_Twoer);
             SettingObject(50, _prfavs_Ui);
+            SettingObject(10, _prefabs_Sound);
 
         }
 

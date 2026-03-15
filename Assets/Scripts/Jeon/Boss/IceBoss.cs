@@ -51,6 +51,7 @@ namespace Dev.jeon.Boss
 
                     yield return new WaitForSeconds(_skillMotionDuration);
                     pool.ReturnPool(scopeObj);
+                    sm.PlaySFX(_scopeSound);
                 }
             }
 

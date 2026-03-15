@@ -17,11 +17,20 @@ namespace Dev.cheol.Manager
 
         private void Awake()
         {
+
             if (_bgmSource == null)
             {
                 _bgmSource = gameObject.AddComponent<AudioSource>();
                 _bgmSource.loop = true;
                 _bgmSource.playOnAwake = false;
+
+                // [추가] BGM 그룹을 찾아서 출력(Output)으로 설정합니다.
+                // 믹서 안에 "BGM"이라는 이름의 그룹이 있어야 합니다.
+                AudioMixerGroup[] groups = _masterMixer.FindMatchingGroups("BGM");
+                if (groups.Length > 0)
+                {
+                    _bgmSource.outputAudioMixerGroup = groups[0];
+                }
             }
         }
 
