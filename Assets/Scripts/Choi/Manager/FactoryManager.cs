@@ -38,8 +38,6 @@ namespace Dev.cheol.Manager
             _prefabs_Bullet = Resources.LoadAll<BaseObject>("Prefabs/CYC/Bullet");
             _prfavs_Ui = Resources.LoadAll<BaseObject>("Prefabs/CYC/UI/BaseUI");
             _prefabs_Sound = Resources.LoadAll<BaseObject>("Prefabs/JHS/Sound");
-            // 2. 타워 로드 (PlayFab 데이터 체크)
-            var userData = PlayFabDataManager.Instance?.userData;
 
 
 
