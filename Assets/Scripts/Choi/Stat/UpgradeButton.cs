@@ -7,70 +7,67 @@ namespace Dev.cheol.UI
 {
     public class UpgradeButton : MonoBehaviour
     {
-        [Header("설정")]
-        [SerializeField] private int _upgradeIndex; // 0: 공격력, 1: 공속 등
-        [SerializeField] private Button _btn;
-        [SerializeField] private TMP_Text _levelText;
+        [Header("--- [슬롯 설정] ---")]
+        [SerializeField] private int _mySlotIndex; // 0~4번
+
+        [Header("--- [UI 컴포넌트] ---")]
+        [SerializeField] private Image _towerIconImage; // 이놈만 그림 갈아끼움
+        [SerializeField] private TMP_Text _lvText;
         [SerializeField] private TMP_Text _costText;
+        [SerializeField] private Button _btn;
 
         private SystemManager _sys;
+        private FactoryManager _factory;
 
         private void Start()
         {
             _sys = ServiceLocator.Instance.GetService<SystemManager>();
+            _factory = ServiceLocator.Instance.GetService<FactoryManager>();
 
-            // 1. 버튼 클릭 이벤트 연결
+            if (_sys == null || _factory == null) return;
+
+            _towerIconImage.sprite = _factory.PrefabSprite[_mySlotIndex];
+
+
+            // 버튼 클릭 (슬롯 번호 전달)
             if (_btn != null)
-                _btn.onClick.AddListener(OnClickUpgrade);
+                _btn.onClick.AddListener(() => _sys.TryUpgradeSlot(_mySlotIndex));
 
-            // 2. 시스템 매니저의 신호를 구독 (골드 변경 시 버튼 활성/비활성 체크용)
-            _sys.OnGoldChanged += RefreshButtonState;
-            _sys.OnUpgradeChanged += (idx, lv) => { if (idx == _upgradeIndex) UpdateUI(); };
+            // 실시간 UI 갱신 (골드/업그레이드 신호 감시)
+            _sys.OnGoldChanged += RefreshUI;
+            _sys.OnUpgradeChanged += (idx, lv) => { if (idx == _mySlotIndex) RefreshUI(); };
 
-            // 3. 초기 UI 세팅
-            UpdateUI();
+            RefreshUI();
         }
 
-        private void OnClickUpgrade()
+
+
+        private void RefreshUI()
         {
-            // 시스템 매니저에게 업그레이드 시도 요청
-            _sys.TryUpgrade(_upgradeIndex);
-        }
+            if (_sys == null || _lvText == null || _costText == null || _btn == null) return;
 
-        private void UpdateUI()
-        {
-            if (_sys == null) return;
+            int lv = _sys.Upgrades[_mySlotIndex];
+            int cost = _sys.GetCurrentUpgradeCost(_mySlotIndex);
 
-            int currentLevel = _sys.Upgrades[_upgradeIndex];
+            // 레벨 표시 (Lv.1, Lv.2...)
+            _lvText.SetText("LV.{0}", lv + 1);
 
-            // 레벨 텍스트 갱신 (박싱 방지 SetText)
-            if (_levelText != null)
-                _levelText.SetText("LV.{0}", currentLevel);
-
-            // 비용 계산 (SystemManager의 로직과 동일하게)
-            // 100, 150, 200... 등 형님이 정한 규칙대로 표시
-            int nextCost = 100 * (currentLevel + 1);
-            if (_costText != null)
-                _costText.SetText("{0} G", nextCost);
-
-            RefreshButtonState();
-        }
-
-        private void RefreshButtonState()
-        {
-            // 현재 골드가 부족하면 버튼을 비활성화(회색) 처리
-            int nextCost = 100 * (_sys.Upgrades[_upgradeIndex] + 1);
-            if (_btn != null)
-                _btn.interactable = (_sys.Gold >= nextCost);
+            // 비용 표시 및 버튼 활성화 체크
+            if (cost == -1)
+            {
+                _costText.SetText("MAX");
+                _btn.interactable = false;
+            }
+            else
+            {
+                _costText.SetText("{0}", cost);
+                _btn.interactable = (_sys.Gold >= cost);
+            }
         }
 
         private void OnDestroy()
         {
-            // 구독 해제
-            if (_sys != null)
-            {
-                _sys.OnGoldChanged -= RefreshButtonState;
-            }
+            if (_sys != null) _sys.OnGoldChanged -= RefreshUI;
         }
     }
 }

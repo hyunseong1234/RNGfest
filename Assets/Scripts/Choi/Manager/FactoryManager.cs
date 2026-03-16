@@ -18,11 +18,16 @@ namespace Dev.cheol.Manager
         [SerializeField] private BaseObject[] _prefabs_Sound = null;
 
         [SerializeField] private BaseObject[] _prefabs = null;
+        [SerializeField] private Sprite[] _prefabSprites;
+
+
         private Dictionary<string, TowerData> _towerDataCache = new Dictionary<string, TowerData>();
+
 
         public BaseObject[] Prefabs_Twoer { get => _prefabs_Twoer; set => _prefabs_Twoer = value; }
         public BaseObject[] Prefabs_Enmey { get => _prefabs_Enmey; set => _prefabs_Enmey = value; }
         public BaseObject[] Prefabs_Bullet { get => _prefabs_Bullet; set => _prefabs_Bullet = value; }
+        public Sprite[] PrefabSprite { get => _prefabSprites; set => _prefabSprites = value; }
 
         private void Awake()
         {
@@ -36,14 +41,22 @@ namespace Dev.cheol.Manager
             // 2. 타워 로드 (PlayFab 데이터 체크)
             var userData = PlayFabDataManager.Instance?.userData;
 
+
+
+
+            //  타워 로드 (PlayFab 데이터 체크)
+            var userData = PlayFabDataManager.Instance?.userData;
             if (userData != null && userData._towerSlots != null && userData._towerSlots.Count > userData._currentSlot)
             {
                 Tower[] allTowerPrefabs = Resources.LoadAll<Tower>("Prefabs/CYC/Tower");
+                Sprite[] _prefabSprite = Resources.LoadAll<Sprite>("Texture/MainLobby/TowerIcon");
 
                 var currentDeck = userData._towerSlots[userData._currentSlot].slotTowers;
 
                 _prefabs_Twoer = allTowerPrefabs
                     .Where(prefab => currentDeck.Any(type => prefab.name.Contains(type.ToString())))
+                    .ToArray();
+                _prefabSprites = _prefabSprite.Where(prefab => currentDeck.Any(type => prefab.name.Contains(type.ToString())))
                     .ToArray();
 
                 Debug.Log($"[Factory] 서버 슬롯({userData._currentSlot}) 필터링 완료: {_prefabs_Twoer.Length}개 타워 준비됨.");
@@ -53,11 +66,15 @@ namespace Dev.cheol.Manager
             else
             {
                 _prefabs_Twoer = Resources.LoadAll<Tower>("Prefabs/CYC/Tower");
+                _prefabSprites = Resources.LoadAll<Sprite>("Texture/MainLobby/TowerIcon");
                 Debug.Log("[Factory] 서버 데이터 없음. 전체 타워 로드.");
+
             }
 
             // 3. 전체 프리팹 리스트 병합 및 캐싱
             _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).Concat(_prfavs_Ui).Concat(_prefabs_Sound).ToArray();
+            //  전체 프리팹 리스트 병합 및 캐싱
+            _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).Concat(_prfavs_Ui).ToArray();
 
             // TowerData SO 캐싱 (기존 로직 유지)
             var allDatas = Resources.LoadAll<TowerData>("Data/Towers");
@@ -73,6 +90,7 @@ namespace Dev.cheol.Manager
             _towerDataCache.TryGetValue(towerName, out var data);
             return data;
         }
+
 
         private void Start()
         {

@@ -129,7 +129,7 @@ namespace Dev.cheol.Manager
 
             if (towerData != null)
             {
-                tower.Setup(towerData, getLank);
+                tower.Setup(towerData, getLank, rand);
             }
             else
             {

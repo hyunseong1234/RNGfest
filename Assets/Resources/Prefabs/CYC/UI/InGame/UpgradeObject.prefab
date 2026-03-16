@@ -339,10 +339,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 213d9fe9086afa44fa0e7c96d22ce16e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _upgradeIndex: 0
-  _btn: {fileID: 3326048445648727180}
-  _levelText: {fileID: 888874297519047617}
+  _mySlotIndex: 0
+  _towerIconImage: {fileID: 5481006080665182951}
+  _lvText: {fileID: 888874297519047617}
   _costText: {fileID: 4932621821501567390}
+  _btn: {fileID: 3326048445648727180}
 --- !u!114 &3326048445648727180
 MonoBehaviour:
   m_ObjectHideFlags: 0
