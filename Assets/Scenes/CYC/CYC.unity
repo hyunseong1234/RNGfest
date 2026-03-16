@@ -1388,6 +1388,10 @@ PrefabInstance:
       propertyPath: _settingSubPanel
       value: 
       objectReference: {fileID: 6144252782499354522}
+    - target: {fileID: 8602464097354694719, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
+      propertyPath: _masterMixer
+      value: 
+      objectReference: {fileID: 24100000, guid: 991a53f11cb215f4fba60157b0ed5463, type: 2}
     - target: {fileID: 8624149424112271689, guid: b2bc7330c7f59654c80f22814650243a, type: 3}
       propertyPath: m_Camera
       value: 

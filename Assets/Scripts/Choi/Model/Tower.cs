@@ -122,6 +122,8 @@ namespace Dev.cheol.Model
         #region ºÀÀÎ ¹× ·©Å© ½Ã½ºÅÛ
         public void Setup(TowerData data, int rank, int slotIndex)
         {
+            UnSeal();
+
             this.Lank = rank;
             this._mySlotIndex = slotIndex;
             var targetStat = data.stats.Find(s => s.rank == rank);
@@ -134,7 +136,11 @@ namespace Dev.cheol.Model
                 for (int i = 0; i < targetStat.specialValues.Count; i++)
                     if (i < _stat.SpecialValues.Count) _stat.SpecialValues[i].BaseValue = targetStat.specialValues[i];
             }
-            ApplyUpgradeStat(ServiceLocator.Instance.GetService<SystemManager>().Upgrades[_mySlotIndex]);
+            var sys = ServiceLocator.Instance.GetService<SystemManager>();
+            if (sys != null && sys.Upgrades != null && slotIndex >= 0 && slotIndex < sys.Upgrades.Length)
+            {
+                ApplyUpgradeStat(sys.Upgrades[slotIndex]);
+            }
         }
 
         public void Seal(BaseObject effectPrefab)
@@ -160,12 +166,13 @@ namespace Dev.cheol.Model
 
         public void UnSeal()
         {
+            if (!_isSealed && _currentEffect == null) return;
             _isSealed = false;
             var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();
             if (_currentEffect != null)
             {
-                _currentEffect.gameObject.SetActive(false);
                 _currentEffect.transform.SetParent(null);
+                _currentEffect.gameObject.SetActive(false);
                 pool.ReturnPool(_currentEffect);
                 _currentEffect = null;
             }

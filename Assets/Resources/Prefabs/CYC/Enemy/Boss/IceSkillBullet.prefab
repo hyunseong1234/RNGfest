@@ -51,11 +51,11 @@ MonoBehaviour:
   _speed: 20
   _damage: 10
   _fontColor: 0
-  _hitEffectPrefab: {fileID: -8604186694145980962, guid: aac011665ab6f17429828af15af2365a, type: 3}
+  _hitEffectPrefab: {fileID: -4322033275501261748, guid: 2c8ea7840028b3747af7437f8c36f773, type: 3}
   _fireSound: {fileID: 8300000, guid: 1d3f4816f669f2942aa47c4dd13c6272, type: 3}
   _hitSound: {fileID: 8300000, guid: af92ad29c3a8545e9ac2e5369bbcc75c, type: 3}
   _arcHeight: 5
-  _effectPrefab: {fileID: -4322033275501261748, guid: 2c8ea7840028b3747af7437f8c36f773, type: 3}
+  _effectPrefab: {fileID: -8604186694145980962, guid: aac011665ab6f17429828af15af2365a, type: 3}
 --- !u!1001 &8437335513428187142
 PrefabInstance:
   m_ObjectHideFlags: 0

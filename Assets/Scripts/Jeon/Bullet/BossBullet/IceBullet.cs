@@ -1,16 +1,18 @@
 using Dev.cheol.Model;
-using UnityEngine;
 
 namespace Dev.jeon.Bullet
 {
-    public class IceBullet : BossBullet
+    public class IceBossBullet : BossBullet
     {
-        // 아이스만의 특수 효과: 타워 봉인(Seal) 실행
         protected override void ApplySkillEffect(Tower targetTower)
         {
-            // 타워 스크립트의 Seal 함수 호출
-            targetTower.Seal(_effectPrefab);
+            // 1. 타워가 봉인 상태가 아니라면
+            if (!targetTower.IsSealed)
+            {
+                // 2. 타워의 Seal 함수를 호출하여 상태이상 프리팹을 넘겨줍니다.
+                // 그러면 타워가 스스로 이펙트를 생성해서 자기 자식으로 붙이고(_currentEffect) 관리합니다.
+                targetTower.Seal(_effectPrefab);
+            }
         }
-
     }
 }
