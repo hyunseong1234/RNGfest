@@ -84,22 +84,20 @@ namespace Dev.jeon.Manager
 
         private IEnumerator WaveRoutine(WaveData data)
         {
+            // 1. 웨이브 시작 알림
             if (_waveUI != null) _waveUI.ShowWave(_currentWaveIndex);
             if (_wavePopup != null) _wavePopup.PlayPopup(_currentWaveIndex, data.waveType);
 
             if (data.delayBeforeWave > 0)
             {
-                Debug.Log($"{data.waveName} 시작 전 {data.delayBeforeWave}초 대기 중...");
                 yield return new WaitForSeconds(data.delayBeforeWave);
             }
 
-            Debug.Log($"{data.waveName} 몬스터 스폰 시작!");
-
+            // 2. 몬스터 스폰
             if (data.waveType == WaveType.Boss)
             {
                 if (data.bossPrefab != null)
                 {
-                    // [수정됨] info가 아닌 data에서 보스 정보를 가져오고, 데미지는 2로 설정
                     SpawnEntity(data.bossPrefab, data.bossHp, data.bossGoldReward, 2);
                 }
             }
@@ -113,20 +111,34 @@ namespace Dev.jeon.Manager
 
                         if (info.monsterPrefab != null)
                         {
-                            // [수정됨] 마지막 인자에 info.hpOverride 대신 데미지 1을 전달
                             SpawnEntity(info.monsterPrefab, info.hpOverride, info.goldReward, 1);
                         }
-
                         yield return new WaitForSeconds(_spawnDelay);
                     }
                 }
             }
 
-            yield return new WaitUntil(() => _main.SpawnEnemys.Count == 0);
+            // 3. [핵심 수정] 모든 적 처치 대기 (안전장치 강화)
+            Debug.Log($"{data.waveName} 스폰 완료. 남은 적 체크 시작...");
 
+            while (true)
+            {
+                // 리스트 내 Null이거나 비활성화된 객체 강제 제거 (유령 데이터 청소)
+                _main.SpawnEnemys.RemoveAll(enemy => enemy == null || !enemy.gameObject.activeInHierarchy);
+
+                if (_main.SpawnEnemys.Count == 0)
+                {
+                    break; // 적이 완전히 없으면 루프 탈출
+                }
+
+                yield return new WaitForSeconds(0.5f); // 0.5초 간격으로 체크 (성능 최적화)
+            }
+
+            // 4. 다음 웨이브로 전환
             if (!_isGameOver)
             {
-                Debug.Log($"{data.waveName} 클리어! 다음 웨이브를 시작합니다.");
+                Debug.Log($"{data.waveName} 클리어! 1.5초 후 다음 단계를 시작합니다.");
+                yield return new WaitForSeconds(3f); // 연출을 위한 짧은 대기
                 StartNextWave();
             }
         }
@@ -203,6 +215,8 @@ namespace Dev.jeon.Manager
         // TODO : 추후 다른 매니저에서 관리 하는 순간 삭제 할것
         public void GameOver()
         {
+            if (_isGameOver) return;
+
             _isGameOver = true;
             StopAllCoroutines();
             Debug.Log("게임 오버! 몬스터 스폰을 중지합니다.");
