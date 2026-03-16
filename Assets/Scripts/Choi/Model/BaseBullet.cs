@@ -86,9 +86,19 @@ namespace Dev.cheol.Model
             {
                 effect.transform.position = pos;
                 effect.gameObject.SetActive(true);
+
+                pool.StartCoroutine(ReturnHitEffectToPool(pool, effect, 1.0f));
             }
         }
-
+        private IEnumerator ReturnHitEffectToPool(ObjectPoolingManger pool, BaseObject effect, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (effect != null && effect.gameObject.activeSelf)
+            {
+                effect.gameObject.SetActive(false);
+                pool.ReturnPool(effect);
+            }
+        }
         protected virtual void ReturnToPool()
         {
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);

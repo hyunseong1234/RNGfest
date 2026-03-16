@@ -106,11 +106,15 @@ public class Enemy : BaseUnit
 
         if (_stat.CurrentHp <= 0)
         {
+            OnDeath();// 사망 시 호출될 가상 함수 추가
+
             var system = ServiceLocator.Instance.GetService<SystemManager>();
             main.RemoveUnit(this);
             system.Gold += _getGold;
         }
     }
+
+    protected virtual void OnDeath() { }
 
     private void BreakShield(ObjectPoolingManger pool)
     {
