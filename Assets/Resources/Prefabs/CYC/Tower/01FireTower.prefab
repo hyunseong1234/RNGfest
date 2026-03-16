@@ -4184,7 +4184,9 @@ MonoBehaviour:
   currentState: 1
   _animator: {fileID: 0}
   _attackAniNum: 2
+  _mySlotIndex: 0
   _currentEffect: {fileID: 0}
+  _destroyTime: 1
   _currentTile: {fileID: 0}
   _lank: 0
   _starUI: {fileID: 0}

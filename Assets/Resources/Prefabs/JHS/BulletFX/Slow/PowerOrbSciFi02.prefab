@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4569326882460692439}
   - component: {fileID: 6421411622887517874}
   - component: {fileID: 2434234388752906366}
+  - component: {fileID: 1134815389654506287}
   m_Layer: 0
   m_Name: PowerOrbSciFi02
   m_TagString: Untagged
@@ -4800,6 +4801,22 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &1134815389654506287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 989096550707780098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c8faef1d1efac04e88d51a098c9003b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _poolTag: 
+  _target: {fileID: 0}
+  _isUI: 0
+  _duration: 1
 --- !u!1 &2478502594826921095
 GameObject:
   m_ObjectHideFlags: 0

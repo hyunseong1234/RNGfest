@@ -16,14 +16,16 @@ namespace Dev.cheol.Model
         [SerializeField] protected BaseObject _hitEffectPrefab;
         [SerializeField] protected AudioClip _fireSound;
         [SerializeField] protected AudioClip _hitSound;
+        protected AudioSource _audioSource;
 
         protected Coroutine _moveCoroutine;
         protected SoundManager _sound; // 캐싱용
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
-            // 사운드 매니저 미리 찾아두기
+            base.Awake();
             _sound = ServiceLocator.Instance.GetService<SoundManager>();
+            _audioSource = GetComponent<AudioSource>();
         }
 
         public virtual void Init(Transform target, float damage, float speed = 20f)
@@ -62,7 +64,8 @@ namespace Dev.cheol.Model
 
         protected void OnHit(Vector3 hitPoint)
         {
-            PlaySound(_hitSound);
+            //PlaySound(_hitSound);
+            //AudioSource.PlayClipAtPoint(_hitSound, hitPoint);
             SpawnHitEffect(hitPoint);
             ApplyHitLogic(hitPoint);
             ReturnToPool();
@@ -73,7 +76,7 @@ namespace Dev.cheol.Model
         protected void PlaySound(AudioClip clip)
         {
             if (clip == null || _sound == null) return;
-            _sound.PlaySFX(clip);
+            _audioSource.PlayOneShot(clip);
         }
 
         //  virtual 키워드 추가: 자식에서 재정의(override) 가능해짐!
