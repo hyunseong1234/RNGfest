@@ -77,7 +77,7 @@ namespace Dev.Help
 
         private void AttemptDrop()
         {
-            // 4. [고스트 숨기기] 드롭했으니 고스트는 퇴장
+            // [고스트 숨기기] 드롭했으니 고스트는 퇴장
             _ghost.HideGhost();
 
             _draggingUnit.gameObject.layer = LayerMask.NameToLayer("Tower");
@@ -86,7 +86,7 @@ namespace Dev.Help
             Tower closestTarget = null;
             float minSqrDist = 1.0f;
 
-            // 5. [판정 기준 변경] 원본 위치가 아니라 '고스트의 현재 위치'를 기준으로 타겟을 찾습니다.
+            // [판정 기준 변경] 원본 위치가 아니라 '고스트의 현재 위치'를 기준으로 타겟을 찾습니다.
             Vector3 dropPos = _ghost.transform.position;
 
             foreach (var target in main.SpawnTowers)
@@ -133,14 +133,14 @@ namespace Dev.Help
 
             foreach (var tower in main.SpawnTowers)
             {
-                // 1. 만약 지금 내가 들고 있는 타워라면? 노란색으로 표시!
+                //  만약 지금 내가 들고 있는 타워라면? 노란색으로 표시!
                 if (tower == _draggingUnit)
                 {
                     tower.CurrentTile.SetHighlight(3); // 3번 처리 (Yellow)
                     continue;
                 }
 
-                // 2. 나머지는 기존처럼 파랑/빨강 판단
+                //  나머지는 기존처럼 파랑/빨강 판단
                 bool canMerge = CanMerge(_draggingUnit, tower);
                 tower.CurrentTile.SetHighlight(canMerge ? 1 : 2);
             }

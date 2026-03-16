@@ -24,14 +24,14 @@ namespace Dev.cheol.Comon
         {
             while (true)
             {
-                // 1. 타겟 유효성 검사
+                // 타겟 유효성 검사
                 if (unit.Target == null)
                 {
                     unit.ChangeState(EState.IDLE);
                     yield break;
                 }
 
-                // 2. 타겟 방향 회전 (기존 로직 유지)
+                // 타겟 방향 회전 기존 로직 유지
                 Vector3 direction = (unit.Target.position - unit.transform.position).normalized;
                 direction.y = 0;
                 if (direction != Vector3.zero)
@@ -40,7 +40,7 @@ namespace Dev.cheol.Comon
                     unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, targetRotation, Time.deltaTime * 10f);
                 }
 
-                // 3. 애니메이션 종료 체크 (단순화)
+                // 애니메이션 종료 체크 단순화
                 AnimatorStateInfo stateInfo = unit.Animator.GetCurrentAnimatorStateInfo(0);
 
                 // 애니메이션이 끝나면 IDLE로 복귀
