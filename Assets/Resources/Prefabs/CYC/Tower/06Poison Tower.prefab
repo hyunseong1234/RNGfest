@@ -4707,7 +4707,7 @@ GameObject:
   - component: {fileID: 2581118569496729646}
   - component: {fileID: -2390547759027132000}
   m_Layer: 6
-  m_Name: 06Posion Tower
+  m_Name: 06Poison Tower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

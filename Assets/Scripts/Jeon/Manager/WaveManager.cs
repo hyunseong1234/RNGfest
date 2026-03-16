@@ -21,7 +21,7 @@ namespace Dev.jeon.Manager
         [SerializeField] private int _maxHp = 3;
         private int _currentHp;
 
-        private int _currentWaveIndex = 0;
+        [SerializeField] private int _currentWaveIndex = 0;
         private bool _isGameOver = false;
 
         private ObjectPoolingManger _pool;

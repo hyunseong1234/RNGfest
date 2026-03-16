@@ -39,27 +39,40 @@ namespace Dev.cheol.Manager
             _prfavs_Ui = Resources.LoadAll<BaseObject>("Prefabs/CYC/UI/BaseUI");
             _prefabs_Sound = Resources.LoadAll<BaseObject>("Prefabs/JHS/Sound");
 
-
-
-
             //  타워 로드 (PlayFab 데이터 체크)
             var userData = PlayFabDataManager.Instance?.userData;
             if (userData != null && userData._towerSlots != null && userData._towerSlots.Count > userData._currentSlot)
             {
                 Tower[] allTowerPrefabs = Resources.LoadAll<Tower>("Prefabs/CYC/Tower");
-                Sprite[] _prefabSprite = Resources.LoadAll<Sprite>("Texture/MainLobby/TowerIcon");
+                Sprite[] allSprites = Resources.LoadAll<Sprite>("Texture/MainLobby/TowerIcon");
+
 
                 var currentDeck = userData._towerSlots[userData._currentSlot].slotTowers;
 
-                _prefabs_Twoer = allTowerPrefabs
-                    .Where(prefab => currentDeck.Any(type => prefab.name.Contains(type.ToString())))
-                    .ToArray();
-                _prefabSprites = _prefabSprite.Where(prefab => currentDeck.Any(type => prefab.name.Contains(type.ToString())))
-                    .ToArray();
+                List<BaseObject> orderedTowers = new List<BaseObject>();
+                List<Sprite> orderedSprites = new List<Sprite>();
 
-                Debug.Log($"[Factory] 서버 슬롯({userData._currentSlot}) 필터링 완료: {_prefabs_Twoer.Length}개 타워 준비됨.");
+                foreach (var towerType in currentDeck)
+                {
+                    string typeName = towerType.ToString();
 
-                foreach (var p in _prefabs_Twoer) Debug.Log($"로드된 타워: {p.name}");
+                    // 덱의 타입 이름이 포함된 프리팹/스프라이트를 순서대로 찾아서 추가
+                    var targetTower = allTowerPrefabs.FirstOrDefault(p => p.name.Contains(typeName));
+                    var targetSprite = allSprites.FirstOrDefault(s => s.name.Contains(typeName));
+
+                    if (targetTower != null)
+                    {
+                        orderedTowers.Add(targetTower);
+                        orderedSprites.Add(targetSprite);
+
+                        Debug.Log($"[Factory] {orderedTowers.Count}번 슬롯 로드: {typeName}");
+                    }
+                }
+
+                _prefabs_Twoer = orderedTowers.ToArray();
+                _prefabSprites = orderedSprites.ToArray();
+
+                Debug.Log($"[Factory] 서버 덱 순서대로 {_prefabs_Twoer.Length}개 정렬 완료.");
             }
             else
             {
@@ -69,12 +82,11 @@ namespace Dev.cheol.Manager
 
             }
 
-            // 3. 전체 프리팹 리스트 병합 및 캐싱
+            //전체 프리팹 리스트 병합 및 캐싱
             _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).Concat(_prfavs_Ui).Concat(_prefabs_Sound).ToArray();
-            //  전체 프리팹 리스트 병합 및 캐싱
             _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).Concat(_prfavs_Ui).ToArray();
 
-            // TowerData SO 캐싱 (기존 로직 유지)
+            // TowerData SO 캐싱 
             var allDatas = Resources.LoadAll<TowerData>("Data/Towers");
             foreach (var data in allDatas)
             {

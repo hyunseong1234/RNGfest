@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 11fe45893c91e9d488743e03d1abc04f, type: 3}
-  m_Name: 06Posion Tower
+  m_Name: 06Poison Tower
   m_EditorClassIdentifier: 
-  towerName: 06Posion Tower
+  towerName: 06Poison Tower
   stats:
   - rank: 1
     attack: 4
