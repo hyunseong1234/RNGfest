@@ -28,7 +28,7 @@ MonoBehaviour:
     count: 1
     hpOverride: 40
     goldReward: 15
-  - monsterPrefab: {fileID: 8527523970361274601, guid: 7220b7c31a4d5bd43a52a1f59861c2cc, type: 3}
+  - monsterPrefab: {fileID: -1295839071558878677, guid: 7220b7c31a4d5bd43a52a1f59861c2cc, type: 3}
     count: 1
     hpOverride: 40
     goldReward: 15

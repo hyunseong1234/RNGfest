@@ -13,6 +13,8 @@ namespace Dev.jeon.Manager
         [SerializeField] private List<WaveData> _waves;
         [SerializeField] private float _spawnDelay = 0.5f;
 
+        [SerializeField] private List<Enemy> _randomBossPrefabs;
+
         [SerializeField] private WaveUIController _waveUI;
         [SerializeField] private WavePopupUI _wavePopup;
         [SerializeField] private HpUIController _hpUI;
@@ -93,12 +95,25 @@ namespace Dev.jeon.Manager
                 yield return new WaitForSeconds(data.delayBeforeWave);
             }
 
-            // 2. 몬스터 스폰
+            // 2. 몬스터/보스 스폰
             if (data.waveType == WaveType.Boss)
             {
-                if (data.bossPrefab != null)
+                Enemy bossToSpawn = data.bossPrefab; // 기본값
+
+                // [핵심] 10, 20, 30, 40, 50 라운드에서 랜덤 보스 선택
+                if (_currentWaveIndex % 10 == 0 && _currentWaveIndex <= 50)
                 {
-                    SpawnEntity(data.bossPrefab, data.bossHp, data.bossGoldReward, 2);
+                    if (_randomBossPrefabs != null && _randomBossPrefabs.Count > 0)
+                    {
+                        int randomIndex = Random.Range(0, _randomBossPrefabs.Count);
+                        bossToSpawn = _randomBossPrefabs[randomIndex];
+                        Debug.Log($"<color=cyan>{_currentWaveIndex}라운드 특별 보스: {bossToSpawn.name} 등장!</color>");
+                    }
+                }
+
+                if (bossToSpawn != null)
+                {
+                    SpawnEntity(bossToSpawn, data.bossHp, data.bossGoldReward, 2);
                 }
             }
             else
@@ -118,55 +133,43 @@ namespace Dev.jeon.Manager
                 }
             }
 
-            // 3. [핵심 수정] 모든 적 처치 대기 (안전장치 강화)
-            Debug.Log($"{data.waveName} 스폰 완료. 남은 적 체크 시작...");
-
+            // 3. 모든 적 처치 대기
             while (true)
             {
-                // 리스트 내 Null이거나 비활성화된 객체 강제 제거 (유령 데이터 청소)
                 _main.SpawnEnemys.RemoveAll(enemy => enemy == null || !enemy.gameObject.activeInHierarchy);
 
-                if (_main.SpawnEnemys.Count == 0)
-                {
-                    break; // 적이 완전히 없으면 루프 탈출
-                }
+                if (_main.SpawnEnemys.Count == 0) break;
 
-                yield return new WaitForSeconds(0.5f); // 0.5초 간격으로 체크 (성능 최적화)
+                yield return new WaitForSeconds(0.5f);
             }
 
             // 4. 다음 웨이브로 전환
             if (!_isGameOver)
             {
-                Debug.Log($"{data.waveName} 클리어! 1.5초 후 다음 단계를 시작합니다.");
-                yield return new WaitForSeconds(3f); // 연출을 위한 짧은 대기
+                Debug.Log($"{_currentWaveIndex} 라운드 클리어!");
+                yield return new WaitForSeconds(3.0f);
                 StartNextWave();
             }
         }
-
         private void SpawnEntity(Enemy prefab, float hpOverride, int goldReward, int baseDamage)
         {
+            if (_pool == null || _map == null || _map.FlagPoints == null || _map.FlagPoints.Length == 0) return;
+
             Enemy entity = _pool.GetFromPool<Enemy>(prefab.gameObject.name);
+            
             if (entity != null)
             {
                 // 스탯 주입 (hpOverride가 0보다 클 때만 적용)
                 if (hpOverride > 0)
                 {
-                    if (entity.PoolTag == "Stone")
-                    {
-                        entity._stat.MaxHp.BaseValue = hpOverride * 1.5f;
-                        entity._stat.CurrentHp = hpOverride * 1.5f;
-                    }
-                    else
-                    {
-
-                        entity._stat.MaxHp.BaseValue = hpOverride;
-                        entity._stat.CurrentHp = hpOverride;
-                    }
+                    float finalHp = (entity.PoolTag == "Stone") ? hpOverride * 1.5f : hpOverride;
+                    entity._stat.MaxHp.BaseValue = finalHp;
+                    entity._stat.CurrentHp = finalHp;
                 }
 
                 // 골드 보상 설정
                 entity.GetGold = goldReward;
-
+                entity.BaseDamage = baseDamage;
 
                 float speed = 1;
 
