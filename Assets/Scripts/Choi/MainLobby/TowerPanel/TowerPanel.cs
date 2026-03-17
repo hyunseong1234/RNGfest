@@ -51,6 +51,7 @@ public class TowerPanel : MonoBehaviour
             _currentData._lv++;
 
             RefreshUI();
+            TowerPresetManager.Instance.RefreshAll();
 
             PlayFabDataManager.Instance.SaveData();
 
@@ -66,18 +67,18 @@ public class TowerPanel : MonoBehaviour
     {
         if (_currentData == null) return;
 
-        // 1. 타워 아이콘 교체
+        // 타워 아이콘 교체
         if (_towerIcon != null)
             _towerIcon.sprite = TowerSlotManager.Instance.GetTowerSprite(_currentData._id);
 
-        // 2. 레벨 바 (슬롯) 색상 갱신
+        // 레벨 바 (슬롯) 색상 갱신
         for (int i = 0; i < _currentLvimageBar.Count; i++)
         {
-            bool isReached = (i < _currentData._lv);
+            bool isReached = (i == _currentData._lv - 1);
             _currentLvimageBar[i].SetSlotColor(isReached);
         }
 
-        // 3. [추가] 경험치 계산 및 UI 적용
+        // 경험치 계산 및 UI 적용
         int currentExp = _currentData._currentExp;
         int maxExp = 10 + (_currentData._lv * 5); // 레벨 비례 공식 적용
 
@@ -94,7 +95,7 @@ public class TowerPanel : MonoBehaviour
             _towerExpImage.fillAmount = (float)currentExp / maxExp;
         }
 
-        // 4. 강화 가능 여부에 따른 막기 이미지 처리
+        // 강화 가능 여부에 따른 막기 이미지 처리
         bool cannotUpgrade = currentExp < maxExp;
         if (_notUpgradeImage != null)
         {

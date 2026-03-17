@@ -5,7 +5,6 @@ using UnityEngine.UI;
 // IPointerClickHandler 인터페이스를 추가합니다.
 public class SelectTowerSlot : MonoBehaviour, IDropHandler, IPointerClickHandler
 {
-    // [가장 중요] 하이라키에서 각 슬롯마다 0, 1, 2, 3, 4가 직접 입력되어 있어야 함
     public int slotIndex;
 
     [Header("UI Components")]

@@ -20,6 +20,10 @@ public class SelectTowerList : MonoBehaviour
 
         }
     }
+    private void OnEnable()
+    {
+        if (TowerPresetManager.Instance != null) TowerPresetManager.Instance.RefreshAll();
+    }
 }
 
 

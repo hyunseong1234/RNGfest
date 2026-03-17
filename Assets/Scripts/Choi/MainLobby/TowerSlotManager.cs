@@ -35,7 +35,7 @@ public class TowerSlotManager : MonoBehaviour
 
     public Sprite GetTowerSprite(TowerType type) => _towerSpriteDict.GetValueOrDefault(type);
 
-    // [핵심] 그냥 딱 인덱스 찍어서 데이터 넣고 저장함. 꼬임 방지용 데이터 보정 포함.
+    // 그냥 딱 인덱스 찍어서 데이터 넣고 저장함. 꼬임 방지용 데이터 보정 포함.
     public void ChangeTowerInSlot(int slotIndex, TowerType newTower)
     {
         var userData = PlayFabDataManager.Instance.userData;
