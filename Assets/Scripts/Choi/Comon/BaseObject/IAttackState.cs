@@ -12,9 +12,13 @@ namespace Dev.cheol.Comon
     {
         public IEnumerator Enter(BaseUnit unit)
         {
-            unit.Animator.SetInteger("animation", unit.AttackAniNum);
 
-            //unit.Animator.Play("ATK0", 0, 0f);
+            if (unit.Animator != null)
+            {
+                unit.Animator.speed = unit._stat.Speed.Value;
+            }
+
+            unit.Animator.SetInteger("animation", unit.AttackAniNum);
             unit.ActiveAttack();
 
             yield break;
@@ -24,14 +28,14 @@ namespace Dev.cheol.Comon
         {
             while (true)
             {
-                // 타겟 유효성 검사
-                if (unit.Target == null)
+                // 1. 타겟 유효성 검사
+                if (unit.Target == null || !unit.Target.gameObject.activeSelf)
                 {
                     unit.ChangeState(EState.IDLE);
                     yield break;
                 }
 
-                // 타겟 방향 회전 기존 로직 유지
+                // 2. 타겟 방향으로 회전 로직
                 Vector3 direction = (unit.Target.position - unit.transform.position).normalized;
                 direction.y = 0;
                 if (direction != Vector3.zero)
@@ -40,13 +44,16 @@ namespace Dev.cheol.Comon
                     unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, targetRotation, Time.deltaTime * 10f);
                 }
 
-                // 애니메이션 종료 체크 단순화
+                // 애니메이션 종료 체크
                 AnimatorStateInfo stateInfo = unit.Animator.GetCurrentAnimatorStateInfo(0);
 
-                // 애니메이션이 끝나면 IDLE로 복귀
+
+                //애니메이션 끝나는 로직
                 if (stateInfo.normalizedTime >= 1.0f && !unit.Animator.IsInTransition(0))
                 {
+                    unit.Animator.speed = 1.0f;
                     unit.ChangeState(EState.IDLE);
+
                     yield break;
                 }
 
@@ -56,6 +63,11 @@ namespace Dev.cheol.Comon
 
         public IEnumerator Exit(BaseUnit unit)
         {
+            if (unit.Animator != null)
+            {
+                unit.Animator.speed = 1.0f;
+            }
+
             yield break;
         }
 

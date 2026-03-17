@@ -16,9 +16,10 @@ MonoBehaviour:
   stats:
   - rank: 1
     attack: 4
-    speed: 0
-    range: 0
-    specialValues: []
+    speed: 1
+    range: 5
+    specialValues:
+    - 50
   - rank: 2
     attack: 12
     speed: 1

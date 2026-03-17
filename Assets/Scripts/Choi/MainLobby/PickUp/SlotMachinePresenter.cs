@@ -89,7 +89,7 @@ public class SlotMachinePresenter : MonoBehaviour
         List<TowerType> validTowers = new List<TowerType>();
         List<TowerType> rewardTowers = new List<TowerType>();
 
-        // 1. 유효 타워 필터링 (기존 동일)
+        // 유효 타워 필터링 (기존 동일)
         foreach (TowerType type in System.Enum.GetValues(typeof(TowerType)))
         {
             if (type == TowerType.None || type == TowerType.Max) continue;
@@ -98,7 +98,7 @@ public class SlotMachinePresenter : MonoBehaviour
 
         if (validTowers.Count == 0) { /* 에러 처리 */ yield break; }
 
-        // 2. 가챠 결과 미리 계산 (중요: 실시간 텍스트 반영을 위해 미리 계산함)
+        // 가챠 결과 미리 계산 (중요: 실시간 텍스트 반영을 위해 미리 계산함)
         var playfab = PlayFabDataManager.Instance;
         // 현재 타워들의 경험치 상태를 복사본으로 들고 있음 (실시간 UI 표기용)
         Dictionary<TowerType, int> tempExpTracker = new Dictionary<TowerType, int>();
@@ -107,7 +107,7 @@ public class SlotMachinePresenter : MonoBehaviour
             tempExpTracker[t._id] = t._currentExp;
         }
 
-        // 3. 슬롯 연출 시작
+        // 슬롯 연출 시작
         for (int i = 0; i < instantiatedSlots.Count; i++)
         {
             TowerType randomResult = validTowers[UnityEngine.Random.Range(0, validTowers.Count)];

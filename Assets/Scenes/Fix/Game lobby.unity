@@ -1105,6 +1105,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2417801676855698343, guid: 919e4632f48e0c2489d53e6e10ace7f0, type: 3}
+      propertyPath: m_text
+      value: "\uACF5\uACA9\uB825 10% \uC99D\uAC00"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2608351036604440931, guid: 919e4632f48e0c2489d53e6e10ace7f0, type: 3}
+      propertyPath: m_text
+      value: "\uACF5\uACA9\uB825 15% \uC99D\uAC00"
+      objectReference: {fileID: 0}
     - target: {fileID: 2888815503812052052, guid: 919e4632f48e0c2489d53e6e10ace7f0, type: 3}
       propertyPath: m_Color.b
       value: 1
@@ -1364,6 +1372,10 @@ PrefabInstance:
     - target: {fileID: 5830089112575910138, guid: 919e4632f48e0c2489d53e6e10ace7f0, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5849061312541327405, guid: 919e4632f48e0c2489d53e6e10ace7f0, type: 3}
+      propertyPath: m_text
+      value: "\uACF5\uACA9\uB825 5% \uC99D\uAC00"
       objectReference: {fileID: 0}
     - target: {fileID: 6228760313855540852, guid: 919e4632f48e0c2489d53e6e10ace7f0, type: 3}
       propertyPath: m_IsActive

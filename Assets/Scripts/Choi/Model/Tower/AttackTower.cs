@@ -13,6 +13,7 @@ namespace Dev.cheol.Model
         private List<Enemy> _enemyList; // 적 리스트 캐싱용
         [SerializeField] private BaseBullet _bullet;
 
+        private float _lastAttackTime;
         public BaseBullet Bullet { get => _bullet; set => _bullet = value; }
 
         protected override void Awake()
@@ -40,7 +41,15 @@ namespace Dev.cheol.Model
 
             if (Target != null)
             {
-                ChangeState(EState.ATTACK);
+                float attackInterval = 1f / Mathf.Max(0.01f, _stat.Speed.Value);
+
+                // 현재 시간이 (마지막 공격 시간 + 쿨타임)보다 지났는지 체크
+                if (Time.time >= _lastAttackTime + attackInterval)
+                {
+                    ChangeState(EState.ATTACK); // 상태 변경 (애니메이션 등)
+                    //ActiveAttack();             // 실제 총알 발사!
+                    _lastAttackTime = Time.time; // 마지막 공격 시간 갱신
+                }
             }
             else
             {

@@ -222,6 +222,23 @@ namespace Dev.cheol.Manager
             }
         }
 
+        /// <summary>
+        /// 레벨별 계산하는 세팅 함수
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public int GetTowerLevel(TowerType type)
+        {
+            var userData = PlayFabDataManager.Instance?.userData;
+            if (userData == null || userData._towers == null) return 1;
+
+            // 유저가 보유한 타워 리스트에서 해당 타입 찾기
+            var towerData = userData._towers.FirstOrDefault(t => t._id == type);
+
+            // 타워가 있으면 레벨 반환, 없으면 1레벨
+            return towerData != null ? towerData._lv : 1;
+        }
+
         public override void HandleEvent(string data)
         {
             throw new System.NotImplementedException();

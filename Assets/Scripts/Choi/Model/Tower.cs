@@ -12,7 +12,7 @@ namespace Dev.cheol.Model
         [Header("--- [덱 슬롯 설정] ---")]
         [SerializeField] private int _mySlotIndex;
 
-        [Header("--- [기본 변수] ---")]
+        [Header("기본 변수")]
         [SerializeField] private BaseObject _currentEffect;
         [SerializeField] private float _destroyTime = 1.0f;
         [SerializeField] private TileObject _currentTile;
@@ -20,7 +20,9 @@ namespace Dev.cheol.Model
         [SerializeField] private LankStarUI _starUI;
         [SerializeField] private bool _isSealed = false;
 
-        private StatModifier _upgradeMod;
+        [Header("모디파이어")]
+        [SerializeField] private StatModifier _levelMod; //레벨
+        [SerializeField] private StatModifier _upgradeMod; //업글
 
         public EState _state;
         public bool IsSealed => _isSealed;
@@ -123,23 +125,49 @@ namespace Dev.cheol.Model
         public void Setup(TowerData data, int rank, int slotIndex)
         {
             UnSeal();
-
             this.Lank = rank;
             this._mySlotIndex = slotIndex;
+
+            //팩토리에서 레벨 가져오기
+            var factory = ServiceLocator.Instance.GetService<FactoryManager>();
+            TowerType myType = TowerType.None;
+            foreach (TowerType type in System.Enum.GetValues(typeof(TowerType)))
+            {
+                if (type == TowerType.None || type == TowerType.Max) continue;
+
+                // PoolTag(예: "04Speed Tower")에 Enum 이름(예: "Speed")이 포함되어 있는지 확인
+                if (PoolTag.Contains(type.ToString()))
+                {
+                    myType = type;
+                    break;
+                }
+            }
+
+            // 만약 못 찾았을 경우를 위한 방어 코드
+            if (myType == TowerType.None)
+            {
+                Debug.LogWarning($"[Tower] PoolTag '{PoolTag}'에 해당하는 TowerType을 찾을 수 없습니다.");
+            }
+
+            int userLevel = factory.GetTowerLevel(myType);
+
+            //기존 스탯 설정
             var targetStat = data.stats.Find(s => s.rank == rank);
             if (targetStat != null && _stat != null)
             {
                 _stat.Damage.BaseValue = targetStat.attack;
                 _stat.Speed.BaseValue = targetStat.speed;
                 _stat.Range.BaseValue = targetStat.range;
+
+                // 기존 레벨 보너스가 있다면 제거 (재사용 시 대비)
+                if (_levelMod != null) _stat.Damage.RemoveModifier(_levelMod);
+
+                //TODO : 나중에 SO로 계수나 특수 능력 고려해서 리팩토링 필요
+                float bonusValue = (userLevel - 1) * 0.05f;
+                _levelMod = new StatModifier(bonusValue, StatModType.Percent, this);
+                _stat.Damage.AddModifier(_levelMod);
+
                 _stat.CurrentHp = _stat.MaxHp.Value;
-                for (int i = 0; i < targetStat.specialValues.Count; i++)
-                    if (i < _stat.SpecialValues.Count) _stat.SpecialValues[i].BaseValue = targetStat.specialValues[i];
-            }
-            var sys = ServiceLocator.Instance.GetService<SystemManager>();
-            if (sys != null && sys.Upgrades != null && slotIndex >= 0 && slotIndex < sys.Upgrades.Length)
-            {
-                ApplyUpgradeStat(sys.Upgrades[slotIndex]);
             }
         }
 

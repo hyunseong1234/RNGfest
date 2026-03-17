@@ -76,6 +76,8 @@ public class TowerPanel : MonoBehaviour
         {
             bool isReached = (i == _currentData._lv - 1);
             _currentLvimageBar[i].SetSlotColor(isReached);
+            _currentLvimageBar[i].SetAbility(i + 1);
+
         }
 
         // 경험치 계산 및 UI 적용
