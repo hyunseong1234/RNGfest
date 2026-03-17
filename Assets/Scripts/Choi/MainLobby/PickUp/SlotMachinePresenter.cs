@@ -33,17 +33,17 @@ public class SlotMachinePresenter : MonoBehaviour
         productionCanvas.SetActive(true);
         closeButton.gameObject.SetActive(false);
 
-        // 1. TowerSlotManager에서 연출용 스프라이트들 긁어오기
+        // TowerSlotManager에서 연출용 스프라이트들 긁어오기
         PrepareSprites();
 
-        // 2. 기존 슬롯 청소
+        // 기존 슬롯 청소
         foreach (var slot in instantiatedSlots) Destroy(slot.gameObject);
         instantiatedSlots.Clear();
 
-        // 3. 레이아웃 설정 (1뽑: 중앙, 10뽑: 2x5)
+        // 레이아웃 설정 (1뽑: 중앙, 10뽑: 2x5)
         SetupLayout(count);
 
-        // 4. 슬롯 생성
+        // 슬롯 생성
         for (int i = 0; i < count; i++)
         {
             GameObject go = Instantiate(slotPrefab, slotContainer);
@@ -75,7 +75,6 @@ public class SlotMachinePresenter : MonoBehaviour
         {
             gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             gridLayout.constraintCount = 1;
-            // 중앙 정렬을 위해 Padding이나 Spacing 조절이 필요할 수 있습니다.
         }
         else
         {
@@ -93,7 +92,7 @@ public class SlotMachinePresenter : MonoBehaviour
         foreach (TowerType type in System.Enum.GetValues(typeof(TowerType)))
         {
             if (type == TowerType.None) continue;
-            if (TowerSlotManager.Instance.GetTowerSprite(type) != null) // 이미지가 있는 것만!
+            if (TowerSlotManager.Instance.GetTowerSprite(type) != null)
             {
                 validTowers.Add(type);
             }
