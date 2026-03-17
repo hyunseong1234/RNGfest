@@ -50,6 +50,7 @@ MonoBehaviour:
   _isUI: 0
   _radius: 1.5
   _slowAmount: 0.5
+  _slowEffectPrefab: {fileID: 0}
 --- !u!1001 &4097267032591768841
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -61,6 +62,10 @@ PrefabInstance:
     - target: {fileID: 989096550707780098, guid: b94dcbf3af0b8e34e8dc7aeeb2fa90ea, type: 3}
       propertyPath: m_Name
       value: PowerOrbSciFi02
+      objectReference: {fileID: 0}
+    - target: {fileID: 2434234388752906366, guid: b94dcbf3af0b8e34e8dc7aeeb2fa90ea, type: 3}
+      propertyPath: m_SortingOrder
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4569326882460692439, guid: b94dcbf3af0b8e34e8dc7aeeb2fa90ea, type: 3}
       propertyPath: m_LocalPosition.x
