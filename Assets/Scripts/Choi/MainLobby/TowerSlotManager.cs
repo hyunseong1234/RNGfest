@@ -4,12 +4,22 @@ using UnityEngine;
 public class TowerSlotManager : MonoBehaviour
 {
     public static TowerSlotManager Instance;
+    public TowerPanel _towerPanel = null;
     private Dictionary<TowerType, Sprite> _towerSpriteDict = new Dictionary<TowerType, Sprite>();
 
     private void Awake()
     {
         if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); LoadResources(); }
         else { Destroy(gameObject); }
+
+        if (_towerPanel == null)
+        {
+            GameObject go = GameObject.Find("Tower Panel");
+            if (go != null)
+            {
+                _towerPanel = go.GetComponent<TowerPanel>();
+            }
+        }
     }
 
     private void LoadResources()

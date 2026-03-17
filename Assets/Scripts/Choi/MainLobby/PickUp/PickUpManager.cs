@@ -63,8 +63,6 @@ public class PickUpManager : MonoBehaviour
     public void OnClickTenGacha()
     {
 
-        // 1. 부모인 Shop Panel(또는 SlotMachinePresenter 자체)을 먼저 켠다
-        // 만약 Shop Panel을 참조하고 있다면 그것을 SetActive(true) 하세요.
         _slotPresenter.gameObject.SetActive(true);
 
         // 2. 그 다음 코루틴을 호출한다

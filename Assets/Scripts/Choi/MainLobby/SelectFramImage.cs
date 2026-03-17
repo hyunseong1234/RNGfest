@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(DraggableIcon))]
@@ -16,6 +17,8 @@ public class SelectFramImage : MonoBehaviour
     [Header("State Elements")]
     [SerializeField] private CanvasGroup _canvasGroup;
 
+
+    TowerGameData _towerGameData;
     private TowerType _towerType = TowerType.None;
 
     private void Awake()
@@ -26,10 +29,10 @@ public class SelectFramImage : MonoBehaviour
     public void InitSlot(TowerGameData data)
     {
         _towerType = data._id;
-
         int lv = data._lv;
         int exp = data._currentExp;
         int maxExp = 10 + (lv * 5);
+        _towerGameData = data; //정보 일단 담고있기
 
         if (_lvText) _lvText.text = $"Lv.{lv}";
         if (_countText) _countText.text = $"{exp}/{maxExp}";
@@ -48,6 +51,23 @@ public class SelectFramImage : MonoBehaviour
         // 장착 중(isEquipped == true)이면 오브젝트를 끄고, 아니면 켭니다.
         this.gameObject.SetActive(!isEquipped);
 
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        // 드래그 중이 아닐 때만 정보창 오픈
+        if (!eventData.dragging)
+        {
+            TowerSlotManager.Instance._towerPanel.gameObject.SetActive(true);
+        }
+    }
+
+
+    public void OpenInfo()
+    {
+        var towerPanel = TowerSlotManager.Instance._towerPanel;
+        towerPanel.SetInfo(_towerGameData);
+        TowerSlotManager.Instance._towerPanel.gameObject.SetActive(true);
     }
 
     public TowerType GetTowerType() => _towerType;
