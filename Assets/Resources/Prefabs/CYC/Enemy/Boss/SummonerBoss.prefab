@@ -183,6 +183,8 @@ MonoBehaviour:
   _spacing: 0.5
   _portalPrefab: {fileID: 3369151197022026474, guid: ceb9b3450eaf16d4bb79c643538c3673, type: 3}
   _impactEffectPrefab: {fileID: -9212538156424395788, guid: f1e284c7021ce424fb37e03f52da0389, type: 3}
+  _portalSound: {fileID: 0}
+  _impactSound: {fileID: 8300000, guid: 1c5dd24bc8f5e4a218d4d247a6e73acf, type: 3}
 --- !u!1 &5756651686647709477
 GameObject:
   m_ObjectHideFlags: 0
