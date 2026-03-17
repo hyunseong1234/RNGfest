@@ -108,7 +108,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AlphaCutoff: 0.414
+    - _AlphaCutoff: 0.515
     - _Anchorthefoliagebase: 0
     - _Bias1: 0
     - _BumpScale: 1
@@ -158,7 +158,7 @@ Material:
     - _Tiling: 1
     - _TransShadow: 0.006
     - _Translucency: 1
-    - _TranslucencyInt: 9.7
+    - _TranslucencyInt: 41.3
     - _TranslucencyOffset: -0.5
     - _UVBigWavesScale: 0.25
     - _UVBigWavesSpeed: 5
