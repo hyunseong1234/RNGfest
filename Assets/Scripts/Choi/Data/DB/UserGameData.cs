@@ -58,6 +58,34 @@ public class UserGameData
             _towerSlots.Add(newSlot);
         }
     }
+
+    /// <summary>
+    /// 가챠 결과로 받은 타워 리스트를 데이터에 반영합니다.
+    /// 중복이면 경험치 +5, 없으면 신규 추가!
+    /// </summary>
+    public void AddGachaResults(List<TowerType> results)
+    {
+        foreach (TowerType resultId in results)
+        {
+            if (resultId == TowerType.None) continue;
+
+            // 이미 보유 중인 타워인지 확인
+            TowerGameData existingTower = _towers.Find(t => t._id == resultId);
+
+            if (existingTower != null)
+            {
+                // 2. 중복인 경우: 경험치 +5
+                existingTower._currentExp += 5;
+                UnityEngine.Debug.Log($"{resultId} 중복 획득! 경험치 +5 (현재: {existingTower._currentExp})");
+            }
+            else
+            {
+                //없는 타워인 경우: 리스트에 새로 추가 (1레벨, 경험치 0)
+                _towers.Add(new TowerGameData(resultId, 1, 0));
+                UnityEngine.Debug.Log($"{resultId} 신규 획득! 리스트에 추가되었습니다.");
+            }
+        }
+    }
 }
 
 [System.Serializable]

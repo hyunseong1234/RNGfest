@@ -32,6 +32,7 @@ public class PickUpManager : MonoBehaviour
     {
         Instance = this;
     }
+
     void Start()
     {
         // 데이터 개수와 UI 객체 개수가 맞는지 확인
@@ -49,7 +50,8 @@ public class PickUpManager : MonoBehaviour
 
     public void GoldCheck()
     {
-        int currentGold = PlayFabDataManager.Instance.userData._gold;
+        var playfab = PlayFabDataManager.Instance;
+        int currentGold = playfab.userData._gold;
 
         if (currentGold < 50)
         {
@@ -65,14 +67,16 @@ public class PickUpManager : MonoBehaviour
         if (currentGold < 500)
         {
             gacha10.color = Color.red;
-            nogoldPanel1.gameObject.SetActive(true);
+            nogoldPanel10.gameObject.SetActive(true);
         }
         else
         {
             gacha10.color = Color.black;
-            nogoldPanel1.gameObject.SetActive(false);
+            nogoldPanel10.gameObject.SetActive(false);
         }
         shopGoldText.text = currentGold.ToString();
+        MainLobbyManager.Instance.PorfilePanel.SetProfile("gold", currentGold.ToString());
+        playfab.SaveData();
     }
 
     public void SelectTab(int index)
@@ -105,7 +109,6 @@ public class PickUpManager : MonoBehaviour
         var playfab = PlayFabDataManager.Instance;
         _slotPresenter.gameObject.SetActive(true);
         playfab.userData._gold -= 500;
-        playfab.SaveData();
 
         _slotPresenter.StartSlotMachine(10, () => { });
         GoldCheck();
@@ -116,9 +119,7 @@ public class PickUpManager : MonoBehaviour
         var playfab = PlayFabDataManager.Instance;
         _slotPresenter.gameObject.SetActive(true);
         playfab.userData._gold -= 50;
-        playfab.SaveData();
 
-        // 2. 그 다음 코루틴을 호출한다
         _slotPresenter.StartSlotMachine(1, () => { });
         GoldCheck();
     }

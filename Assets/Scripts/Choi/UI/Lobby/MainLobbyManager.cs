@@ -4,9 +4,15 @@ using UnityEngine.SceneManagement;
 
 public class MainLobbyManager : MonoBehaviour
 {
+    public static MainLobbyManager Instance;
     [SerializeField] private ProfilePanel _porfilePanel;
 
     public ProfilePanel PorfilePanel { get => _porfilePanel; set => _porfilePanel = value; }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void OnEnable()
     {
@@ -16,6 +22,7 @@ public class MainLobbyManager : MonoBehaviour
             string nickName = playfab.userData._userNickName.ToString();
             string gold = playfab.userData._gold.ToString();
             string juwel = playfab.userData._jewel.ToString();
+
             _porfilePanel.SetProfile(nickName, gold, juwel);
         }
     }
@@ -26,7 +33,9 @@ public class MainLobbyManager : MonoBehaviour
         {
             var _userData = PlayFabDataManager.Instance.userData;
             _userData._gold += 1000;
+
             PorfilePanel.SetProfile(_userData._userNickName.ToString(), _userData._gold.ToString(), _userData._jewel.ToString());
+            PickUpManager.Instance.GoldCheck();
         }
     }
 
