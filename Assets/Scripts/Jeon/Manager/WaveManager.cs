@@ -234,6 +234,12 @@ namespace Dev.jeon.Manager
 
         }
 
+        private void OnDestroy()
+        {
+            // 씬이 바뀌어 이 스크립트가 파괴될 때, 실행 중인 모든 코루틴을 즉시 멈춥니다.
+            StopAllCoroutines();
+        }
+
         public override void HandleEvent(string data)
         {
         }
