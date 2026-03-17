@@ -167,6 +167,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: SpinPortalBlue (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3483597891189758385, guid: a1329b19127c08044b6e11d249046652, type: 3}
+      propertyPath: m_SortingOrder
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4095696311394559373, guid: a1329b19127c08044b6e11d249046652, type: 3}
+      propertyPath: m_SortingOrder
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 7745703754644167676, guid: a1329b19127c08044b6e11d249046652, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

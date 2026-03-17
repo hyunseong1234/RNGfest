@@ -250,6 +250,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4637203974464041241, guid: 2e1841b1e45b13245b51f05b45a8254a, type: 3}
+      propertyPath: m_SortingOrder
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 7867794738730565358, guid: 2e1841b1e45b13245b51f05b45a8254a, type: 3}
       propertyPath: m_LocalScale.x
       value: 1

@@ -269,6 +269,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5906375856216890158}
     m_Modifications:
+    - target: {fileID: 1640053479887682025, guid: acde350fe5598cf468f20143ca7f9a7a, type: 3}
+      propertyPath: m_SortingOrder
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 3148410418819525789, guid: acde350fe5598cf468f20143ca7f9a7a, type: 3}
       propertyPath: m_Name
       value: LightningOrbSharpBlue

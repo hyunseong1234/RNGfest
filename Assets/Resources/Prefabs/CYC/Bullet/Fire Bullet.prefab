@@ -160,6 +160,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5906375856216890158}
     m_Modifications:
+    - target: {fileID: 1419175891683777792, guid: 3f2ad742ab69e294ea7679433e489f44, type: 3}
+      propertyPath: m_SortingFudge
+      value: -100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1419175891683777792, guid: 3f2ad742ab69e294ea7679433e489f44, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 3762616805493791848, guid: 3f2ad742ab69e294ea7679433e489f44, type: 3}
+      propertyPath: m_SortingFudge
+      value: -100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3762616805493791848, guid: 3f2ad742ab69e294ea7679433e489f44, type: 3}
+      propertyPath: m_SortingOrder
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 3865311090546315771, guid: 3f2ad742ab69e294ea7679433e489f44, type: 3}
       propertyPath: m_Name
       value: PowerupGlow5

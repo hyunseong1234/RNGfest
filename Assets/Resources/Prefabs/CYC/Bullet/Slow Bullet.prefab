@@ -165,6 +165,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PowerOrbSciFi02
       objectReference: {fileID: 0}
+    - target: {fileID: 2434234388752906366, guid: b94dcbf3af0b8e34e8dc7aeeb2fa90ea, type: 3}
+      propertyPath: m_SortingOrder
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 4569326882460692439, guid: b94dcbf3af0b8e34e8dc7aeeb2fa90ea, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
