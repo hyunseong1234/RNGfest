@@ -291,7 +291,7 @@ MonoBehaviour:
   _isUI: 0
   _stat:
     Speed:
-      _baseValue: 0
+      _baseValue: 1
     MaxHp:
       _baseValue: 0
     Defense:

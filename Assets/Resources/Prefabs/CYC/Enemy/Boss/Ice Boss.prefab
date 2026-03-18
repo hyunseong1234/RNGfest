@@ -902,7 +902,7 @@ MonoBehaviour:
   _skillTileInterval: 4
   _skillMotionDuration: 1.5
   _bulletPrefab: {fileID: 1272907618916568948, guid: de184905467d8f642a43fded944fb922, type: 3}
-  _bulletSpeed: 15
+  _bulletSpeed: 5
   _scopePrefab: {fileID: 8620680803446921347, guid: 4455268dc2addb449a39f8558c48f58e, type: 3}
   _scopeSound: {fileID: 8300000, guid: 4ff7d983635bb4edc93ba8161c0e07e6, type: 3}
 --- !u!1 &3298501115715162955
