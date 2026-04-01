@@ -11,7 +11,7 @@ public class TowerConverter
     private const string CSV_PATH = "Assets/Resources/Data/TowerData.csv";
     private const string SAVE_PATH = "Assets/Resources/Data/Towers";
 
-    [MenuItem("Tools/Convert Tower CSV to SO (Safe Mode)")]
+    [MenuItem("Tools/타워 SO 베이킹")]
     public static void ConvertDirect()
     {
         if (!File.Exists(CSV_PATH))

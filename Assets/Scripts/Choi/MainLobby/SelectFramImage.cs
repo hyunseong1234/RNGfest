@@ -58,6 +58,11 @@ public class SelectFramImage : MonoBehaviour
         // 드래그 중이 아닐 때만 정보창 오픈
         if (!eventData.dragging)
         {
+            if (TowerSlotManager.Instance._towerPanel == null)
+            {
+                TowerSlotManager.Instance._towerPanel = Object.FindAnyObjectByType<TowerPanel>();
+
+            }
             TowerSlotManager.Instance._towerPanel.gameObject.SetActive(true);
         }
     }
@@ -65,6 +70,10 @@ public class SelectFramImage : MonoBehaviour
 
     public void OpenInfo()
     {
+        if (TowerSlotManager.Instance._towerPanel == null)
+        {
+            TowerSlotManager.Instance._towerPanel = Object.FindAnyObjectByType<TowerPanel>();
+        }
         var towerPanel = TowerSlotManager.Instance._towerPanel;
         towerPanel.SetInfo(_towerGameData);
         TowerSlotManager.Instance._towerPanel.gameObject.SetActive(true);

@@ -74,7 +74,7 @@ Material:
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
-    - _ZTest: 4
+    - _ZTest: 8
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 2.5000002, g: 2.5000002, b: 2.5000002, a: 1}

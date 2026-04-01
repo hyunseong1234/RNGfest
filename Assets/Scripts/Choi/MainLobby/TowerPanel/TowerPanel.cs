@@ -22,6 +22,11 @@ public class TowerPanel : MonoBehaviour
         {
             _currentLvimageBar = GetComponentsInChildren<ImageSlotBar>().ToList();
         }
+
+        if (TowerSlotManager.Instance._towerPanel == null)
+        {
+            TowerSlotManager.Instance._towerPanel = this;
+        }
     }
 
     /// <summary>

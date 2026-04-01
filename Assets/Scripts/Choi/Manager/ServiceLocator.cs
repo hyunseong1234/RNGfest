@@ -25,12 +25,10 @@ namespace Dev.cheol.Manager
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject);
                 InitChildManagers();
             }
             else
             {
-                Destroy(gameObject);
                 return;
             }
         }
@@ -40,14 +38,10 @@ namespace Dev.cheol.Manager
         {
             // 자식들 중 BaseManager를 상속받은 모든 컴포넌트 가져오기
             var managers = GetComponentsInChildren<BaseManager>(true);
-
             foreach (var manager in managers)
             {
                 RegisterService(manager);
-
-
             }
-
             Debug.Log($"[ServiceLocator] 총 {serviceRegistry.Count}개의 매니저 자동 등록 완료.");
         }
         public void RegisterService(BaseManager service)
@@ -78,7 +72,7 @@ namespace Dev.cheol.Manager
                 return service as T;
             }
 
-            Debug.LogError($"Service '{key}' 등록된 레지스트리 없음 순번확인이나 base AWake 받았는지 한번 ㄱㄱ");
+            Debug.LogError($"Service '{key}' 등록된 레지스트리 없음 순번확인이나 base AWake 받았는지 확인하세요");
             return null;
         }
 

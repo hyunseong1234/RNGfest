@@ -9,7 +9,7 @@ public class WaveConverter
     // 프리팹이 위치한 리소스 상대 경로 (Resources.Load용)
     private const string PREFAB_PATH = "Prefabs/CYC/Enemy";
 
-    [MenuItem("Tools/Convert Wave CSV to SO")]
+    [MenuItem("Tools/웨이브 SO 베이킹")]
     public static void ConvertWave()
     {
         TextAsset csv = Resources.Load<TextAsset>("Data/WaveData");

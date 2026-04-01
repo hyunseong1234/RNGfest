@@ -18,6 +18,7 @@ namespace Dev.jeon.Manager
         [SerializeField] private WaveUIController _waveUI;
         [SerializeField] private WavePopupUI _wavePopup;
         [SerializeField] private HpUIController _hpUI;
+        [SerializeField] private GameEndPanel _gameEndPanel;
 
         // 기지 관련
         [SerializeField] private int _maxHp = 3;
@@ -29,6 +30,8 @@ namespace Dev.jeon.Manager
         private ObjectPoolingManger _pool;
         private MapManager _map;
         private MainManager _main;
+
+        public int CurrentWaveIndex { get => _currentWaveIndex; set => _currentWaveIndex = value; }
 
         private void Start()
         {
@@ -156,7 +159,7 @@ namespace Dev.jeon.Manager
             if (_pool == null || _map == null || _map.FlagPoints == null || _map.FlagPoints.Length == 0) return;
 
             Enemy entity = _pool.GetFromPool<Enemy>(prefab.gameObject.name);
-            
+
             if (entity != null)
             {
                 // 스탯 주입 (hpOverride가 0보다 클 때만 적용)
@@ -223,6 +226,7 @@ namespace Dev.jeon.Manager
             _isGameOver = true;
             StopAllCoroutines();
             Debug.Log("게임 오버! 몬스터 스폰을 중지합니다.");
+            _gameEndPanel.gameObject.SetActive(true);
 
             Time.timeScale = 0f;
 
