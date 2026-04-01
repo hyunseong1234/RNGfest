@@ -9,6 +9,9 @@ Shader "Custom/Particles/Unlit_ZTest" // 이름을 바꿔서 유니티 순정과
         // 0:Disabled, 1:Never, 2:Less, 3:Equal, 4:LEqual, 5:Greater, 6:NotEqual, 7:GEqual, 8:Always
         [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest Mode", Float) = 4
 
+        // ZWrite를 Off(0)로 설정하여 뒤에 그려지는 물체에 영향을 주지 않도록 합니다.
+        [Enum(Off, 0, On, 1)] _ZWrite("ZWrite Mode", Float) = 0
+
         _Cutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
         _BumpMap("Normal Map", 2D) = "bump" {}
         [HDR] _EmissionColor("Color", Color) = (0,0,0)
@@ -40,7 +43,9 @@ Shader "Custom/Particles/Unlit_ZTest" // 이름을 바꿔서 유니티 순정과
     {
         Tags
         {
-            "RenderType" = "Opaque"
+            //"RenderType" = "Opaque"
+            "RenderType" = "Transparent" // 렌더 타입 수정
+            "Queue" = "Transparent+100" // 불투명(2000)과 일반 투명(3000)보다 늦게 출력
             "IgnoreProjector" = "True"
             "PreviewType" = "Plane"
             "PerformanceChecks" = "False"
@@ -57,6 +62,8 @@ Shader "Custom/Particles/Unlit_ZTest" // 이름을 바꿔서 유니티 순정과
             Blend[_SrcBlend][_DstBlend]
             ZWrite[_ZWrite]
             
+            ZWrite[_ZWrite] // 프로퍼티의 _ZWrite 사용
+
             // [수정] 고정된 값이 아니라 프로퍼티에서 받은 _ZTest 값을 사용
             ZTest [_ZTest] 
             
