@@ -66,12 +66,14 @@ namespace Dev.cheol.Model
             if (_animator != null) return;
             _animator = GetComponentInChildren<Animator>();
         }
-        // 이넘을 인자로 받는 ChangeState
+
+        /// <summary>
+        /// 상태 머신 교체하는 로직 분기점 비교
+        /// </summary>
+        /// <param name="newStateEnum"></param>
         public void ChangeState(EState newStateEnum)
         {
-            // [추가] 오브젝트가 꺼져있으면 코루틴을 돌릴 수 없으므로 리턴
             if (!gameObject.activeInHierarchy) return;
-
             if (currentState == newStateEnum && currentStateCoroutine != null) return;
 
             if (stateDictionary.TryGetValue(newStateEnum, out IState nextState))
@@ -89,6 +91,11 @@ namespace Dev.cheol.Model
                 Debug.LogWarning($"{newStateEnum} 상태가 stateDictionary에 등록되지 않았습니다.");
             }
         }
+
+
+        //TODO : 나중에 버퍼 핸들러 클래스 추가하하고 거기로 기능 옮겨 놔야됨 핸들러는 가급적 모노비헤이비어 상속 받지 말것
+
+        #region 버퍼 핸들러
         //  외부에서 버프를 추가하는 함수
         public void AddBuff(BaseBuff newBuff)
         {
@@ -124,8 +131,7 @@ namespace Dev.cheol.Model
             return null; // 없으면 null
         }
 
-
-        public override void ObjectUpdate()
+        private void UpdateeBuffs()
         {
             if (_buffs == null || _buffs.Count == 0) return;
 
@@ -140,19 +146,25 @@ namespace Dev.cheol.Model
                     continue;
                 }
 
-                // 1. 업데이트 실행
+                // 업데이트 실행
                 targetBuff.BuffUpdate(Time.deltaTime);
 
                 // [안전장치 2] BuffUpdate 실행 도중 리스트가 변했을 가능성 체크
                 if (i >= _buffs.Count || _buffs[i] != targetBuff) continue;
 
-                // 2. 수명 다한 버프 리스트에서 제거
+                //수명 다한 버프 리스트에서 제거
                 if (targetBuff.IsFinished)
                 {
                     targetBuff.EndBuff(); // 끝날 때 처리 명시적 호출 (필요시)
                     _buffs.RemoveAt(i);
                 }
             }
+        }
+        #endregion
+
+        public override void ObjectUpdate()
+        {
+            UpdateeBuffs();
         }
 
 

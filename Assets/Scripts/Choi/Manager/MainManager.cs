@@ -25,11 +25,8 @@ namespace Dev.cheol.Manager
         private void Start()
         {
             var factory = ServiceLocator.Instance.GetService<FactoryManager>();
-
             StartCoroutine(WaitForSeedAndSpawn());
         }
-
-
 
         /// <summary>
         /// 초반 세팅용 코루틴 함수 네트워크 염두
@@ -39,20 +36,17 @@ namespace Dev.cheol.Manager
         {
 
             yield return new WaitForSeconds(0.2f);
-
         }
 
         private void Update()
         {
-
             //업데이트
             UpdateList(_spawnEnemys);
             UpdateList(_spawnTowers);
-            //UpdateList(_spawnUI);
+            UpdateList(_spawnUI);
 
             //테스트용 인풋기능
-            Test(); // 테스트때만 주석풀어용~
-
+            //Test(); // 테스트때만 주석풀어용~
 
             //업데이트 매니저 업데이트 호출해주는 구간
             if (ServiceLocator.Instance.UpdateManagers == null) return;
@@ -63,7 +57,6 @@ namespace Dev.cheol.Manager
                 manager.ManagerUpdate();
             }
         }
-
         private void Test()
         {
             if (Input.GetKeyDown(KeyCode.F1))
@@ -155,7 +148,7 @@ namespace Dev.cheol.Manager
             else if (obj is Tower tower)
             {
                 _spawnTowers.Remove(tower);
-                tower.CurrentTile._isUsed = false; // 커플링 발생 2호기
+                tower.CurrentTile._isUsed = false; // 타일 점유 상태 해제 및 참조 초기화
 
                 //UI 부분 초기화 세팅 부분 위치 나중에 리팩토링 요구
                 tower.StarUI.gameObject.SetActive(false);
@@ -165,10 +158,10 @@ namespace Dev.cheol.Manager
 
             // 공통 초기화 및 반납 처리
             obj.OnReturnToPool();
-
             ServiceLocator.Instance.GetService<ObjectPoolingManger>().ReturnPool(obj);
-
         }
+
+
         public void TogglePause()
         {
             if (Time.timeScale == 0)

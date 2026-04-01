@@ -9,8 +9,8 @@ public class TowerSlotManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); LoadResources(); }
-        else { Destroy(gameObject); }
+        Instance = this;
+
 
         if (_towerPanel == null)
         {
@@ -20,7 +20,10 @@ public class TowerSlotManager : MonoBehaviour
                 _towerPanel = go.GetComponent<TowerPanel>();
             }
         }
+
+        LoadResources();
     }
+
 
     private void LoadResources()
     {
