@@ -35,7 +35,7 @@ namespace Dev.jeon.Bullet
                 {
                     var newPoison = new PoisonBuff(_poisonDamage);
                     newPoison.Init(enemy, _poisonDuration, _poisonBuffVFXPrefab);
-                    enemy.AddBuff(newPoison);
+                    enemy.AddBuff(newPoison, _poisonDuration, _poisonBuffVFXPrefab);
                 }
             }
         }

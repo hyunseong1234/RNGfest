@@ -43,7 +43,7 @@ namespace Dev.jeon.Model
                             var slowBuff = new SlowBuff(_slowAmount);
                             // 수정된 Init 방식: 주인, 지속시간, 연출프리팹 3개를 전달
                             slowBuff.Init(enemy, 0.5f, _slowEffectPrefab);
-                            enemy.AddBuff(slowBuff);
+                            enemy.AddBuff(slowBuff, _slowAmount, _slowEffectPrefab);
                         }
                         else
                         {

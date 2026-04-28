@@ -19,7 +19,7 @@ public class SlowBullet : BaseBullet
             {
                 var slowBuff = new SlowBuff(_slowAmount);
                 slowBuff.Init(enemy, _slowDuration, _hitEffectPrefab);
-                enemy.AddBuff(slowBuff);
+                enemy.AddBuff(slowBuff, _slowDuration, _hitEffectPrefab);
             }
             else existingSlow.Refresh(_slowDuration);
         }
