@@ -1,11 +1,12 @@
-using Dev.cheol.Data;
+using Dev.jeon.Data;
 using Dev.cheol.Model;
 using Dev.cheol.Stats;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Dev.cheol.Manager;
 
-namespace Dev.cheol.Manager
+namespace Dev.jeon.Manager
 {
     /// <summary>
     /// 증강 시스템 매니저

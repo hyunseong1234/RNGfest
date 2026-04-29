@@ -1,12 +1,12 @@
 #if UNITY_EDITOR
-using Dev.cheol.Data;
+using Dev.jeon.Data;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Dev.cheol.Editor
+namespace Dev.jeon.Editor
 {
     /// <summary>
     /// CSV → TowerData / AugmentData ScriptableObject 자동 생성 에디터 툴
