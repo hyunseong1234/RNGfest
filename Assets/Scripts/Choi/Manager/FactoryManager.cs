@@ -48,6 +48,8 @@ namespace Dev.cheol.Manager
 
 
                 var currentDeck = userData._towerSlots[userData._currentSlot].slotTowers;
+                
+               
 
                 List<BaseObject> orderedTowers = new List<BaseObject>();
                 List<Sprite> orderedSprites = new List<Sprite>();
@@ -72,7 +74,13 @@ namespace Dev.cheol.Manager
                 _prefabs_Twoer = orderedTowers.ToArray();
                 _prefabSprites = orderedSprites.ToArray();
 
+
+
                 Debug.Log($"[Factory] 서버 덱 순서대로 {_prefabs_Twoer.Length}개 정렬 완료.");
+
+                // 증강 매니저
+                var augmentManager = ServiceLocator.Instance.GetService<AugmentManager>();
+                augmentManager?.Init(currentDeck);
             }
             else
             {
