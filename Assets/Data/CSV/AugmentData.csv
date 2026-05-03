@@ -1,0 +1,42 @@
+Name,Description,Weight,AugmentType,TargetTower,Value
+FireDamageUp,화염 공격력 30% 증가,80,StatModifier_Damage,Fire,0.3
+FireSpeedUp,화염 공격속도 20% 증가,70,StatModifier_Speed,Fire,0.2
+FireAbilityUp,화염 스플래시 범위 20% 증가,50,AbilityBoost,Fire,0.2
+FireUltimate,화염 궁극기 - 전체 적에게 스플래시 데미지,20,Ultimate,Fire,0
+SlowDamageUp,슬로우 공격력 30% 증가,80,StatModifier_Damage,Slow,0.3
+SlowSpeedUp,슬로우 공격속도 20% 증가,70,StatModifier_Speed,Slow,0.2
+SlowAbilityUp,슬로우 수치 20% 증가,50,AbilityBoost,Slow,0.2
+SlowUltimate,슬로우 궁극기 - 전체 적 3초 완전 정지,20,Ultimate,Slow,3
+ArcherDamageUp,궁수 공격력 30% 증가,80,StatModifier_Damage,Archer,0.3
+ArcherSpeedUp,궁수 공격속도 20% 증가,70,StatModifier_Speed,Archer,0.2
+ArcherUltimate,궁수 궁극기 - 전체 적에게 고데미지,20,Ultimate,Archer,0
+SpeedDamageUp,스피드 공격력 30% 증가,80,StatModifier_Damage,Speed,0.3
+SpeedSpeedUp,스피드 공격속도 20% 증가,70,StatModifier_Speed,Speed,0.2
+SpeedUltimate,스피드 궁극기 - 모든 타워 공격속도 5초 2배,20,Ultimate,Speed,5
+ElectricDamageUp,전기 공격력 30% 증가,80,StatModifier_Damage,Electric,0.3
+ElectricSpeedUp,전기 공격속도 20% 증가,70,StatModifier_Speed,Electric,0.2
+ElectricAbilityUp,전기 연쇄 횟수 +1,30,AbilityBoost,Electric,1
+ElectricUltimate,전기 궁극기 - 전체 적에게 연쇄 번개,20,Ultimate,Electric,0
+PoisonDamageUp,독 공격력 30% 증가,80,StatModifier_Damage,Poison,0.3
+PoisonSpeedUp,독 공격속도 20% 증가,70,StatModifier_Speed,Poison,0.2
+PoisonAbilityUp,독 데미지 20% 증가,50,AbilityBoost,Poison,0.2
+PoisonUltimate,독 궁극기 - 전체 적에게 강력한 독 즉시 적용,20,Ultimate,Poison,0
+StationaryDamageUp,고정포 공격력 30% 증가,80,StatModifier_Damage,Stationary,0.3
+StationarySpeedUp,고정포 공격속도 20% 증가,70,StatModifier_Speed,Stationary,0.2
+StationaryUltimate,고정포 궁극기 - 전체 타워 공격력 5초 증가,20,Ultimate,Stationary,5
+MarkingDamageUp,마킹 공격력 30% 증가,80,StatModifier_Damage,Marking,0.3
+MarkingSpeedUp,마킹 공격속도 20% 증가,70,StatModifier_Speed,Marking,0.2
+MarkingUltimate,마킹 궁극기 - 전체 적 받는 데미지 5초 증가,20,Ultimate,Marking,5
+MeleeDamageUp,근접 공격력 30% 증가,80,StatModifier_Damage,Meleeattack,0.3
+MeleeSpeedUp,근접 공격속도 20% 증가,70,StatModifier_Speed,Meleeattack,0.2
+MeleeAbilityUp,근접 이동속도 20% 증가,50,AbilityBoost,Meleeattack,0.2
+MeleeUltimate,근접 궁극기 - 전체 적에게 돌진 공격,20,Ultimate,Meleeattack,0
+BuffDamageUp,버프 수치 20% 증가,60,StatModifier_Damage,Buff,0.2
+BuffSpeedUp,버프 범위 20% 증가,60,StatModifier_Speed,Buff,0.2
+BuffUltimate,버프 궁극기 - 모든 타워 버프 수치 5초 2배,20,Ultimate,Buff,5
+GrowthDamageUp,성장 공격력 20% 증가,60,StatModifier_Damage,Growth,0.2
+GrowthSpeedUp,성장 공격속도 20% 증가,60,StatModifier_Speed,Growth,0.2
+GrowthUltimate,성장 궁극기 - 즉시 성장 스택 대폭 증가,20,Ultimate,Growth,0
+GoldBonus,처치당 골드 +2,70,Economy_Gold,None,2
+InterestBonus,보유 골드 10% 이자,30,Economy_Interest,None,0.1
+SlowZoneUnlock,슬로우존 해금,20,Ultimate_SlowZone,None,0

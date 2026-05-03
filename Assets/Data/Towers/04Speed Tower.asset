@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11fe45893c91e9d488743e03d1abc04f, type: 3}
+  m_Name: 04Speed Tower
+  m_EditorClassIdentifier: 
+  towerName: 04Speed Tower
+  stats:
+  - rank: 1
+    attack: 7
+    speed: 1.5
+    range: 5
+    specialValues: []
+  - rank: 2
+    attack: 21
+    speed: 1.8
+    range: 5
+    specialValues: []
+  - rank: 3
+    attack: 70
+    speed: 2.1
+    range: 5
+    specialValues: []
+  - rank: 4
+    attack: 280
+    speed: 2.4
+    range: 5
+    specialValues: []
+  - rank: 5
+    attack: 0
+    speed: 0
+    range: 2.7
+    specialValues:
+    - 5
+  - rank: 6
+    attack: 0
+    speed: 0
+    range: 3
+    specialValues:
+    - 5
+  - rank: 7
+    attack: 0
+    speed: 0
+    range: 3.3
+    specialValues:
+    - 5
