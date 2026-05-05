@@ -1,8 +1,8 @@
 #if UNITY_EDITOR
+using Dev.cheol.Data;
 using Dev.jeon.Data;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,14 +11,20 @@ namespace Dev.jeon.Editor
     /// <summary>
     /// CSV → TowerData / AugmentData ScriptableObject 자동 생성 에디터 툴
     /// 사용법:
-    /// 1. 엑셀에서 CSV로 저장 (UTF-8)
+    /// 1. 엑셀/구글시트에서 CSV로 저장 (UTF-8)
     /// 2. Assets/Data/CSV/ 폴더에 파일 넣기
     /// 3. Unity 상단 메뉴 → Tools → Import Tower Data CSV 클릭
+    /// 
+    /// [AugmentData CSV 형식]
+    /// Name,Description,Weight,AugmentType,TargetTower,Value
+    /// FireDamageUp,화염 공격력 30% 증가,80,StatModifier_Damage,Fire,0.3
     /// </summary>
     public class TowerDataImporter : EditorWindow
     {
-        private string _csvPath = "Assets/Data/CSV/TowerData.csv";
-        private string _outputPath = "Assets/Data/Towers";
+        private string _towerCsvPath = "Assets/Data/CSV/TowerData.csv";
+        private string _augmentCsvPath = "Assets/Data/CSV/AugmentData.csv";
+        private string _towerOutputPath = "Assets/Data/Towers";
+        private string _augmentOutputPath = "Assets/Data/Augments";
 
         [MenuItem("Tools/Import Tower Data CSV")]
         public static void ShowWindow()
@@ -31,11 +37,19 @@ namespace Dev.jeon.Editor
             GUILayout.Label("Tower Data CSV Importer", EditorStyles.boldLabel);
             GUILayout.Space(10);
 
-            GUILayout.Label("CSV 파일 경로:");
-            _csvPath = GUILayout.TextField(_csvPath);
+            GUILayout.Label("Tower CSV 경로:");
+            _towerCsvPath = GUILayout.TextField(_towerCsvPath);
 
-            GUILayout.Label("SO 저장 경로:");
-            _outputPath = GUILayout.TextField(_outputPath);
+            GUILayout.Label("Augment CSV 경로:");
+            _augmentCsvPath = GUILayout.TextField(_augmentCsvPath);
+
+            GUILayout.Space(5);
+
+            GUILayout.Label("Tower SO 저장 경로:");
+            _towerOutputPath = GUILayout.TextField(_towerOutputPath);
+
+            GUILayout.Label("Augment SO 저장 경로:");
+            _augmentOutputPath = GUILayout.TextField(_augmentOutputPath);
 
             GUILayout.Space(10);
 
@@ -46,25 +60,32 @@ namespace Dev.jeon.Editor
 
             if (GUILayout.Button("CSV에서 AugmentData SO 생성", GUILayout.Height(40)))
                 ImportAugmentData();
+
+            GUILayout.Space(5);
+
+            if (GUILayout.Button("전체 Import (Tower + Augment)", GUILayout.Height(40)))
+            {
+                ImportTowerData();
+                ImportAugmentData();
+            }
         }
 
         /// <summary>
-        /// CSV 형식:
+        /// TowerData CSV 파싱
         /// Name,Rank,Attack,Speed,Range,Value1,Value2,Value3
-        /// 01FireTower,1,8,1,5,1.5,,
         /// </summary>
         private void ImportTowerData()
         {
-            if (!File.Exists(_csvPath))
+            if (!File.Exists(_towerCsvPath))
             {
-                EditorUtility.DisplayDialog("오류", $"CSV 파일을 찾을 수 없습니다:\n{_csvPath}", "확인");
+                EditorUtility.DisplayDialog("오류", $"Tower CSV 파일을 찾을 수 없습니다:\n{_towerCsvPath}", "확인");
                 return;
             }
 
-            if (!Directory.Exists(_outputPath))
-                Directory.CreateDirectory(_outputPath);
+            if (!Directory.Exists(_towerOutputPath))
+                Directory.CreateDirectory(_towerOutputPath);
 
-            string[] lines = File.ReadAllLines(_csvPath, System.Text.Encoding.UTF8);
+            string[] lines = File.ReadAllLines(_towerCsvPath, System.Text.Encoding.UTF8);
             var towerDict = new Dictionary<string, TowerData>();
 
             for (int i = 1; i < lines.Length; i++)
@@ -79,8 +100,8 @@ namespace Dev.jeon.Editor
                 if (!int.TryParse(cols[1].Trim(), out int rank)) continue;
 
                 float attack = ParseFloat(cols[2]);
-                float speed  = ParseFloat(cols[3]);
-                float range  = ParseFloat(cols[4]);
+                float speed = ParseFloat(cols[3]);
+                float range = ParseFloat(cols[4]);
 
                 List<float> specials = new List<float>();
                 for (int v = 5; v < cols.Length; v++)
@@ -92,7 +113,7 @@ namespace Dev.jeon.Editor
 
                 if (!towerDict.ContainsKey(towerName))
                 {
-                    string assetPath = $"{_outputPath}/{towerName}.asset";
+                    string assetPath = $"{_towerOutputPath}/{towerName}.asset";
                     TowerData existing = AssetDatabase.LoadAssetAtPath<TowerData>(assetPath);
 
                     if (existing == null)
@@ -128,26 +149,21 @@ namespace Dev.jeon.Editor
         }
 
         /// <summary>
-        /// Augment CSV 형식:
-        /// AugmentName,Description,Weight,AugmentType,TargetTower,StatType,Value,BonusGold,InterestRate,UltimateTower
-        /// FireDamageUp,파이어 타워 공격력 +30%,80,TowerBuff,Fire,Damage,0.3,0,0,None
+        /// AugmentData CSV 파싱
+        /// Name,Description,Weight,AugmentType,TargetTower,Value
         /// </summary>
         private void ImportAugmentData()
         {
-            string augmentCsvPath   = _csvPath.Replace("TowerData", "AugmentData");
-            string augmentOutputPath = _outputPath.Replace("Towers", "Augments");
-
-            if (!File.Exists(augmentCsvPath))
+            if (!File.Exists(_augmentCsvPath))
             {
-                EditorUtility.DisplayDialog("오류",
-                    $"Augment CSV 파일을 찾을 수 없습니다:\n{augmentCsvPath}\n\n먼저 AugmentData.csv를 만들어주세요.", "확인");
+                EditorUtility.DisplayDialog("오류", $"Augment CSV 파일을 찾을 수 없습니다:\n{_augmentCsvPath}", "확인");
                 return;
             }
 
-            if (!Directory.Exists(augmentOutputPath))
-                Directory.CreateDirectory(augmentOutputPath);
+            if (!Directory.Exists(_augmentOutputPath))
+                Directory.CreateDirectory(_augmentOutputPath);
 
-            string[] lines = File.ReadAllLines(augmentCsvPath, System.Text.Encoding.UTF8);
+            string[] lines = File.ReadAllLines(_augmentCsvPath, System.Text.Encoding.UTF8);
             int count = 0;
 
             for (int i = 1; i < lines.Length; i++)
@@ -159,21 +175,24 @@ namespace Dev.jeon.Editor
                 if (cols.Length < 6) continue;
 
                 string augName = cols[0].Trim();
-                string desc    = cols[1].Trim();
-                int weight     = int.TryParse(cols[2].Trim(), out int w) ? w : 50;
+                string desc = cols[1].Trim();
+                int weight = int.TryParse(cols[2].Trim(), out int w) ? w : 50;
+                string typeName = cols[3].Trim();
+                string towerName = cols[4].Trim();
+                float value = ParseFloat(cols[5]);
 
-                if (!System.Enum.TryParse(cols[3].Trim(), out AugmentType augType)) continue;
-                if (!System.Enum.TryParse(cols[4].Trim(), out TowerType targetTower)) targetTower = TowerType.None;
-                if (!System.Enum.TryParse(cols[5].Trim(), out AugmentStatType statType)) statType = AugmentStatType.Damage;
+                // AugmentEffectType 파싱
+                if (!System.Enum.TryParse(typeName, out AugmentEffectType effectType))
+                {
+                    Debug.LogWarning($"[TowerDataImporter] 알 수 없는 AugmentEffectType: {typeName} (행 {i + 1})");
+                    continue;
+                }
 
-                float value        = cols.Length > 6 ? ParseFloat(cols[6]) : 0;
-                int bonusGold      = cols.Length > 7 && int.TryParse(cols[7].Trim(), out int bg) ? bg : 0;
-                float interestRate = cols.Length > 8 ? ParseFloat(cols[8]) : 0;
+                // TowerType 파싱 (None이면 타워 무관)
+                if (!System.Enum.TryParse(towerName, out TowerType targetTower))
+                    targetTower = TowerType.None;
 
-                TowerType ultimateType = TowerType.None;
-                if (cols.Length > 9) System.Enum.TryParse(cols[9].Trim(), out ultimateType);
-
-                string assetPath = $"{augmentOutputPath}/{augName}.asset";
+                string assetPath = $"{_augmentOutputPath}/{augName}.asset";
                 AugmentData augData = AssetDatabase.LoadAssetAtPath<AugmentData>(assetPath);
 
                 if (augData == null)
@@ -182,16 +201,12 @@ namespace Dev.jeon.Editor
                     AssetDatabase.CreateAsset(augData, assetPath);
                 }
 
-                augData.augmentName       = augName;
-                augData.description       = desc;
-                augData.weight            = weight;
-                augData.augmentType       = augType;
-                augData.targetTowerType   = targetTower;
-                augData.statType          = statType;
-                augData.value             = value;
-                augData.bonusGoldPerKill  = bonusGold;
-                augData.interestRate      = interestRate;
-                augData.ultimateTowerType = ultimateType;
+                augData.augmentName = augName;
+                augData.description = desc;
+                augData.weight = weight;
+                augData.effectType = effectType;
+                augData.targetTowerType = targetTower;
+                augData.value = value;
 
                 EditorUtility.SetDirty(augData);
                 count++;
@@ -203,7 +218,7 @@ namespace Dev.jeon.Editor
             Debug.Log($"[TowerDataImporter] {count}개 증강 데이터 임포트 완료");
         }
 
-        // "1,800" 같은 숫자도 파싱 가능
+        // "1,800" 같은 숫자 파싱
         private float ParseFloat(string raw)
         {
             string cleaned = raw.Trim().Replace(",", "");
