@@ -1,5 +1,6 @@
 ﻿using Dev.cheol.Manager;
 using Dev.cheol.Model;
+using Dev.jeon.Model;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +8,36 @@ using UnityEngine;
 
 namespace Dev.jeon.Bullet
 {
-    public class ElectricityBullet : BaseBullet
+    public class ElectricityBullet : BaseBullet, IAbilityBoost
     {
         [Header("전기 속성 설정")]
         [SerializeField] private float _bounceRadius = 5f;
         [SerializeField] private LineRenderer _lineRenderer;
         [SerializeField] private float _lightningDuration = 0.2f;
-
         private int _maxTargets = 3;
         private float[] _damageMultipliers = { 1.0f, 0.7f, 0.4f };
+
+        /// <summary>
+        /// 증강 적용 → 연쇄 횟수 증가
+        /// </summary>
+        public void ApplyAbilityBoost(float value)
+        {
+            int addCount = Mathf.RoundToInt(value);
+            _maxTargets += addCount;
+
+            // 연쇄 횟수 늘어나면 데미지 배율 배열도 확장
+            float[] newMultipliers = new float[_maxTargets];
+            for (int i = 0; i < _maxTargets; i++)
+            {
+                if (i < _damageMultipliers.Length)
+                    newMultipliers[i] = _damageMultipliers[i];
+                else
+                    newMultipliers[i] = Mathf.Max(0.1f, _damageMultipliers[_damageMultipliers.Length - 1] - 0.1f);
+            }
+            _damageMultipliers = newMultipliers;
+
+            Debug.Log($"[ElectricityBullet] 연쇄 횟수 증가: {_maxTargets}");
+        }
 
         public override void Init(Transform target, float damage, float speed = 20)
         {
@@ -41,14 +63,12 @@ namespace Dev.jeon.Bullet
             Enemy primaryEnemy = (_target != null && _target.gameObject.activeSelf) ? _target.GetComponent<Enemy>() : null;
             List<Enemy> hitEnemies = new List<Enemy>();
             List<Vector3> linePoints = new List<Vector3> { hitPosition };
-
             Enemy currentTarget = primaryEnemy;
 
             for (int i = 0; i < _maxTargets; i++)
             {
                 if (currentTarget == null || !currentTarget.gameObject.activeSelf)
                     currentTarget = FindNextTarget(linePoints.Last(), hitEnemies);
-
                 if (currentTarget == null) break;
 
                 // 데미지 및 이펙트

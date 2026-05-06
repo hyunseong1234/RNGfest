@@ -1,12 +1,13 @@
 using Dev.cheol.Manager;
 using Dev.cheol.Model;
+using Dev.jeon.Model;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dev.jeon.Bullet
 {
-    public class AdeleBullet : BaseBullet
+    public class AdeleBullet : BaseBullet, IAbilityBoost
     {
         private enum SwordState { Chasing, Overshooting, Returning }
 
@@ -28,6 +29,15 @@ namespace Dev.jeon.Bullet
         private float _nextAttackTime = 0f;
         private float _currentOvershootLimit;
         private float _currentTurnDelay;
+
+        /// <summary>
+        /// 증강 적용 → 이동속도 증가
+        /// </summary>
+        public void ApplyAbilityBoost(float value)
+        {
+            _attackSpeed *= (1 + value);
+            Debug.Log($"[AdeleBullet] 이동속도 증가: {_attackSpeed}");
+        }
 
         // 1. 초기화 (부모의 Init을 활용하여 발사음 자동 재생)
         public override void Init(Transform targetOrOwner, float damage, float speed = 40f)
@@ -74,9 +84,7 @@ namespace Dev.jeon.Bullet
                                     (main.SpawnEnemys.Count == 0);
 
                 if (_currentState != SwordState.Returning && shouldReturn)
-                {
                     _currentState = SwordState.Returning;
-                }
 
                 switch (_currentState)
                 {

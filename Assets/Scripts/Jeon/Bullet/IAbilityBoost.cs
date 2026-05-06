@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class IAbilityBoost : MonoBehaviour
+namespace Dev.jeon.Model
 {
-    // Start is called before the first frame update
-    void Start()
+    /// <summary>
+    /// 타워 고유 특수 수치를 증강으로 강화할 때 사용하는 인터페이스
+    /// 각 Bullet에서 구현
+    /// FireBullet   → _splashRadius 증가
+    /// SlowBullet   → _slowAmount 증가
+    /// PoisonBullet → _poisonDamage 증가
+    /// AdeleBullet  → _attackSpeed 증가
+    /// ElectricityBullet → _maxTargets 증가
+    /// </summary>
+    public interface IAbilityBoost
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        void ApplyAbilityBoost(float value);
     }
 }
