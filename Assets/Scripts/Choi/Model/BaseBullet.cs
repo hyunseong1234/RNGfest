@@ -73,14 +73,14 @@ namespace Dev.cheol.Model
 
         protected abstract void ApplyHitLogic(Vector3 hitPoint);
 
-        protected void PlaySound(AudioClip clip)
+        public void PlaySound(AudioClip clip)
         {
             if (clip == null || _sound == null) return;
             _audioSource.PlayOneShot(clip);
         }
 
         //  virtual 키워드 추가: 자식에서 재정의(override) 가능해짐!
-        protected virtual void SpawnHitEffect(Vector3 pos)
+        public virtual void SpawnHitEffect(Vector3 pos)
         {
             if (_hitEffectPrefab == null) return;
             var pool = ServiceLocator.Instance.GetService<ObjectPoolingManger>();

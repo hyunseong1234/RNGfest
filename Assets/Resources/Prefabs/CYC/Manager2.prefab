@@ -272,7 +272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b25e839021b42d8428741a247285240c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bgmClip: {fileID: 8300000, guid: 7bc34abe96d2197409f8a6ed352913ff, type: 3}
+  _bgmClip: {fileID: 8300000, guid: a26550efdf0403f49ab83d5378bbd15d, type: 3}
   _masterMixer: {fileID: 24100000, guid: 73c2b8ef81d1b854ca1805174e57f970, type: 2}
   _bgmSource: {fileID: 0}
   _sfxPoolTag: SoundObject
@@ -357,6 +357,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _settingSubPanel: {fileID: 0}
   _pausePanel: {fileID: 0}
+--- !u!1 &7602191020690737743
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6183734320332783968}
+  - component: {fileID: 1619841514433513524}
+  m_Layer: 0
+  m_Name: AugmentManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6183734320332783968
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7602191020690737743}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1195369533975208108}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1619841514433513524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7602191020690737743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5df5519abfb79348a46fa8360e98bba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _allAugments: []
 --- !u!1001 &1320209819815167456
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -629,6 +674,26 @@ PrefabInstance:
       propertyPath: _waves.Array.data[49]
       value: 
       objectReference: {fileID: 11400000, guid: 06957e27c61ef2b46b9bad9fa1d6a802, type: 2}
+    - target: {fileID: 8569308805410444710, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
+      propertyPath: _randomBossPrefabs.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8569308805410444710, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
+      propertyPath: _randomBossPrefabs.Array.data[0]
+      value: 
+      objectReference: {fileID: -5264274753041999592, guid: 54fd5a3d664f0334f9c8a5a5ecdcdc92, type: 3}
+    - target: {fileID: 8569308805410444710, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
+      propertyPath: _randomBossPrefabs.Array.data[1]
+      value: 
+      objectReference: {fileID: -1434673315415745900, guid: aabca69f99823a1438a6587e46f9bc7a, type: 3}
+    - target: {fileID: 8569308805410444710, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
+      propertyPath: _randomBossPrefabs.Array.data[2]
+      value: 
+      objectReference: {fileID: 3334126504066729881, guid: 682c85964d08fc542a3c58fb80196bae, type: 3}
+    - target: {fileID: 8569308805410444710, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
+      propertyPath: _randomBossPrefabs.Array.data[3]
+      value: 
+      objectReference: {fileID: 1156190510331805262, guid: 29f96e3d2424eea4cafdce494ed939ee, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -641,6 +706,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 199457559218382156, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2524474606301139291}
+    - targetCorrespondingSourceObject: {fileID: 199457559218382156, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6183734320332783968}
     - targetCorrespondingSourceObject: {fileID: 6076368982076449942, guid: 9bcb94c58be39b142a0be26b8d9f42e8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1778531084521130954}

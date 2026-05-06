@@ -3,6 +3,7 @@ using Dev.cheol.Model;
 using Dev.cheol.Stats;
 using Dev.jeon.Data;
 using Dev.jeon.Model;
+using Dev.jeon.UI;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -40,6 +41,12 @@ namespace Dev.jeon.Manager
             Instance = this;
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.T))
+                OnBossDefeated();
+        }
+
         /// <summary>
         /// 게임 시작 시 선택된 타워 목록 받아서 풀 초기화
         /// </summary>
@@ -75,7 +82,7 @@ namespace Dev.jeon.Manager
             Time.timeScale = 0;
 
             List<AugmentData> picks = GetWeightedRandomAugments(3);
-            // TODO: AugmentUI.Instance.Show(picks, OnAugmentSelected);
+            AugmentUI.Instance.Show(picks, OnAugmentSelected);
             Debug.Log($"[AugmentManager] 증강 {picks.Count}개 뽑기 완료");
         }
 

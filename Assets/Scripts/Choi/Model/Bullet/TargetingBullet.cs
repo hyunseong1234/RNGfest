@@ -64,7 +64,7 @@ public class TargetingBullet : BaseBullet
             // 슬래시 이펙트 회전 로직은 여기서 처리 (부모의 SpawnHitEffect 이후 추가 연출)
         }
     }
-    protected override void SpawnHitEffect(Vector3 position)
+    public override void SpawnHitEffect(Vector3 position)
     {
         if (_hitEffectPrefab == null || _target == null) return;
 

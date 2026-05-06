@@ -47,10 +47,12 @@ namespace Dev.cheol.Manager
                 Tower[] allTowerPrefabs = Resources.LoadAll<Tower>("Prefabs/CYC/Tower");
                 Sprite[] allSprites = Resources.LoadAll<Sprite>("Texture/MainLobby/TowerIcon");
 
-
+                // 증강 매니저
                 var currentDeck = userData._towerSlots[userData._currentSlot].slotTowers;
-                
-               
+                var augmentManager = ServiceLocator.Instance.GetService<AugmentManager>();
+                augmentManager?.Init(currentDeck);
+
+
 
                 List<BaseObject> orderedTowers = new List<BaseObject>();
                 List<Sprite> orderedSprites = new List<Sprite>();
@@ -79,9 +81,6 @@ namespace Dev.cheol.Manager
 
                 Debug.Log($"[Factory] 서버 덱 순서대로 {_prefabs_Twoer.Length}개 정렬 완료.");
 
-                // 증강 매니저
-                var augmentManager = ServiceLocator.Instance.GetService<AugmentManager>();
-                augmentManager?.Init(currentDeck);
             }
             else
             {
@@ -89,10 +88,11 @@ namespace Dev.cheol.Manager
                 _prefabSprites = Resources.LoadAll<Sprite>("Texture/MainLobby/TowerIcon");
                 Debug.Log("[Factory] 서버 데이터 없음. 전체 타워 로드.");
 
+
             }
 
             //전체 프리팹 리스트 병합 및 캐싱
-            _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).Concat(_prfavs_Ui).Concat(_prefabs_Sound).ToArray();
+            //_prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).Concat(_prfavs_Ui).Concat(_prefabs_Sound).ToArray();
             _prefabs = _prefabs_Enmey.Concat(_prefabs_Twoer).Concat(_prefabs_Bullet).Concat(_prfavs_Ui).ToArray();
 
             // TowerData SO 캐싱 
@@ -118,6 +118,21 @@ namespace Dev.cheol.Manager
             SettingObject(50, _prfavs_Ui);
             SettingObject(10, _prefabs_Sound);
 
+            // AugmentManager Init - Start에서 호출해야 ServiceLocator 등록 완료됨
+            var userData = PlayFabDataManager.Instance?.userData;
+            if (userData != null && userData._towerSlots != null && userData._towerSlots.Count > userData._currentSlot)
+            {
+                var currentDeck = userData._towerSlots[userData._currentSlot].slotTowers;
+                ServiceLocator.Instance.GetService<AugmentManager>()?.Init(currentDeck);
+            }
+            else
+            {
+                var allTowerTypes = System.Enum.GetValues(typeof(TowerType))
+                    .Cast<TowerType>()
+                    .Where(t => t != TowerType.None && t != TowerType.Max)
+                    .ToList();
+                ServiceLocator.Instance.GetService<AugmentManager>()?.Init(allTowerTypes);
+            }
         }
 
         private void StartSetting()

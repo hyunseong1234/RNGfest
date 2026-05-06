@@ -17,7 +17,7 @@ namespace Dev.jeon.Bullet
         }
 
         // 부모의 기본 피격 이펙트(펑 터지는 등)를 무시하기 위해 오버라이드
-        protected override void SpawnHitEffect(Vector3 pos)
+        public override void SpawnHitEffect(Vector3 pos)
         {
             // 저주 탄환은 부모의 공통 이펙트를 생성하지 않고 비워둡니다.
             // 만약 공통 이펙트가 필요하다면 base.SpawnHitEffect(pos); 를 호출하세요.

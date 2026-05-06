@@ -13,13 +13,9 @@ MonoBehaviour:
   m_Name: Wave_01
   m_EditorClassIdentifier: 
   waveName: Wave_01
-  waveType: 0
+  waveType: 2
   delayBeforeWave: 3
-  monsterTypes:
-  - monsterPrefab: {fileID: -5820791943814646689, guid: 5d7c9fcb1c27d5740b49578befd15143, type: 3}
-    count: 10
-    hpOverride: 10
-    goldReward: 5
-  bossPrefab: {fileID: 0}
+  monsterTypes: []
+  bossPrefab: {fileID: 3334126504066729881, guid: 682c85964d08fc542a3c58fb80196bae, type: 3}
   bossHp: 0
   bossGoldReward: 0
