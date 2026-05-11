@@ -49,8 +49,6 @@ namespace Dev.cheol.Manager
 
                 // 증강 매니저
                 var currentDeck = userData._towerSlots[userData._currentSlot].slotTowers;
-                var augmentManager = ServiceLocator.Instance.GetService<AugmentManager>();
-                augmentManager?.Init(currentDeck);
 
 
 

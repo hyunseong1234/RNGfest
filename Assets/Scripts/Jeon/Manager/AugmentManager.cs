@@ -72,7 +72,11 @@ namespace Dev.jeon.Manager
                 Debug.Log("[AugmentManager] 더 이상 뽑을 수 있는 증강이 없습니다.");
                 return;
             }
-
+            if (AugmentUI.Instance == null)
+            {
+                Debug.LogWarning("[AugmentManager] AugmentUI.Instance가 null입니다. 씬에 AugmentUI가 있는지 확인하세요.");
+                return;
+            }
             Time.timeScale = 0;
 
             List<AugmentData> picks = GetWeightedRandomAugments(3);
