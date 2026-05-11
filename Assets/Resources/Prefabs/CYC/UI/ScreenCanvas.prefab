@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1815334040072405992}
   - component: {fileID: 8992585447143438883}
   - component: {fileID: 6238588181055626332}
+  - component: {fileID: 1190479093994597074}
   m_Layer: 5
   m_Name: AugmentCard2
   m_TagString: Untagged
@@ -79,6 +80,26 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1190479093994597074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18146237863725115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96f4de28ce0f12f47a748c22f1dfc4c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nameText: {fileID: 9032789184948526655}
+  _descriptionText: {fileID: 6917848552960065566}
+  _iconImage: {fileID: 1321090821671113570}
+  _backgroundImage: {fileID: 6238588181055626332}
+  _button: {fileID: 2106235396608781011}
+  _towerBuffColor: {r: 0.2, g: 0.6, b: 1, a: 1}
+  _economyColor: {r: 1, g: 0.8, b: 0.2, a: 1}
+  _ultimateColor: {r: 0.8, g: 0.2, b: 1, a: 1}
 --- !u!1 &145741957474845170
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,7 +858,7 @@ GameObject:
   - component: {fileID: 4861774729844323878}
   - component: {fileID: 9035407595774459363}
   m_Layer: 5
-  m_Name: AugmentImage
+  m_Name: AugmentIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2180,6 +2201,7 @@ GameObject:
   - component: {fileID: 551662134829205698}
   - component: {fileID: 8769090970229862892}
   - component: {fileID: 7175306216137448212}
+  - component: {fileID: 2349772225116613022}
   m_Layer: 5
   m_Name: AugmentCard3
   m_TagString: Untagged
@@ -2248,6 +2270,26 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2349772225116613022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2925077730588116433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96f4de28ce0f12f47a748c22f1dfc4c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nameText: {fileID: 148433897395852076}
+  _descriptionText: {fileID: 7489464668309866331}
+  _iconImage: {fileID: 2128430704716818862}
+  _backgroundImage: {fileID: 7175306216137448212}
+  _button: {fileID: 786759434879917512}
+  _towerBuffColor: {r: 0.2, g: 0.6, b: 1, a: 1}
+  _economyColor: {r: 1, g: 0.8, b: 0.2, a: 1}
+  _ultimateColor: {r: 0.8, g: 0.2, b: 1, a: 1}
 --- !u!1 &3030587257878311708
 GameObject:
   m_ObjectHideFlags: 0
@@ -2257,9 +2299,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2164805944934136972}
-  - component: {fileID: 6330157035380118588}
   m_Layer: 5
-  m_Name: AugmentUI
+  m_Name: AugmentPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2287,23 +2328,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6330157035380118588
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3030587257878311708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0470687cccb947e4d970ed55298fe914, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _panel: {fileID: 0}
-  _titleText: {fileID: 0}
-  _card1: {fileID: 0}
-  _card2: {fileID: 0}
-  _card3: {fileID: 0}
 --- !u!1 &3300428681215934441
 GameObject:
   m_ObjectHideFlags: 0
@@ -2450,8 +2474,9 @@ GameObject:
   - component: {fileID: 3641265415474459575}
   - component: {fileID: 8486623759341962954}
   - component: {fileID: 2060997045533998512}
+  - component: {fileID: 6420504572420128837}
   m_Layer: 5
-  m_Name: 'AugmentPanel '
+  m_Name: AugmentUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2493,9 +2518,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _panel: {fileID: 3551531825121032849}
   _titleText: {fileID: 3459609332064092898}
-  _card1: {fileID: 0}
-  _card2: {fileID: 0}
-  _card3: {fileID: 0}
+  _card1: {fileID: 7674007076889434708}
+  _card2: {fileID: 1190479093994597074}
+  _card3: {fileID: 2349772225116613022}
 --- !u!222 &8486623759341962954
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2534,6 +2559,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6420504572420128837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3551531825121032849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0470687cccb947e4d970ed55298fe914, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _panel: {fileID: 3551531825121032849}
+  _titleText: {fileID: 3459609332064092898}
+  _card1: {fileID: 7674007076889434708}
+  _card2: {fileID: 1190479093994597074}
+  _card3: {fileID: 2349772225116613022}
 --- !u!1 &3578628210074849808
 GameObject:
   m_ObjectHideFlags: 0
@@ -2755,7 +2797,7 @@ GameObject:
   - component: {fileID: 3718110830177873034}
   - component: {fileID: 1321090821671113570}
   m_Layer: 5
-  m_Name: AugmentImage
+  m_Name: AugmentIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2963,6 +3005,7 @@ GameObject:
   - component: {fileID: 4169230369350914973}
   - component: {fileID: 1019850568896221886}
   - component: {fileID: 4190600918410006518}
+  - component: {fileID: 7674007076889434708}
   m_Layer: 5
   m_Name: AugmentCard1
   m_TagString: Untagged
@@ -3031,6 +3074,26 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7674007076889434708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3745405383367808821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96f4de28ce0f12f47a748c22f1dfc4c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nameText: {fileID: 7876977874079883279}
+  _descriptionText: {fileID: 4989913151902993721}
+  _iconImage: {fileID: 9035407595774459363}
+  _backgroundImage: {fileID: 4190600918410006518}
+  _button: {fileID: 5273775444553380969}
+  _towerBuffColor: {r: 0.2, g: 0.6, b: 1, a: 1}
+  _economyColor: {r: 1, g: 0.8, b: 0.2, a: 1}
+  _ultimateColor: {r: 0.8, g: 0.2, b: 1, a: 1}
 --- !u!1 &3913671670301790234
 GameObject:
   m_ObjectHideFlags: 0
@@ -4543,7 +4606,7 @@ GameObject:
   - component: {fileID: 3379829679298825344}
   - component: {fileID: 2128430704716818862}
   m_Layer: 5
-  m_Name: AugmentImage
+  m_Name: AugmentIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
