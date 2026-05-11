@@ -20,9 +20,9 @@ namespace Dev.jeon.UI
         [SerializeField] private Button _button;
 
         [Header("타입별 색상")]
-        [SerializeField] private Color _towerBuffColor = new Color(0.2f, 0.6f, 1f);    // 파랑
-        [SerializeField] private Color _economyColor = new Color(1f, 0.8f, 0.2f);    // 노랑
-        [SerializeField] private Color _ultimateColor = new Color(0.8f, 0.2f, 1f);    // 보라
+        [SerializeField] private Color _towerBuffColor = new Color(0.2f, 0.6f, 1f);
+        [SerializeField] private Color _economyColor = new Color(1f, 0.8f, 0.2f);
+        [SerializeField] private Color _ultimateColor = new Color(0.8f, 0.2f, 1f);
 
         private AugmentData _data;
         private System.Action<AugmentData> _onSelected;
@@ -32,28 +32,34 @@ namespace Dev.jeon.UI
             _button?.onClick.AddListener(OnCardClicked);
         }
 
-        /// <summary>
-        /// 카드 초기화
-        /// </summary>
         public void Setup(AugmentData data, System.Action<AugmentData> onSelected)
         {
             _data = data;
             _onSelected = onSelected;
 
-            // 텍스트 설정
             if (_nameText != null) _nameText.text = data.augmentName;
             if (_descriptionText != null) _descriptionText.text = data.description;
 
-            // 아이콘 설정
             if (_iconImage != null)
             {
                 _iconImage.sprite = data.icon;
                 _iconImage.enabled = data.icon != null;
             }
 
-            // 타입별 배경 색상
             if (_backgroundImage != null)
                 _backgroundImage.color = GetColorByType(data.effectType);
+        }
+
+        /// <summary>
+        /// 카드 초기화 - Hide() 시 호출
+        /// </summary>
+        public void Clear()
+        {
+            _data = null;
+            _onSelected = null;
+            if (_nameText != null) _nameText.text = "";
+            if (_descriptionText != null) _descriptionText.text = "";
+            if (_iconImage != null) _iconImage.sprite = null;
         }
 
         private void OnCardClicked()
@@ -68,12 +74,10 @@ namespace Dev.jeon.UI
                 case AugmentEffectType.Economy_Gold:
                 case AugmentEffectType.Economy_Interest:
                     return _economyColor;
-
                 case AugmentEffectType.Ultimate:
                 case AugmentEffectType.Ultimate_SlowZone:
                     return _ultimateColor;
-
-                default: // StatModifier, AbilityBoost
+                default:
                     return _towerBuffColor;
             }
         }

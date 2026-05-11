@@ -8,21 +8,20 @@ namespace Dev.jeon.UI
 {
     /// <summary>
     /// 증강 선택 팝업 UI
-    /// - 보스 처치 시 AugmentManager에서 Show() 호출
-    /// - 3개 카드 표시 후 선택 시 AugmentManager.OnAugmentSelected() 호출
+    /// 카드 3개 고정 배치 방식
     /// </summary>
     public class AugmentUI : MonoBehaviour
     {
         public static AugmentUI Instance { get; private set; }
 
         [Header("UI 레퍼런스")]
-        [SerializeField] private GameObject _panel;           // 전체 팝업 패널
-        [SerializeField] private Transform _cardContainer;    // 카드 3개 들어갈 부모
-        [SerializeField] private AugmentCard _cardPrefab;     // 카드 프리팹
-        [SerializeField] private TextMeshProUGUI _titleText;  // "증강을 선택하세요" 텍스트
+        [SerializeField] private GameObject _panel;
+        [SerializeField] private TextMeshProUGUI _titleText;
 
-        // 현재 표시 중인 카드 목록
-        private List<AugmentCard> _activeCards = new List<AugmentCard>();
+        [Header("증강 카드 3개")]
+        [SerializeField] private AugmentCard _card1;
+        [SerializeField] private AugmentCard _card2;
+        [SerializeField] private AugmentCard _card3;
 
         private void Awake()
         {
@@ -34,44 +33,30 @@ namespace Dev.jeon.UI
         /// 증강 선택 팝업 표시
         /// AugmentManager.OnBossDefeated()에서 호출
         /// </summary>
-        public void Show(List<AugmentData> augments, System.Action<AugmentData> onSelected)
+        public void Show(List<AugmentData> augments)
         {
-            // 기존 카드 정리
-            ClearCards();
-
-            // 카드 생성
-            foreach (var augment in augments)
-            {
-                var card = Instantiate(_cardPrefab, _cardContainer);
-                card.Setup(augment, (chosen) =>
-                {
-                    onSelected?.Invoke(chosen);
-                    Hide();
-                });
-                _activeCards.Add(card);
-            }
-
-            // 패널 표시
             if (_titleText != null) _titleText.text = "증강을 선택하세요";
+
+            if (augments.Count > 0) _card1?.Setup(augments[0], OnCardSelected);
+            if (augments.Count > 1) _card2?.Setup(augments[1], OnCardSelected);
+            if (augments.Count > 2) _card3?.Setup(augments[2], OnCardSelected);
+
             _panel?.SetActive(true);
         }
 
-        /// <summary>
-        /// 팝업 닫기
-        /// </summary>
+        // 카드 클릭 시 AugmentManager에 직접 전달
+        private void OnCardSelected(AugmentData chosen)
+        {
+            AugmentManager.Instance.OnAugmentSelected(chosen);
+            Hide();
+        }
+
         public void Hide()
         {
             _panel?.SetActive(false);
-            ClearCards();
-        }
-
-        private void ClearCards()
-        {
-            foreach (var card in _activeCards)
-            {
-                if (card != null) Destroy(card.gameObject);
-            }
-            _activeCards.Clear();
+            _card1?.Clear();
+            _card2?.Clear();
+            _card3?.Clear();
         }
     }
 }

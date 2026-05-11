@@ -41,12 +41,6 @@ namespace Dev.jeon.Manager
             Instance = this;
         }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.T))
-                OnBossDefeated();
-        }
-
         /// <summary>
         /// 게임 시작 시 선택된 타워 목록 받아서 풀 초기화
         /// </summary>
@@ -82,7 +76,7 @@ namespace Dev.jeon.Manager
             Time.timeScale = 0;
 
             List<AugmentData> picks = GetWeightedRandomAugments(3);
-            AugmentUI.Instance.Show(picks, OnAugmentSelected);
+            AugmentUI.Instance.Show(picks);
             Debug.Log($"[AugmentManager] 증강 {picks.Count}개 뽑기 완료");
         }
 
