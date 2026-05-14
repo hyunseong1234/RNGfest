@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   augmentName: InterestBonus
   description: "\uBCF4\uC720 \uACE8\uB4DC 10% \uC774\uC790"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 11d18a2a880829c4ea7f5c2b7b3cf777, type: 3}
   weight: 30
   effectType: 4
   targetTowerType: 0

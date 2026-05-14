@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   augmentName: SpeedSpeedUp
   description: "\uC2A4\uD53C\uB4DC \uACF5\uACA9\uC18D\uB3C4 20% \uC99D\uAC00"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0fdbf36e25cb3f343bfce7b396d3de80, type: 3}
   weight: 70
   effectType: 1
   targetTowerType: 4

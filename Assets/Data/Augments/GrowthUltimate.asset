@@ -15,7 +15,7 @@ MonoBehaviour:
   augmentName: GrowthUltimate
   description: "\uC131\uC7A5 \uAD81\uADF9\uAE30 - \uC989\uC2DC \uC131\uC7A5 \uC2A4\uD0DD
     \uB300\uD3ED \uC99D\uAC00"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 44c4b3c8a7a7c2e489279548bb7054a2, type: 3}
   weight: 20
   effectType: 5
   targetTowerType: 11

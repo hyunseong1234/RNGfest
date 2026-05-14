@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   augmentName: ElectricAbilityUp
   description: "\uC804\uAE30 \uC5F0\uC1C4 \uD69F\uC218 +1"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: d13f24c25bda7174d95a46e4ca02cc03, type: 3}
   weight: 30
   effectType: 2
   targetTowerType: 5
