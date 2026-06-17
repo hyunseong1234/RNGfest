@@ -15,7 +15,7 @@ MonoBehaviour:
   augmentName: BuffUltimate
   description: "\uBC84\uD504 \uAD81\uADF9\uAE30 - \uBAA8\uB4E0 \uD0C0\uC6CC \uBC84\uD504
     \uC218\uCE58 5\uCD08 2\uBC30"
-  icon: {fileID: 21300000, guid: 44c4b3c8a7a7c2e489279548bb7054a2, type: 3}
+  icon: {fileID: 21300000, guid: 1de78d8388b193841b5ee3d9f14b80ee, type: 3}
   weight: 20
   effectType: 5
   targetTowerType: 10

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   augmentName: PoisonAbilityUp
   description: "\uB3C5 \uB370\uBBF8\uC9C0 20% \uC99D\uAC00"
-  icon: {fileID: 21300000, guid: 1a9ab9dd99a8de445b9a0cdd1a0f590b, type: 3}
+  icon: {fileID: 21300000, guid: 8d8c7fe4788367746925f948c4fd39d4, type: 3}
   weight: 50
   effectType: 2
   targetTowerType: 6

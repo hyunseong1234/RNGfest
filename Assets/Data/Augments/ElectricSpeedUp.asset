@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   augmentName: ElectricSpeedUp
   description: "\uC804\uAE30 \uACF5\uACA9\uC18D\uB3C4 20% \uC99D\uAC00"
-  icon: {fileID: 21300000, guid: 0fdbf36e25cb3f343bfce7b396d3de80, type: 3}
+  icon: {fileID: 21300000, guid: d547d5d43d7b925499654d1c0d00fc04, type: 3}
   weight: 70
   effectType: 1
   targetTowerType: 5

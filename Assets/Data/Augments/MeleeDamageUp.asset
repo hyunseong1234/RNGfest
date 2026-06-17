@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   augmentName: MeleeDamageUp
   description: "\uADFC\uC811 \uACF5\uACA9\uB825 30% \uC99D\uAC00"
-  icon: {fileID: 21300000, guid: e3342fa94b3319047bf49ede3554dff9, type: 3}
+  icon: {fileID: 21300000, guid: 0b5d7013d401506438dc0ac3c520ff3e, type: 3}
   weight: 80
   effectType: 0
   targetTowerType: 0

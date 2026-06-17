@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   augmentName: GoldBonus
   description: "\uCC98\uCE58\uB2F9 \uACE8\uB4DC +2"
-  icon: {fileID: 21300000, guid: 50f271535d1bc4a45b0a610f2b10eaa6, type: 3}
+  icon: {fileID: 21300000, guid: 20e5a94687a08374e84331653792b65a, type: 3}
   weight: 70
   effectType: 3
   targetTowerType: 0
