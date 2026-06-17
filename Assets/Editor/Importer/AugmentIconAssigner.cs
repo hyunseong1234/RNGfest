@@ -105,10 +105,14 @@ namespace Dev.jeon.Editor.Importer
                 case TowerType.Marking: return "Marking";
                 case TowerType.Buff: return "Buff";
                 case TowerType.Growth: return "Growth";
+                case TowerType.Stationary: return "Stationary";
+                case TowerType.Archer: return "Archer";
+                case TowerType.Speed: return "Speed";
+                case TowerType.Melee: return "Melee";  
+                case TowerType.Adel: return "Adele";  
                 default: return "Attack";
             }
         }
-
         private Sprite LoadIcon(string iconName)
         {
             // PNG 시도
@@ -121,6 +125,8 @@ namespace Dev.jeon.Editor.Importer
 
             // SVG 시도
             return AssetDatabase.LoadAssetAtPath<Sprite>($"{_iconPath}/{iconName}.svg");
+
+
         }
     }
 }

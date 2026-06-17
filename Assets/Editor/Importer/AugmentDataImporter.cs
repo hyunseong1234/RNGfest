@@ -74,8 +74,12 @@ namespace Dev.jeon.Editor.Importer
                     continue;
                 }
 
+                // TowerType 파싱 전에 이름 보정
+                if (towerName == "Meleeattack") towerName = "Melee";
+
                 if (!System.Enum.TryParse(towerName, out TowerType targetTower))
                     targetTower = TowerType.None;
+
 
                 string assetPath = $"{_outputPath}/{augName}.asset";
                 AugmentData augData = AssetDatabase.LoadAssetAtPath<AugmentData>(assetPath);
