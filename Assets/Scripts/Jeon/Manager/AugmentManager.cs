@@ -65,6 +65,7 @@ namespace Dev.jeon.Manager
         /// <summary>
         /// 보스 처치 시 호출 → 증강 3개 뽑아서 UI에 전달
         /// </summary>
+        /// 
         public void OnBossDefeated()
         {
             if (_availableAugments.Count == 0)
@@ -74,11 +75,17 @@ namespace Dev.jeon.Manager
             }
             if (AugmentUI.Instance == null)
             {
-                Debug.LogWarning("[AugmentManager] AugmentUI.Instance가 null입니다. 씬에 AugmentUI가 있는지 확인하세요.");
+                Debug.LogWarning("[AugmentManager] AugmentUI.Instance가 null입니다.");
                 return;
             }
-            Time.timeScale = 0;
+            // 이미 UI가 열려있으면 무시
+            if (AugmentUI.Instance.IsOpen)
+            {
+                Debug.Log("[AugmentManager] 이미 증강 선택 중입니다.");
+                return;
+            }
 
+            Time.timeScale = 0;
             List<AugmentData> picks = GetWeightedRandomAugments(3);
             AugmentUI.Instance.Show(picks);
             Debug.Log($"[AugmentManager] 증강 {picks.Count}개 뽑기 완료");
@@ -123,6 +130,7 @@ namespace Dev.jeon.Manager
             ApplyAugment(chosen);
             _availableAugments.Remove(chosen);
             _activeAugments.Add(chosen);
+            AugmentHUD.Instance?.AddAugmentSlot(chosen);
             Time.timeScale = 1;
             Debug.Log($"[AugmentManager] 증강 선택됨: {chosen.augmentName}");
         }

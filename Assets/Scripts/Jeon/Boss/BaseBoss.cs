@@ -50,19 +50,21 @@ namespace Dev.jeon.Model
         /// 보스 처치 시 → AugmentManager에 알림
         /// Enemy.cs의 OnDamaged()에서 hp <= 0 되면 OnDeath() 호출됨
         /// </summary>
+        private bool _isDead = false; // 추가
+
         protected override void OnDeath()
         {
-            base.OnDeath();
+            if (_isDead) return; // 추가
+            _isDead = true;      // 추가
 
+            base.OnDeath();
             var augmentManager = ServiceLocator.Instance.GetService<AugmentManager>();
             if (augmentManager != null)
-            {
                 augmentManager.OnBossDefeated();
-            }
             else
-            {
-                Debug.LogWarning("[BaseBoss] AugmentManager를 찾을 수 없습니다. ServiceLocator에 등록됐는지 확인하세요.");
-            }
+                Debug.LogWarning("[BaseBoss] AugmentManager를 찾을 수 없습니다.");
         }
     }
+
+
 }

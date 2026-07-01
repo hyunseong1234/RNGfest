@@ -43,6 +43,8 @@ namespace Dev.jeon.UI
 
             _panel?.SetActive(true);
         }
+        // 현재 UI가 열려있는지 확인
+        public bool IsOpen => _panel != null && _panel.activeSelf;
 
         // 카드 클릭 시 AugmentManager에 직접 전달
         private void OnCardSelected(AugmentData chosen)

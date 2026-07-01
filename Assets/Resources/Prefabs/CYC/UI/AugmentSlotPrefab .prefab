@@ -78,11 +78,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 610387029f29a7949a7cdba2194ccb20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _iconImage: {fileID: 0}
-  _backgroundImage: {fileID: 0}
-  _tooltip: {fileID: 0}
-  _tooltipName: {fileID: 0}
-  _tooltipDescription: {fileID: 0}
+  _iconImage: {fileID: 1926240896161668169}
+  _backgroundImage: {fileID: 2600429780019888233}
+  _tooltip: {fileID: 6546414132440639073}
+  _tooltipName: {fileID: 8348784933946621015}
+  _tooltipDescription: {fileID: 1167840858131490583}
   _towerBuffColor: {r: 0.2, g: 0.6, b: 1, a: 1}
   _economyColor: {r: 1, g: 0.8, b: 0.2, a: 1}
   _ultimateColor: {r: 0.8, g: 0.2, b: 1, a: 1}
